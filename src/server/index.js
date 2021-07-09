@@ -9,8 +9,19 @@ import dev from './dev';
 import hmr from './hmr';
 import compose from 'koa-compose';
 
-export default function server(compiler, options) {
-  const { hmr: hmrOptions, ...devOptions } = options;
+function miscAssign(from, to) {
+  for (const [prop, value] of Object.entries(from)) {
+    to[prop] = value;
+  }
+}
 
-  return compose([dev(compiler, devOptions), hmr(compiler, hmrOptions)]);
+export default function server(compiler, options) {
+  const devMiddleware = dev(compiler, options);
+  const hmrMiddleware = hmr(compiler, options);
+  const middleware = compose([devMiddleware, hmrMiddleware]);
+
+  miscAssign(devMiddleware, middleware);
+  miscAssign(hmrMiddleware, middleware);
+
+  return middleware;
 }

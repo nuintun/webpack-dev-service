@@ -6,6 +6,32 @@
  */
 
 import { Server } from 'ws';
+import memoize from 'memoize-one';
+
+const DEFAULT_STATS = {
+  all: false,
+  hash: true,
+  assets: true,
+  errors: true,
+  warnings: true,
+  errorDetails: false
+};
+
+const resolveStats = memoize(stats => {
+  return stats.toJson(DEFAULT_STATS);
+});
+
+function isStillOK(stats) {
+  const { errors, warnings } = stats;
+
+  return (
+    stats &&
+    stats.assets &&
+    (!errors || !errors.length === 0) &&
+    (!warnings || warnings.length === 0) &&
+    stats.assets.every(asset => !asset.emitted)
+  );
+}
 
 function isUpgradable(context, detector) {
   const { upgrade } = context.headers;
@@ -13,28 +39,24 @@ function isUpgradable(context, detector) {
   return upgrade ? detector.test(upgrade.trim()) : false;
 }
 
-function isShouldEmit(stats) {
-  return (
-    stats &&
-    stats.assets &&
-    stats.assets.every(asset => !asset.emitted) &&
-    (!stats.errors || stats.errors.length === 0) &&
-    (!stats.warnings || stats.warnings.length === 0)
-  );
-}
-
 class HMRServer {
+  name = 'webpack-dev-server';
+
   constructor(compiler, options) {
     this.options = options;
     this.wss = new Server({ ...options, noServer: true });
-    this.logger = compiler.getInfrastructureLogger('webpack-dev-middleware');
+    this.logger = compiler.getInfrastructureLogger(this.name);
 
-    this.setup();
+    this.initialize();
   }
 
-  setup() {
-    const { wss, compiler, logger } = this;
-    const { invalid, done } = compiler.hooks;
+  initialize() {
+    this.setupWss();
+    this.setupHooks();
+  }
+
+  setupWss() {
+    const { wss, logger } = this;
 
     wss.on('connection', ws => {
       ws.send('hot');
@@ -51,18 +73,26 @@ class HMRServer {
         }
       }
     });
+  }
 
-    invalid.tap('webpack-dev-server', () => {
-      // invalid
-    });
+  setupHooks() {
+    const { compiler } = this;
+    const compilers = compiler.compilers ?? [compiler];
 
-    done.tap('webpack-dev-server', stats => {
-      const shouldEmit = isShouldEmit(stats);
+    const onInvalid = () => {
+      this.broadcast('invalid');
+    };
 
-      if (shouldEmit) {
-        // shouldEmit
-      }
-    });
+    const onDone = stats => {
+      this.stats = stats;
+
+      this.broadcastStats(stats);
+    };
+
+    for (const { hooks } of compilers) {
+      hooks.done.tap(this.name, onDone);
+      hooks.invalid.tap(this.name, onInvalid);
+    }
   }
 
   upgrade(context) {
@@ -88,14 +118,44 @@ class HMRServer {
       }
     }
   }
+
+  broadcastStats(stats) {
+    stats = resolveStats(stats);
+
+    if (isStillOK(stats)) {
+      return this.broadcast('still-ok');
+    }
+
+    this.broadcast('hash', stats.hash);
+
+    const { errors, warnings } = stats;
+    const hasErrors = errors.length !== 0;
+    const hasWarnings = warnings.length !== 0;
+
+    if (!hasErrors && !hasWarnings) {
+      return this.broadcast('ok');
+    }
+
+    if (hasErrors) {
+      this.broadcast('errors', errors);
+    }
+
+    if (hasWarnings) {
+      this.broadcast('warnings', warnings);
+    }
+  }
 }
 
 export default function hmr(compiler, options) {
   const wss = new HMRServer(compiler, options);
 
-  return async (context, next) => {
+  const hmrMiddleware = async (context, next) => {
     if (!wss.upgrade(context)) {
       await next();
     }
   };
+
+  hmrMiddleware.broadcast = wss.broadcast.bind(wss);
+
+  return hmrMiddleware;
 }
