@@ -100,10 +100,10 @@ class HMRServer {
     this.options = { path: '/hmr', hmr: true, reload: true, overlay: true, ...options };
     this.server = new WebSocket__default['default'].Server({ path: this.options.path, noServer: true });
 
-    this.initialize();
+    this.init();
   }
 
-  initialize() {
+  init() {
     this.setupWss();
     this.setupHooks();
   }
@@ -115,7 +115,7 @@ class HMRServer {
       const { options } = this;
       const { hmr, reload, overlay } = options;
 
-      this.broadcast([client], 'configure', { hmr, reload, overlay });
+      this.broadcast([client], 'init', { hmr, reload, overlay });
 
       if (this.stats) {
         this.broadcastStats([client], this.stats);
