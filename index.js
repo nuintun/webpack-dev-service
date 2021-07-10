@@ -1,12 +1,64 @@
+'use strict';
+
+var webpackDevMiddleware = require('webpack-dev-middleware');
+var WebSocket = require('ws');
+var memoize = require('memoize-one');
+var compose = require('koa-compose');
+
+function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
+
+var webpackDevMiddleware__default = /*#__PURE__*/_interopDefaultLegacy(webpackDevMiddleware);
+var WebSocket__default = /*#__PURE__*/_interopDefaultLegacy(WebSocket);
+var memoize__default = /*#__PURE__*/_interopDefaultLegacy(memoize);
+var compose__default = /*#__PURE__*/_interopDefaultLegacy(compose);
+
+/**
+ * @module dev
+ * @license MIT
+ * @author nuintun
+ * @description Webpack dev middleware for koa2
+ */
+
+function dev(compiler, options) {
+  const middleware = webpackDevMiddleware__default['default'](compiler, options);
+
+  const devMiddleware = async (context, next) => {
+    context.remove('Content-Type');
+
+    await middleware(
+      context.req,
+      {
+        locals: context.state,
+        send(body) {
+          context.body = body;
+        },
+        status(statusCode) {
+          context.status = statusCode;
+        },
+        set(field, value) {
+          context.response.set(field, value);
+        },
+        get(field) {
+          return context.response.get(field);
+        }
+      },
+      next
+    );
+  };
+
+  for (const [prop, value] of Object.entries(middleware)) {
+    devMiddleware[prop] = value;
+  }
+
+  return devMiddleware;
+}
+
 /**
  * @module hot
  * @license MIT
  * @author nuintun
  * @description Webpack hmr middleware for koa2
  */
-
-import WebSocket from 'ws';
-import memoize from 'memoize-one';
 
 const DEFAULT_STATS = {
   all: false,
@@ -17,11 +69,11 @@ const DEFAULT_STATS = {
   errorDetails: false
 };
 
-const resolveStats = memoize(stats => {
+const resolveStats = memoize__default['default'](stats => {
   return stats.toJson(DEFAULT_STATS);
 });
 
-const isStillOK = memoize(stats => {
+const isStillOK = memoize__default['default'](stats => {
   const { errors, warnings } = stats;
 
   return (
@@ -46,7 +98,7 @@ class HMRServer {
     this.compiler = compiler;
     this.logger = compiler.getInfrastructureLogger(this.name);
     this.options = { path: '/hmr', hmr: true, reload: true, overlay: true, ...options };
-    this.server = new WebSocket.Server({ path: this.options.path, noServer: true });
+    this.server = new WebSocket__default['default'].Server({ path: this.options.path, noServer: true });
 
     this.initialize();
   }
@@ -76,7 +128,7 @@ class HMRServer {
 
     server.on('close', () => {
       for (const client of server.clients) {
-        if (client.readyState === WebSocket.OPEN) {
+        if (client.readyState === WebSocket__default['default'].OPEN) {
           client.close(1000);
         }
       }
@@ -122,7 +174,7 @@ class HMRServer {
 
   broadcast(clients, action, payload) {
     for (const client of clients) {
-      if (client.readyState === WebSocket.OPEN) {
+      if (client.readyState === WebSocket__default['default'].OPEN) {
         client.send(JSON.stringify({ action, payload }));
       }
     }
@@ -155,7 +207,7 @@ class HMRServer {
   }
 }
 
-export default function hmr(compiler, options) {
+function hmr(compiler, options) {
   const server = new HMRServer(compiler, options);
 
   const hmrMiddleware = async (context, next) => {
@@ -170,3 +222,32 @@ export default function hmr(compiler, options) {
 
   return hmrMiddleware;
 }
+
+/**
+ * @module index
+ * @license MIT
+ * @author nuintun
+ * @description Webpack dev and hot middleware for koa2
+ */
+
+function miscAssign(from, to) {
+  for (const [prop, value] of Object.entries(from)) {
+    to[prop] = value;
+  }
+}
+
+function server(compiler, options = {}) {
+  const devMiddleware = dev(compiler, options);
+
+  if (options.hot === false) return devMiddleware;
+
+  const hmrMiddleware = hmr(compiler, options.hot);
+  const composeMiddleware = compose__default['default']([devMiddleware, hmrMiddleware]);
+
+  miscAssign(devMiddleware, composeMiddleware);
+  miscAssign(hmrMiddleware, composeMiddleware);
+
+  return composeMiddleware;
+}
+
+module.exports = server;

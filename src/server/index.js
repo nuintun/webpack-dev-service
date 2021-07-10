@@ -15,13 +15,16 @@ function miscAssign(from, to) {
   }
 }
 
-export default function server(compiler, options) {
+export default function server(compiler, options = {}) {
   const devMiddleware = dev(compiler, options);
-  const hmrMiddleware = hmr(compiler, options);
-  const middleware = compose([devMiddleware, hmrMiddleware]);
 
-  miscAssign(devMiddleware, middleware);
-  miscAssign(hmrMiddleware, middleware);
+  if (options.hot === false) return devMiddleware;
 
-  return middleware;
+  const hmrMiddleware = hmr(compiler, options.hot);
+  const composeMiddleware = compose([devMiddleware, hmrMiddleware]);
+
+  miscAssign(devMiddleware, composeMiddleware);
+  miscAssign(hmrMiddleware, composeMiddleware);
+
+  return composeMiddleware;
 }
