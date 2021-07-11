@@ -5,6 +5,7 @@
 
 'use strict';
 
+const fs = require('fs');
 const dev = require('../');
 const Koa = require('koa');
 const path = require('path');
@@ -16,12 +17,14 @@ const progress = {
   percentBy: 'entries'
 };
 
+const entryHTML = path.resolve('public/index.html');
+
 const html = {
   xhtml: true,
   minify: false,
   title: 'React',
-  template: path.resolve('index.ejs'),
-  filename: path.resolve('public/index.html')
+  filename: entryHTML,
+  template: path.resolve('index.ejs')
 };
 
 function httpError(error) {
@@ -70,13 +73,20 @@ const compiler = webpack({
 });
 
 const app = new Koa();
-const server = dev(compiler);
+const server = dev(compiler, {
+  writeToDisk: file => file === entryHTML
+});
 
 server.waitUntilValid(() => {
   console.log(`server run at: \u001B[36mhttp://127.0.0.1:8000\u001B[0m`);
 });
 
 app.use(server);
+
+app.use(async ctx => {
+  ctx.type = 'text/html; charset=utf-8';
+  ctx.body = fs.createReadStream(entryHTML);
+});
 
 app.on('error', error => {
   !httpError(error) && console.error(error);

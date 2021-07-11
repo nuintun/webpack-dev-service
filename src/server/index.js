@@ -6,13 +6,17 @@
  */
 
 import dev from './dev';
-import hmr from './hmr';
+import hot from './hot';
 import compose from 'koa-compose';
 
-function miscAssign(from, to) {
-  for (const [prop, value] of Object.entries(from)) {
-    to[prop] = value;
+function assign(dest, ...sources) {
+  for (const source of sources) {
+    for (const [prop, value] of Object.entries(source)) {
+      dest[prop] = value;
+    }
   }
+
+  return dest;
 }
 
 export default function server(compiler, options = {}) {
@@ -20,11 +24,8 @@ export default function server(compiler, options = {}) {
 
   if (options.hot === false) return devMiddleware;
 
-  const hmrMiddleware = hmr(compiler, options.hot);
-  const composeMiddleware = compose([devMiddleware, hmrMiddleware]);
+  const hotMiddleware = hot(compiler, options.hot);
+  const composeMiddleware = compose([devMiddleware, hotMiddleware]);
 
-  miscAssign(devMiddleware, composeMiddleware);
-  miscAssign(hmrMiddleware, composeMiddleware);
-
-  return composeMiddleware;
+  return assign(composeMiddleware, devMiddleware, hotMiddleware);
 }

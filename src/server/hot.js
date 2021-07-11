@@ -17,20 +17,10 @@ const DEFAULT_STATS = {
   errorDetails: false
 };
 
-const resolveStats = memoize(stats => {
+const WEBSOCKET_RE = /^websocket$/i;
+
+const parseStats = memoize(stats => {
   return stats.toJson(DEFAULT_STATS);
-});
-
-const isStillOK = memoize(stats => {
-  const { errors, warnings } = stats;
-
-  return (
-    stats &&
-    stats.assets &&
-    (!errors || errors.length === 0) &&
-    (!warnings || warnings.length === 0) &&
-    stats.assets.every(asset => !asset.emitted)
-  );
 });
 
 function isUpgradable(context, detector) {
@@ -39,19 +29,19 @@ function isUpgradable(context, detector) {
   return upgrade && detector.test(upgrade.trim());
 }
 
-class HMRServer {
-  name = 'webpack-dev-server';
+class HotServer {
+  name = 'webpack-hot-middleware';
 
   constructor(compiler, options) {
     this.compiler = compiler;
     this.logger = compiler.getInfrastructureLogger(this.name);
-    this.options = { path: '/hmr', hmr: true, reload: true, overlay: true, ...options };
+    this.options = { path: '/hmr', hmr: true, overlay: true, ...options };
     this.server = new WebSocket.Server({ path: this.options.path, noServer: true });
 
-    this.init();
+    this.setup();
   }
 
-  init() {
+  setup() {
     this.setupWss();
     this.setupHooks();
   }
@@ -61,9 +51,9 @@ class HMRServer {
 
     server.on('connection', client => {
       const { options } = this;
-      const { hmr, reload, overlay } = options;
+      const { hmr, overlay } = options;
 
-      this.broadcast([client], 'init', { hmr, reload, overlay });
+      this.broadcast([client], 'init', { hmr, overlay });
 
       if (this.stats) {
         this.broadcastStats([client], this.stats);
@@ -104,7 +94,7 @@ class HMRServer {
   }
 
   upgrade(context) {
-    if (isUpgradable(context, /^websocket$/i)) {
+    if (isUpgradable(context, WEBSOCKET_RE)) {
       context.respond = false;
 
       const { server } = this;
@@ -129,44 +119,35 @@ class HMRServer {
   }
 
   broadcastStats(clients, stats) {
-    stats = resolveStats(stats);
+    const output = parseStats(stats);
+    const { errors, warnings } = output;
 
-    if (isStillOK(stats)) {
-      return this.broadcast(clients, 'still-ok');
-    }
-
-    this.broadcast(clients, 'hash', stats.hash);
-
-    const { errors, warnings } = stats;
-    const hasErrors = errors.length !== 0;
-    const hasWarnings = warnings.length !== 0;
-
-    if (!hasErrors && !hasWarnings) {
-      return this.broadcast(clients, 'ok');
-    }
-
-    if (hasErrors) {
+    if (errors.length > 0) {
       this.broadcast(clients, 'errors', errors);
-    }
+    } else {
+      this.broadcast(clients, 'hash', output.hash);
 
-    if (hasWarnings) {
-      this.broadcast(clients, 'warnings', warnings);
+      if (warnings.length > 0) {
+        this.broadcast(clients, 'warnings', warnings);
+      } else {
+        this.broadcast(clients, 'ok');
+      }
     }
   }
 }
 
-export default function hmr(compiler, options) {
-  const server = new HMRServer(compiler, options);
+export default function hmr(compiler, options = {}) {
+  const server = new HotServer(compiler, options);
 
-  const hmrMiddleware = async (context, next) => {
+  const hotMiddleware = async (context, next) => {
     if (!server.upgrade(context)) {
       await next();
     }
   };
 
-  hmrMiddleware.broadcast = (action, payload) => {
+  hotMiddleware.broadcast = (action, payload) => {
     server.broadcast(server.clients, action, payload);
   };
 
-  return hmrMiddleware;
+  return hotMiddleware;
 }
