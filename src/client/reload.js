@@ -3,7 +3,7 @@
  */
 
 function isUpToDate(hash) {
-  return hash.indexOf(__webpack_hash__) >= 0;
+  return hash === __webpack_hash__;
 }
 
 function update(hash) {
@@ -19,7 +19,7 @@ function update(hash) {
     .catch(function () {
       const status = module.hot.status();
 
-      if (['abort', 'fail'].indexOf(status) >= 0) {
+      if (status === 'abort' || status === 'fail') {
         window.location.reload();
       }
     });
