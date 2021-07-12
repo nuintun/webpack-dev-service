@@ -33,6 +33,9 @@
     "utf-8-validate": "^5.0.5",
     "webpack-dev-middleware": "^5.0.0"
   },
+  "peerDependencies": {
+    "webpack": "^5.0.0"
+  },
   "devDependencies": {
     "koa": "^2.13.1",
     "react": "^17.0.2",

@@ -25,7 +25,6 @@ export default function server(compiler, options = {}) {
   if (options.hot === false) return devMiddleware;
 
   const hotMiddleware = hot(compiler, options.hot);
-  const composeMiddleware = compose([devMiddleware, hotMiddleware]);
 
-  return assign(composeMiddleware, devMiddleware, hotMiddleware);
+  return assign(compose([devMiddleware, hotMiddleware]), devMiddleware, hotMiddleware);
 }

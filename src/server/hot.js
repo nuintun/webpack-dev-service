@@ -17,9 +17,17 @@ const DEFAULT_STATS = {
   errorDetails: false
 };
 
+const DEFAULT_OPTIONS = {
+  hmr: true,
+  path: '/hmr',
+  errors: true,
+  overlay: true,
+  warnings: true
+};
+
 const WEBSOCKET_RE = /^websocket$/i;
 
-const parseStats = memoize(stats => {
+const jsonStats = memoize(stats => {
   return stats.toJson(DEFAULT_STATS);
 });
 
@@ -34,8 +42,8 @@ class HotServer {
 
   constructor(compiler, options) {
     this.compiler = compiler;
+    this.options = { ...DEFAULT_OPTIONS, ...options };
     this.logger = compiler.getInfrastructureLogger(this.name);
-    this.options = { path: '/hmr', hmr: true, overlay: true, ...options };
     this.server = new WebSocket.Server({ path: this.options.path, noServer: true });
 
     this.setup();
@@ -50,10 +58,9 @@ class HotServer {
     const { server, logger } = this;
 
     server.on('connection', client => {
-      const { options } = this;
-      const { hmr, overlay } = options;
+      const { hmr, overlay, errors, warnings } = this.options;
 
-      this.broadcast([client], 'init', { hmr, overlay });
+      this.broadcast([client], 'init', { hmr, overlay, errors, warnings });
 
       if (this.stats) {
         this.broadcastStats([client], this.stats);
@@ -77,8 +84,8 @@ class HotServer {
     const { compiler } = this;
     const compilers = compiler.compilers ?? [compiler];
 
-    const onInvalid = () => {
-      this.broadcast(this.server.clients, 'rebuild');
+    const onInvalid = (_main, timestamp) => {
+      this.broadcast(this.server.clients, 'rebuild', new Date(timestamp));
     };
 
     const onDone = stats => {
@@ -119,18 +126,20 @@ class HotServer {
   }
 
   broadcastStats(clients, stats) {
-    const output = parseStats(stats);
-    const { errors, warnings } = output;
+    if (clients.size || clients.length) {
+      const output = jsonStats(stats);
+      const { name, errors } = output;
 
-    if (errors.length > 0) {
-      this.broadcast(clients, 'errors', errors);
-    } else {
-      this.broadcast(clients, 'hash', output.hash);
-
-      if (warnings.length > 0) {
-        this.broadcast(clients, 'warnings', warnings);
+      if (errors.length > 0) {
+        this.broadcast(clients, 'errors', { name, errors });
       } else {
-        this.broadcast(clients, 'ok');
+        const { name, hash, warnings } = output;
+
+        if (warnings.length > 0) {
+          this.broadcast(clients, 'warnings', { name, hash, warnings });
+        } else {
+          this.broadcast(clients, 'ok', { name, hash });
+        }
       }
     }
   }

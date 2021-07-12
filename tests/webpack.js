@@ -32,7 +32,7 @@ function httpError(error) {
 }
 
 const compiler = webpack({
-  name: 'React',
+  name: 'react',
   mode: 'development',
   context: path.resolve('src'),
   entry: path.resolve('src/App.jsx'),
