@@ -35,7 +35,7 @@ const compiler = webpack({
   name: 'react',
   mode: 'development',
   context: path.resolve('src'),
-  entry: path.resolve('src/App.jsx'),
+  entry: [path.resolve('../client/index.js'), path.resolve('src/App.jsx')],
   output: {
     publicPath: '/public/',
     filename: `js/[name].js`,

@@ -19,12 +19,12 @@ function assign(dest, ...sources) {
   return dest;
 }
 
-export default function server(compiler, options = {}) {
-  const devMiddleware = dev(compiler, options);
+export default function server(compiler, { hot: hotOptions, ...devOptions } = {}) {
+  const devMiddleware = dev(compiler, devOptions);
 
-  if (options.hot === false) return devMiddleware;
+  if (hotOptions === false) return devMiddleware;
 
-  const hotMiddleware = hot(compiler, options.hot);
+  const hotMiddleware = hot(compiler, hotOptions);
 
   return assign(compose([devMiddleware, hotMiddleware]), devMiddleware, hotMiddleware);
 }

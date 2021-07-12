@@ -1,8 +1,8 @@
 {
   "name": "webpack-dev-server-middleware",
   "version": "0.0.0",
-  "description": "A development and hot reload middleware for Koa2.",
   "main": "index.js",
+  "description": "A development and hot reload middleware for Koa2.",
   "scripts": {
     "test": "cd tests && node webpack",
     "build": "rollup -c rollup.config.js"
@@ -27,9 +27,11 @@
   "homepage": "https://github.com/nuintun/webpack-dev-server-middleware#readme",
   "dependencies": {
     "ws": "^7.5.3",
+    "ansi-html": "^0.0.7",
     "bufferutil": "^4.0.3",
     "memoize-one": "^5.2.1",
     "koa-compose": "^4.1.0",
+    "html-entities": "^2.3.2",
     "utf-8-validate": "^5.0.5",
     "webpack-dev-middleware": "^5.0.0"
   },

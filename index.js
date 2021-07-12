@@ -2,15 +2,9 @@
 
 var webpackDevMiddleware = require('webpack-dev-middleware');
 var WebSocket = require('ws');
+var webpack = require('webpack');
 var memoize = require('memoize-one');
 var compose = require('koa-compose');
-
-function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-var webpackDevMiddleware__default = /*#__PURE__*/_interopDefaultLegacy(webpackDevMiddleware);
-var WebSocket__default = /*#__PURE__*/_interopDefaultLegacy(WebSocket);
-var memoize__default = /*#__PURE__*/_interopDefaultLegacy(memoize);
-var compose__default = /*#__PURE__*/_interopDefaultLegacy(compose);
 
 /**
  * @module dev
@@ -20,7 +14,7 @@ var compose__default = /*#__PURE__*/_interopDefaultLegacy(compose);
  */
 
 function dev(compiler, options) {
-  const middleware = webpackDevMiddleware__default['default'](compiler, options);
+  const middleware = webpackDevMiddleware(compiler, options);
 
   const devMiddleware = async (context, next) => {
     context.remove('Content-Type');
@@ -74,12 +68,13 @@ const DEFAULT_OPTIONS = {
   path: '/hmr',
   errors: true,
   overlay: true,
-  warnings: true
+  warnings: true,
+  progress: false
 };
 
 const WEBSOCKET_RE = /^websocket$/i;
 
-const jsonStats = memoize__default['default'](stats => {
+const jsonStats = memoize(stats => {
   return stats.toJson(DEFAULT_STATS);
 });
 
@@ -96,7 +91,7 @@ class HotServer {
     this.compiler = compiler;
     this.options = { ...DEFAULT_OPTIONS, ...options };
     this.logger = compiler.getInfrastructureLogger(this.name);
-    this.server = new WebSocket__default['default'].Server({ path: this.options.path, noServer: true });
+    this.server = new WebSocket.Server({ path: this.options.path, noServer: true });
 
     this.setup();
   }
@@ -104,31 +99,20 @@ class HotServer {
   setup() {
     this.setupWss();
     this.setupHooks();
+    this.setupPlugins();
   }
 
   setupWss() {
     const { server, logger } = this;
 
-    server.on('connection', client => {
-      const { hmr, overlay, errors, warnings } = this.options;
-
-      this.broadcast([client], 'init', { hmr, overlay, errors, warnings });
-
-      if (this.stats) {
-        this.broadcastStats([client], this.stats);
-      }
-    });
-
     server.on('error', error => {
       logger.error(error.message);
     });
 
-    server.on('close', () => {
-      for (const client of server.clients) {
-        if (client.readyState === WebSocket__default['default'].OPEN) {
-          client.close(1000);
-        }
-      }
+    server.on('connection', client => {
+      const { hmr, overlay, errors, warnings } = this.options;
+
+      this.broadcast([client], 'init', { hmr, overlay, errors, warnings });
     });
   }
 
@@ -141,14 +125,44 @@ class HotServer {
     };
 
     const onDone = stats => {
-      this.stats = stats;
-
       this.broadcastStats(this.server.clients, stats);
     };
 
     for (const { hooks } of compilers) {
       hooks.done.tap(this.name, onDone);
       hooks.invalid.tap(this.name, onInvalid);
+    }
+  }
+
+  setupPlugins() {
+    const { options } = this;
+    const plugins = [new webpack.HotModuleReplacementPlugin()];
+
+    if (options.progress) {
+      let bookmark = 0;
+
+      plugins.push(
+        new webpack.ProgressPlugin({
+          percentBy: 'entries',
+          handler: percentage => {
+            percentage = Math.floor(percentage * 100);
+
+            if (percentage > bookmark || percentage === 0) {
+              this.broadcast(this.server.clients, 'progress', (bookmark = percentage));
+            }
+          }
+        })
+      );
+    }
+
+    this.applyPlugins(plugins);
+  }
+
+  applyPlugins(plugins) {
+    const { compiler } = this;
+
+    for (const plugin of plugins) {
+      plugin.apply(compiler);
     }
   }
 
@@ -171,7 +185,7 @@ class HotServer {
 
   broadcast(clients, action, payload) {
     for (const client of clients) {
-      if (client.readyState === WebSocket__default['default'].OPEN) {
+      if (client.readyState === WebSocket.OPEN) {
         client.send(JSON.stringify({ action, payload }));
       }
     }
@@ -179,25 +193,28 @@ class HotServer {
 
   broadcastStats(clients, stats) {
     if (clients.size || clients.length) {
-      const output = jsonStats(stats);
-      const { name, errors } = output;
+      process.nextTick(() => {
+        stats = jsonStats(stats);
 
-      if (errors.length > 0) {
-        this.broadcast(clients, 'errors', { name, errors });
-      } else {
-        const { name, hash, warnings } = output;
+        const { name, errors } = stats;
 
-        if (warnings.length > 0) {
-          this.broadcast(clients, 'warnings', { name, hash, warnings });
+        if (errors.length > 0) {
+          this.broadcast(clients, 'errors', { name, errors });
         } else {
-          this.broadcast(clients, 'ok', { name, hash });
+          const { name, hash, warnings } = stats;
+
+          if (warnings.length > 0) {
+            this.broadcast(clients, 'warnings', { name, hash, warnings });
+          } else {
+            this.broadcast(clients, 'ok', { name, hash });
+          }
         }
-      }
+      });
     }
   }
 }
 
-function hmr(compiler, options = {}) {
+function hot(compiler, options = {}) {
   const server = new HotServer(compiler, options);
 
   const hotMiddleware = async (context, next) => {
@@ -230,14 +247,14 @@ function assign(dest, ...sources) {
   return dest;
 }
 
-function server(compiler, options = {}) {
-  const devMiddleware = dev(compiler, options);
+function server(compiler, { hot: hotOptions, ...devOptions } = {}) {
+  const devMiddleware = dev(compiler, devOptions);
 
-  if (options.hot === false) return devMiddleware;
+  if (hotOptions === false) return devMiddleware;
 
-  const hotMiddleware = hmr(compiler, options.hot);
+  const hotMiddleware = hot(compiler, hotOptions);
 
-  return assign(compose__default['default']([devMiddleware, hotMiddleware]), devMiddleware, hotMiddleware);
+  return assign(compose([devMiddleware, hotMiddleware]), devMiddleware, hotMiddleware);
 }
 
 module.exports = server;

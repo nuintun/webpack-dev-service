@@ -6,6 +6,7 @@
  */
 
 import WebSocket from 'ws';
+import webpack from 'webpack';
 import memoize from 'memoize-one';
 
 const DEFAULT_STATS = {
@@ -22,7 +23,8 @@ const DEFAULT_OPTIONS = {
   path: '/hmr',
   errors: true,
   overlay: true,
-  warnings: true
+  warnings: true,
+  progress: false
 };
 
 const WEBSOCKET_RE = /^websocket$/i;
@@ -52,31 +54,20 @@ class HotServer {
   setup() {
     this.setupWss();
     this.setupHooks();
+    this.setupPlugins();
   }
 
   setupWss() {
     const { server, logger } = this;
 
-    server.on('connection', client => {
-      const { hmr, overlay, errors, warnings } = this.options;
-
-      this.broadcast([client], 'init', { hmr, overlay, errors, warnings });
-
-      if (this.stats) {
-        this.broadcastStats([client], this.stats);
-      }
-    });
-
     server.on('error', error => {
       logger.error(error.message);
     });
 
-    server.on('close', () => {
-      for (const client of server.clients) {
-        if (client.readyState === WebSocket.OPEN) {
-          client.close(1000);
-        }
-      }
+    server.on('connection', client => {
+      const { hmr, overlay, errors, warnings } = this.options;
+
+      this.broadcast([client], 'init', { hmr, overlay, errors, warnings });
     });
   }
 
@@ -89,14 +80,44 @@ class HotServer {
     };
 
     const onDone = stats => {
-      this.stats = stats;
-
       this.broadcastStats(this.server.clients, stats);
     };
 
     for (const { hooks } of compilers) {
       hooks.done.tap(this.name, onDone);
       hooks.invalid.tap(this.name, onInvalid);
+    }
+  }
+
+  setupPlugins() {
+    const { options } = this;
+    const plugins = [new webpack.HotModuleReplacementPlugin()];
+
+    if (options.progress) {
+      let bookmark = 0;
+
+      plugins.push(
+        new webpack.ProgressPlugin({
+          percentBy: 'entries',
+          handler: percentage => {
+            percentage = Math.floor(percentage * 100);
+
+            if (percentage > bookmark || percentage === 0) {
+              this.broadcast(this.server.clients, 'progress', (bookmark = percentage));
+            }
+          }
+        })
+      );
+    }
+
+    this.applyPlugins(plugins);
+  }
+
+  applyPlugins(plugins) {
+    const { compiler } = this;
+
+    for (const plugin of plugins) {
+      plugin.apply(compiler);
     }
   }
 
@@ -127,25 +148,28 @@ class HotServer {
 
   broadcastStats(clients, stats) {
     if (clients.size || clients.length) {
-      const output = jsonStats(stats);
-      const { name, errors } = output;
+      process.nextTick(() => {
+        stats = jsonStats(stats);
 
-      if (errors.length > 0) {
-        this.broadcast(clients, 'errors', { name, errors });
-      } else {
-        const { name, hash, warnings } = output;
+        const { name, errors } = stats;
 
-        if (warnings.length > 0) {
-          this.broadcast(clients, 'warnings', { name, hash, warnings });
+        if (errors.length > 0) {
+          this.broadcast(clients, 'errors', { name, errors });
         } else {
-          this.broadcast(clients, 'ok', { name, hash });
+          const { name, hash, warnings } = stats;
+
+          if (warnings.length > 0) {
+            this.broadcast(clients, 'warnings', { name, hash, warnings });
+          } else {
+            this.broadcast(clients, 'ok', { name, hash });
+          }
         }
-      }
+      });
     }
   }
 }
 
-export default function hmr(compiler, options = {}) {
+export default function hot(compiler, options = {}) {
   const server = new HotServer(compiler, options);
 
   const hotMiddleware = async (context, next) => {
