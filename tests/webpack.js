@@ -5,10 +5,10 @@
 
 'use strict';
 
-const fs = require('fs');
 const dev = require('../');
 const Koa = require('koa');
 const path = require('path');
+const memfs = require('memfs');
 
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
@@ -26,6 +26,14 @@ const html = {
   filename: entryHTML,
   template: path.resolve('index.ejs')
 };
+
+function createMemfs() {
+  const fs = memfs.createFsFromVolume(new memfs.Volume());
+
+  fs.join = path.join.bind(path);
+
+  return fs;
+}
 
 function httpError(error) {
   return /^(EOF|EPIPE|ECANCELED|ECONNRESET|ECONNABORTED)$/i.test(error.code);
@@ -73,8 +81,10 @@ const compiler = webpack({
 });
 
 const app = new Koa();
+const fs = createMemfs();
+
 const server = dev(compiler, {
-  writeToDisk: file => file === entryHTML
+  outputFileSystem: fs
 });
 
 server.waitUntilValid(() => {

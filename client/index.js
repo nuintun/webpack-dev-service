@@ -44,7 +44,7 @@ const ws = new WebSocket('ws://127.0.0.1:8000/hmr');
 function parseMessage(message) {
   try {
     return JSON.parse(message.data);
-  } catch (error) {
+  } catch {
     return {};
   }
 }
@@ -56,4 +56,6 @@ ws.onmessage = message => {
     case 'ok':
       reload(payload.hash, true);
   }
+
+  window.postMessage({ action: `webpack-hot-${action}`, payload }, '*');
 };
