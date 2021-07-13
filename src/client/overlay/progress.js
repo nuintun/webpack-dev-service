@@ -5,6 +5,7 @@
 import { appendHTML, injectCSS } from './utils';
 
 const ns = 'wds-progress';
+const perimeter = 219.99078369140625;
 
 const css = `
   #${ns} {
@@ -20,14 +21,13 @@ const css = `
   #${ns}-bg {
     fill: #282d35;
   }
-  #${ns}-fill {
+  #${ns}-track {
     stroke-width: 10;
     fill: rgba(0, 0, 0, 0);
     stroke: rgb(186, 223, 172);
-    transition: stroke-dasharray .3s;
-    stroke-dasharray: 219.99078369140625;
-    stroke-dashoffset: -219.99078369140625;
-    transform: rotate(90deg) translate(0px, -80px);
+    stroke-dasharray: ${perimeter};
+    stroke-dashoffset: -${perimeter};
+    transform: rotate(90deg) translate(0, -80px);
   }
   #${ns}-value {
     fill: #ffffff;
@@ -61,22 +61,20 @@ const css = `
     }
   }
   .${ns}-fadein {
-    animation-delay: .3s;
+    animation-fill-mode: both;
     animation: ${ns}-fadein .3s;
-    animation-fill-mode: forwards;
   }
   .${ns}-fadeout {
-    animation-delay: .3s;
+    animation-fill-mode: both;
     animation: ${ns}-fadeout .3s;
-    animation-fill-mode: forwards;
   }
 `;
 
 const html = `
   <svg id="${ns}" class="${ns}-noselect" x="0" y="0" viewBox="0 0 80 80">
     <circle id="${ns}-bg" cx="50%" cy="50%" r="35" />
-    <path id="${ns}-fill" d="M5,40a35,35 0 1,0 70,0a35,35 0 1,0 -70,0" />
-    <text id="${ns}-value" x="50%" y="52%">0</text>
+    <path id="${ns}-track" d="M5,40a35,35 0 1,0 70,0a35,35 0 1,0 -70,0" />
+    <text id="${ns}-value" x="50%" y="52%">0%</text>
   </svg>
 `;
 
@@ -90,15 +88,15 @@ export default class Progress {
     appendHTML(html);
 
     this.svg = document.querySelector(`#${ns}`);
-    this.track = document.querySelector(`#${ns}-fill`);
+    this.track = document.querySelector(`#${ns}-track`);
     this.value = document.querySelector(`#${ns}-value`);
   }
 
   update(value) {
-    const max = -219.99078369140625;
-    const offset = ((100 - value) / 100) * max;
-
     this.value.innerHTML = `${value}%`;
+
+    const offset = ((100 - value) / 100) * -perimeter;
+
     this.track.setAttribute('style', `stroke-dashoffset: ${offset}`);
   }
 
