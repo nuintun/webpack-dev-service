@@ -1,76 +1,8 @@
-'use strict';
-
-/**
- * @module reload
- */
-
-function isUpToDate(hash) {
-  return hash === __webpack_hash__;
-}
-
-function update(hash) {
-  module.hot
-    .check(true)
-    .then(updated => {
-      if (!updated) {
-        window.location.reload();
-      } else if (!isUpToDate(hash)) {
-        update(hash);
-      }
-    })
-    .catch(() => {
-      const status = module.hot.status();
-
-      if (status === 'abort' || status === 'fail') {
-        window.location.reload();
-      }
-    });
-}
-
-function reload(hash, hmr) {
-  if (!isUpToDate(hash)) {
-    if (hmr && module.hot) {
-      if (module.hot.status() === 'idle') {
-        update(hash);
-      }
-    } else {
-      window.location.reload();
-    }
-  }
-}
-
-/**
- * @module utils
- */
-
-function appendHTML(html, parent) {
-  const nodes = [];
-  const div = document.createElement('div');
-
-  div.innerHTML = html.trim();
-
-  while (div.firstChild) {
-    nodes.push((parent || document.body).appendChild(div.firstChild));
-  }
-
-  return nodes;
-}
-
-function injectCSS(css) {
-  const style = document.createElement('style');
-
-  if (css.styleSheet) {
-    style.styleSheet.cssText = css;
-  } else {
-    style.appendChild(document.createTextNode(css));
-  }
-
-  document.head.appendChild(style);
-}
-
 /**
  * @module progress
  */
+
+import { appendHTML, injectCSS } from './utils';
 
 const ns = 'wds-progress';
 
@@ -156,7 +88,7 @@ const html = `
   </svg>
 `;
 
-class Progress {
+export default class Progress {
   constructor() {
     this.init();
   }
@@ -198,50 +130,3 @@ class Progress {
     }
   }
 }
-
-function parseMessage(message) {
-  try {
-    return JSON.parse(message.data);
-  } catch {
-    return {};
-  }
-}
-
-function createWebSocket(url, protocols) {
-  const bar = new Progress();
-  const ws = new WebSocket(url, protocols);
-
-  const progress = value => {
-    value === 0 && bar.show();
-
-    bar.update(value);
-
-    value === 100 && bar.hide();
-  };
-
-  ws.onmessage = message => {
-    const { action, payload } = parseMessage(message);
-
-    switch (action) {
-      case 'ok':
-        reload(payload.hash, true);
-        break;
-      case 'problems':
-        reload(payload.hash, true);
-        break;
-      case 'rebuild':
-        break;
-      case 'progress':
-        progress(payload.value);
-        break;
-    }
-
-    window.postMessage({ action: `webpack-hot-${action}`, payload }, '*');
-  };
-
-  ws.onclose = event => {
-    console.log(event);
-  };
-}
-
-createWebSocket('ws://127.0.0.1:8000/hmr');

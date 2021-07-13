@@ -1,4 +1,5 @@
 import reload from './reload';
+import Progress from './overlay/progress';
 
 function parseMessage(message) {
   try {
@@ -9,7 +10,16 @@ function parseMessage(message) {
 }
 
 function createWebSocket(url, protocols) {
+  const bar = new Progress();
   const ws = new WebSocket(url, protocols);
+
+  const progress = value => {
+    value === 0 && bar.show();
+
+    bar.update(value);
+
+    value === 100 && bar.hide();
+  };
 
   ws.onmessage = message => {
     const { action, payload } = parseMessage(message);
@@ -20,6 +30,11 @@ function createWebSocket(url, protocols) {
         break;
       case 'problems':
         reload(payload.hash, true);
+        break;
+      case 'rebuild':
+        break;
+      case 'progress':
+        progress(payload.value);
         break;
     }
 
