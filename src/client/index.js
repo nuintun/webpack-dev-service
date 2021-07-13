@@ -21,9 +21,13 @@ ws.onmessage = message => {
       reload(payload.hash, true);
       break;
     case 'errors':
+      reload(payload.hash, true);
+
       overlay.show('error', payload.errors);
       break;
     case 'warnings':
+      reload(payload.hash, true);
+
       overlay.show('warning', payload.warnings);
       break;
   }

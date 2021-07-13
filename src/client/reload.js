@@ -26,13 +26,13 @@ function update(hash) {
 }
 
 export default function reload(hash, hmr) {
-  if (hmr && module.hot) {
-    const status = module.hot.status();
-
-    if (status === 'idle' && !isUpToDate(hash)) {
-      update(hash);
+  if (!isUpToDate(hash)) {
+    if (hmr && module.hot) {
+      if (module.hot.status() === 'idle') {
+        update(hash);
+      }
+    } else {
+      window.location.reload();
     }
-  } else {
-    window.location.reload();
   }
 }

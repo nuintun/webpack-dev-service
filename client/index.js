@@ -31,14 +31,14 @@ function update(hash) {
 }
 
 function reload(hash, hmr) {
-  if (hmr && module.hot) {
-    const status = module.hot.status();
-
-    if (status === 'idle' && !isUpToDate(hash)) {
-      update(hash);
+  if (!isUpToDate(hash)) {
+    if (hmr && module.hot) {
+      if (module.hot.status() === 'idle') {
+        update(hash);
+      }
+    } else {
+      window.location.reload();
     }
-  } else {
-    window.location.reload();
   }
 }
 
@@ -139,9 +139,13 @@ ws.onmessage = message => {
       reload(payload.hash, true);
       break;
     case 'errors':
+      reload(payload.hash, true);
+
       show('error', payload.errors);
       break;
     case 'warnings':
+      reload(payload.hash, true);
+
       show('warning', payload.warnings);
       break;
   }

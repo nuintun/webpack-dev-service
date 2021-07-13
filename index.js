@@ -74,7 +74,7 @@ const DEFAULT_OPTIONS = {
 
 const WEBSOCKET_RE = /^websocket$/i;
 
-const jsonStats = memoize(stats => {
+const parseStats = memoize(stats => {
   return stats.toJson(DEFAULT_STATS);
 });
 
@@ -113,6 +113,10 @@ class HotServer {
       const { hmr, overlay, errors, warnings } = this.options;
 
       this.broadcast([client], 'init', { hmr, overlay, errors, warnings });
+
+      if (this.stats) {
+        this.broadcastStats([client], this.stats);
+      }
     });
   }
 
@@ -125,6 +129,8 @@ class HotServer {
     };
 
     const onDone = stats => {
+      this.stats = stats;
+
       this.broadcastStats(this.server.clients, stats);
     };
 
@@ -135,8 +141,12 @@ class HotServer {
   }
 
   setupPlugins() {
+    const plugins = [];
     const { options } = this;
-    const plugins = [new webpack.HotModuleReplacementPlugin()];
+
+    if (options.hmr) {
+      plugins.push(new webpack.HotModuleReplacementPlugin());
+    }
 
     if (options.progress) {
       let bookmark = 0;
@@ -194,20 +204,14 @@ class HotServer {
   broadcastStats(clients, stats) {
     if (clients.size || clients.length) {
       process.nextTick(() => {
-        stats = jsonStats(stats);
+        const { name, hash, errors, warnings } = parseStats(stats);
 
-        const { name, errors } = stats;
-
-        if (errors.length > 0) {
-          this.broadcast(clients, 'errors', { name, errors });
+        if (stats.hasErrors()) {
+          this.broadcast(clients, 'errors', { name, hash, errors });
+        } else if (stats.hasWarnings()) {
+          this.broadcast(clients, 'warnings', { name, hash, warnings });
         } else {
-          const { name, hash, warnings } = stats;
-
-          if (warnings.length > 0) {
-            this.broadcast(clients, 'warnings', { name, hash, warnings });
-          } else {
-            this.broadcast(clients, 'ok', { name, hash });
-          }
+          this.broadcast(clients, 'ok', { name, hash });
         }
       });
     }
