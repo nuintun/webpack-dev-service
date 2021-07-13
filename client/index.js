@@ -11,14 +11,14 @@ function isUpToDate(hash) {
 function update(hash) {
   module.hot
     .check(true)
-    .then(function (updatedModules) {
-      if (!updatedModules) {
+    .then(updated => {
+      if (!updated) {
         window.location.reload();
       } else if (!isUpToDate(hash)) {
         update(hash);
       }
     })
-    .catch(function () {
+    .catch(() => {
       const status = module.hot.status();
 
       if (status === 'abort' || status === 'fail') {
@@ -39,8 +39,6 @@ function reload(hash, hmr) {
   }
 }
 
-const ws = new WebSocket('ws://127.0.0.1:8000/hmr');
-
 function parseMessage(message) {
   try {
     return JSON.parse(message.data);
@@ -49,17 +47,27 @@ function parseMessage(message) {
   }
 }
 
-ws.onmessage = message => {
-  const { action, payload } = parseMessage(message);
+function createWebSocket(url, protocols) {
+  const ws = new WebSocket(url, protocols);
 
-  switch (action) {
-    case 'ok':
-      reload(payload.hash, true);
-      break;
-    case 'problems':
-      reload(payload.hash, true);
-      break;
-  }
+  ws.onmessage = message => {
+    const { action, payload } = parseMessage(message);
 
-  window.postMessage({ action: `webpack-hot-${action}`, payload }, '*');
-};
+    switch (action) {
+      case 'ok':
+        reload(payload.hash, true);
+        break;
+      case 'problems':
+        reload(payload.hash, true);
+        break;
+    }
+
+    window.postMessage({ action: `webpack-hot-${action}`, payload }, '*');
+  };
+
+  ws.onclose = event => {
+    console.log(event);
+  };
+}
+
+createWebSocket('ws://127.0.0.1:8000/hmr');

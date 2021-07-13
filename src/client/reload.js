@@ -9,14 +9,14 @@ function isUpToDate(hash) {
 function update(hash) {
   module.hot
     .check(true)
-    .then(function (updatedModules) {
-      if (!updatedModules) {
+    .then(updated => {
+      if (!updated) {
         window.location.reload();
       } else if (!isUpToDate(hash)) {
         update(hash);
       }
     })
-    .catch(function () {
+    .catch(() => {
       const status = module.hot.status();
 
       if (status === 'abort' || status === 'fail') {
