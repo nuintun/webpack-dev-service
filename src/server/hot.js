@@ -14,6 +14,7 @@ const DEFAULT_STATS = {
   hash: true,
   assets: true,
   errors: true,
+  builtAt: true,
   warnings: true,
   errorDetails: false
 };
@@ -22,9 +23,8 @@ const DEFAULT_OPTIONS = {
   hmr: true,
   path: '/hmr',
   errors: true,
-  overlay: true,
   warnings: true,
-  progress: false
+  progress: true
 };
 
 const WEBSOCKET_RE = /^websocket$/i;
@@ -65,9 +65,9 @@ class HotServer {
     });
 
     server.on('connection', client => {
-      const { hmr, overlay, errors, warnings } = this.options;
+      const { hmr, errors, warnings } = this.options;
 
-      this.broadcast([client], 'init', { hmr, overlay, errors, warnings });
+      this.broadcast([client], 'init', { hmr, errors, warnings });
 
       if (this.stats) {
         this.broadcastStats([client], this.stats);
@@ -76,23 +76,17 @@ class HotServer {
   }
 
   setupHooks() {
-    const { compiler } = this;
-    const compilers = compiler.compilers ?? [compiler];
+    const { hooks } = this.compiler;
 
-    const onInvalid = (_main, timestamp) => {
-      this.broadcast(this.server.clients, 'rebuild', new Date(timestamp));
-    };
-
-    const onDone = stats => {
+    hooks.done.tap(this.name, stats => {
       this.stats = stats;
 
       this.broadcastStats(this.server.clients, stats);
-    };
+    });
 
-    for (const { hooks } of compilers) {
-      hooks.done.tap(this.name, onDone);
-      hooks.invalid.tap(this.name, onInvalid);
-    }
+    hooks.invalid.tap(this.name, (file, builtAt) => {
+      this.broadcast(this.server.clients, 'rebuild', { file, builtAt });
+    });
   }
 
   setupPlugins() {
@@ -104,16 +98,18 @@ class HotServer {
     }
 
     if (options.progress) {
-      let bookmark = 0;
+      let value = 0;
 
       plugins.push(
         new webpack.ProgressPlugin({
           percentBy: 'entries',
           handler: percentage => {
-            percentage = Math.floor(percentage * 100);
+            const nextValue = Math.floor(percentage * 100);
 
-            if (percentage > bookmark || percentage === 0) {
-              this.broadcast(this.server.clients, 'progress', (bookmark = percentage));
+            if (nextValue > value || nextValue === 0) {
+              value = nextValue;
+
+              this.broadcast(this.server.clients, 'progress', { value });
             }
           }
         })
@@ -159,14 +155,23 @@ class HotServer {
   broadcastStats(clients, stats) {
     if (clients.size || clients.length) {
       process.nextTick(() => {
-        const { name, hash, errors, warnings } = parseStats(stats);
+        const { hash, builtAt, errors, warnings } = parseStats(stats);
 
-        if (stats.hasErrors()) {
-          this.broadcast(clients, 'errors', { name, hash, errors });
-        } else if (stats.hasWarnings()) {
-          this.broadcast(clients, 'warnings', { name, hash, warnings });
+        if (stats.hasErrors() || stats.hasWarnings()) {
+          const { options } = this;
+          const payload = { hash, builtAt, errors: [], warnings: [] };
+
+          if (options.errors) {
+            payload.errors = errors;
+          }
+
+          if (options.warnings) {
+            payload.warnings = warnings;
+          }
+
+          this.broadcast(clients, 'problems', payload);
         } else {
-          this.broadcast(clients, 'ok', { name, hash });
+          this.broadcast(clients, 'ok', { hash, builtAt });
         }
       });
     }

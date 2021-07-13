@@ -9,8 +9,8 @@ function isUpToDate(hash) {
 function update(hash) {
   module.hot
     .check(true)
-    .then(function (outdatedModules) {
-      if (!outdatedModules) {
+    .then(function (updatedModules) {
+      if (!updatedModules) {
         window.location.reload();
       } else if (!isUpToDate(hash)) {
         update(hash);

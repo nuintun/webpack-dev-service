@@ -27,7 +27,6 @@
   "homepage": "https://github.com/nuintun/webpack-dev-server-middleware#readme",
   "dependencies": {
     "ws": "^7.5.3",
-    "ansi-html": "^0.0.7",
     "bufferutil": "^4.0.3",
     "koa-compose": "^4.1.0",
     "memoize-one": "^5.2.1",
