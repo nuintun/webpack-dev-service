@@ -104,36 +104,27 @@ const css = `
     dominant-baseline: middle;
   }
   .${ns}-noselect {
-    -webkit-touch-callout: none;
-    -webkit-user-select: none;
-    -khtml-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
     cursor: default;
+    user-select: none;
   }
   @keyframes ${ns}-fadein {
     0% {
       opacity: 0;
       transform: scale(0);
-      -webkit-transform: scale(0);
     }
     100% {
       opacity: 1;
       transform: scale(1);
-      -webkit-transform: scale(1);
     }
   }
   @keyframes ${ns}-fadeout {
     0% {
       opacity: 1;
       transform: scale(1);
-      -webkit-transform: scale(1);
     }
     100% {
       opacity: 0;
       transform: scale(0);
-      -webkit-transform: scale(0);
     }
   }
   .${ns}-fadein {
@@ -223,13 +214,15 @@ function createWebSocket(url, protocols) {
     const { action, payload } = parseMessage(message);
 
     switch (action) {
+      case 'init':
+        break;
+      case 'rebuild':
+        break;
       case 'ok':
         reload(payload.hash, true);
         break;
       case 'problems':
         reload(payload.hash, true);
-        break;
-      case 'rebuild':
         break;
       case 'progress':
         progress(payload.value);

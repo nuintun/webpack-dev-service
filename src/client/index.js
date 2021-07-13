@@ -25,13 +25,15 @@ function createWebSocket(url, protocols) {
     const { action, payload } = parseMessage(message);
 
     switch (action) {
+      case 'init':
+        break;
+      case 'rebuild':
+        break;
       case 'ok':
         reload(payload.hash, true);
         break;
       case 'problems':
         reload(payload.hash, true);
-        break;
-      case 'rebuild':
         break;
       case 'progress':
         progress(payload.value);
