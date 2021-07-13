@@ -92,6 +92,7 @@ const css = `
     stroke-width: 10;
     fill: rgba(0, 0, 0, 0);
     stroke: rgb(186, 223, 172);
+    transition: stroke-dasharray .3s;
     stroke-dasharray: 219.99078369140625;
     stroke-dashoffset: -219.99078369140625;
     transform: rotate(90deg) translate(0px, -80px);
