@@ -4,8 +4,8 @@
   "main": "index.js",
   "description": "A development and hot reload middleware for Koa2.",
   "scripts": {
-    "test": "cd tests && node webpack",
-    "build": "rollup -c rollup.config.js"
+    "build": "rollup -c rollup.config.js",
+    "test": "npm run build && cd tests && node webpack"
   },
   "repository": {
     "type": "git",

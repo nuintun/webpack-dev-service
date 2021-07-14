@@ -40,17 +40,169 @@ function reload(hash, hmr) {
 }
 
 /**
+ * @module effects
+ */
+
+// 默认样式
+const styles = document.documentElement.style;
+
+// Animation 映射表
+const ANIMATION_MAPS = [
+  ['animation', 'animationend'],
+  ['WebkitAnimation', 'webkitAnimationEnd'],
+  ['MozAnimation', 'mozAnimationEnd'],
+  ['OAnimation', 'oAnimationEnd'],
+  ['msAnimation', 'MSAnimationEnd'],
+  ['KhtmlAnimation', 'khtmlAnimationEnd']
+];
+
+// Transition 映射表
+const TRANSITION_MAPS = [
+  ['transition', 'transitionend'],
+  ['WebkitTransition', 'webkitTransitionEnd'],
+  ['MozTransition', 'mozTransitionEnd'],
+  ['OTransition', 'oTransitionEnd'],
+  ['msTransition', 'MSTransitionEnd'],
+  ['KhtmlTransition', 'khtmlTransitionEnd']
+];
+
+/**
+ * @function detect
+ * @param {object} maps
+ */
+function detect(maps) {
+  for (const [prop, event] of maps) {
+    if (prop in styles) {
+      return [prop, event];
+    }
+  }
+}
+
+// Animation
+const [ANIMATION, ANIMATION_END] = detect(ANIMATION_MAPS);
+// Transition
+const [TRANSITION, TRANSITION_END] = detect(TRANSITION_MAPS);
+
+/**
+ * @function toMs
+ * @param {string} value
+ */
+function toMs(value) {
+  return +value.slice(0, -1) * 1000;
+}
+
+/**
+ * @function calcTimeout
+ * @param {Array} delays
+ * @param {Array} durations
+ */
+function calcTimeout(delays, durations) {
+  while (delays.length < durations.length) {
+    delays = delays.concat(delays);
+  }
+
+  const times = durations.map((duration, index) => toMs(duration) + toMs(delays[index]));
+
+  // 获取最大时长
+  return Math.max.apply(null, times);
+}
+
+/**
+ * @function toArray
+ * @param {any} value
+ */
+function toArray(value) {
+  return value ? value.split(', ') : [];
+}
+
+/**
+ * @function calcEffects
+ * @param {HTMLElement} node
+ */
+function calcEffects(node) {
+  const styles = window.getComputedStyle(node);
+
+  const transitioneDelays = toArray(styles.getPropertyValue(TRANSITION + '-delay'));
+  const transitionDurations = toArray(styles.getPropertyValue(TRANSITION + '-duration'));
+  const transitionTimeout = calcTimeout(transitioneDelays, transitionDurations);
+  const animationDelays = toArray(styles.getPropertyValue(ANIMATION + '-delay'));
+  const animationDurations = toArray(styles.getPropertyValue(ANIMATION + '-duration'));
+  const animationTimeout = calcTimeout(animationDelays, animationDurations);
+
+  const timeout = Math.max(transitionTimeout, animationTimeout);
+  const effect = timeout > 0 ? (transitionTimeout > animationTimeout ? TRANSITION : ANIMATION) : null;
+  const count = effect ? (effect === TRANSITION ? transitionDurations.length : animationDurations.length) : 0;
+
+  return { effect, count, timeout };
+}
+
+/**
+ * @function onEffectsEnd
+ * @param {HTMLElement} node
+ * @param {Function} callback
+ * @see https://github.com/vuejs/vue/blob/dev/src/platforms/web/runtime/transition-util.js
+ */
+function onEffectsEnd(node, callback) {
+  // 不支持动画
+  if (!ANIMATION && !TRANSITION) return callback();
+
+  const { count, effect, timeout } = calcEffects(node);
+
+  // 没有动画
+  if (!effect) return callback();
+
+  let ended = 0;
+
+  // 防止有些动画没有触发结束事件
+  const timer = setTimeout(function () {
+    if (ended < count) {
+      end();
+    }
+  }, timeout + 16);
+
+  const event = effect === TRANSITION ? TRANSITION_END : ANIMATION_END;
+
+  const end = () => {
+    clearTimeout(timer);
+
+    node.removeEventListener(event, onEnd);
+
+    callback();
+  };
+
+  const onEnd = function (e) {
+    if (e.target === node) {
+      if (++ended >= count) {
+        end();
+      }
+    }
+  };
+
+  // 监听动画完成事件
+  node.addEventListener(event, onEnd);
+}
+
+/**
  * @module utils
  */
 
+function parseHTML(html) {
+  try {
+    const parser = new DOMParser();
+    const { body } = parser.parseFromString(html.trim(), 'text/html');
+
+    return body.children;
+  } catch {
+    return [];
+  }
+}
+
 function appendHTML(html, parent) {
   const nodes = [];
-  const div = document.createElement('div');
+  const stage = parent || document.body;
 
-  div.innerHTML = html.trim();
-
-  while (div.firstChild) {
-    nodes.push((parent || document.body).appendChild(div.firstChild));
+  for (const node of parseHTML(html)) {
+    nodes.push(stage.appendChild(node));
   }
 
   return nodes;
@@ -76,7 +228,7 @@ const ns = 'wds-progress';
 const perimeter = 219.99078369140625;
 
 const css = `
-  #${ns} {
+  .${ns} {
     opacity: 0;
     width: 50px;
     right: 16px;
@@ -86,18 +238,19 @@ const css = `
     transform: scale(0);
     z-index: 2147483645;
   }
-  #${ns}-bg {
+  .${ns}-bg {
     fill: #282d35;
   }
-  #${ns}-track {
+  .${ns}-track {
     stroke-width: 10;
     fill: rgba(0, 0, 0, 0);
     stroke: rgb(186, 223, 172);
     stroke-dasharray: ${perimeter};
     stroke-dashoffset: -${perimeter};
+    transition: stroke-dashoffset .3s;
     transform: rotate(90deg) translate(0, -80px);
   }
-  #${ns}-value {
+  .${ns}-value {
     fill: #ffffff;
     font-size: 18px;
     text-anchor: middle;
@@ -129,20 +282,20 @@ const css = `
     }
   }
   .${ns}-fadein {
-    animation-fill-mode: both;
     animation: ${ns}-fadein .3s;
+    animation-fill-mode: forwards;
   }
   .${ns}-fadeout {
-    animation-fill-mode: both;
     animation: ${ns}-fadeout .3s;
+    animation-fill-mode: forwards;
   }
 `;
 
 const html = `
-  <svg id="${ns}" class="${ns}-noselect" x="0" y="0" viewBox="0 0 80 80">
-    <circle id="${ns}-bg" cx="50%" cy="50%" r="35" />
-    <path id="${ns}-track" d="M5,40a35,35 0 1,0 70,0a35,35 0 1,0 -70,0" />
-    <text id="${ns}-value" x="50%" y="52%">0%</text>
+  <svg class="${ns} ${ns}-noselect" x="0" y="0" viewBox="0 0 80 80">
+    <circle class="${ns}-bg" cx="50%" cy="50%" r="35" />
+    <path class="${ns}-track" d="M5,40a35,35 0 1,0 70,0a35,35 0 1,0 -70,0" />
+    <text class="${ns}-value" x="50%" y="52%">0%</text>
   </svg>
 `;
 
@@ -153,11 +306,11 @@ class Progress {
 
   init() {
     injectCSS(css);
-    appendHTML(html);
 
-    this.svg = document.querySelector(`#${ns}`);
-    this.track = document.querySelector(`#${ns}-track`);
-    this.value = document.querySelector(`#${ns}-value`);
+    [this.svg] = appendHTML(html);
+
+    this.track = this.svg.querySelector(`.${ns}-track`);
+    this.value = this.svg.querySelector(`.${ns}-value`);
   }
 
   update(value) {
@@ -179,13 +332,19 @@ class Progress {
   }
 
   hide() {
-    const fadein = `${ns}-fadein`;
-    const { classList } = this.svg;
+    onEffectsEnd(this.track, () => {
+      const fadein = `${ns}-fadein`;
+      const { classList } = this.svg;
 
-    if (classList.contains(fadein)) {
-      classList.remove(fadein);
-      classList.add(`${ns}-fadeout`);
-    }
+      if (classList.contains(fadein)) {
+        classList.remove(fadein);
+        classList.add(`${ns}-fadeout`);
+      }
+
+      onEffectsEnd(this.svg, () => {
+        this.update(0);
+      });
+    });
   }
 }
 

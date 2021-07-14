@@ -2,14 +2,23 @@
  * @module utils
  */
 
+function parseHTML(html) {
+  try {
+    const parser = new DOMParser();
+    const { body } = parser.parseFromString(html.trim(), 'text/html');
+
+    return body.children;
+  } catch {
+    return [];
+  }
+}
+
 export function appendHTML(html, parent) {
   const nodes = [];
-  const div = document.createElement('div');
+  const stage = parent || document.body;
 
-  div.innerHTML = html.trim();
-
-  while (div.firstChild) {
-    nodes.push((parent || document.body).appendChild(div.firstChild));
+  for (const node of parseHTML(html)) {
+    nodes.push(stage.appendChild(node));
   }
 
   return nodes;
