@@ -15,16 +15,16 @@ function parseMessage(message) {
 }
 
 function createWebSocket(url, protocols) {
-  const bar = new Progress();
   const overlay = new Overlay();
+  const progressBar = new Progress();
   const ws = new WebSocket(url, protocols);
 
   const progress = value => {
-    value === 0 && bar.show();
+    value === 0 && progressBar.show();
 
-    bar.update(value);
+    progressBar.update(value);
 
-    value === 100 && bar.hide();
+    value === 100 && progressBar.hide();
   };
 
   ws.onmessage = message => {

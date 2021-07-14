@@ -5,7 +5,7 @@
 import onEffectsEnd from './utils/effects';
 import { appendHTML, injectCSS } from './utils';
 
-const ns = 'wps-overlay';
+const ns = 'wds-overlay';
 
 const css = `
   .${ns} {
@@ -13,14 +13,17 @@ const css = `
     left: 0;
     right: 0;
     bottom: 0;
-    opacity: 1;
+    opacity: 0;
     width: 100vw;
     height: 100vh;
     display: flex;
     position: fixed;
     font-size: 16px;
     overflow: hidden;
+    font-style: normal;
+    font-weight: normal;
     z-index: 2147483644;
+    transform: scale(0);
     flex-direction: column;
     font-family: monospace;
     box-sizing: border-box;
@@ -28,17 +31,29 @@ const css = `
   }
   @keyframes ${ns}-show {
     0% {
+      opacity: 0;
+      transform: scale(0);
+    }
+    100% {
       opacity: 1;
+      transform: scale(1);
+    }
+  }
+  @keyframes ${ns}-hide {
+    0% {
+      opacity: 1;
+      transform: scale(1);
     }
     100% {
       opacity: 0;
-
+      transform: scale(0);
     }
   }
-  .${ns}.${ns}-hidden {
-    display: none;
-    animation: ${ns}-show .3s;
-    animation-fill-mode:forwards;
+  .${ns}-show {
+    animation: ${ns}-show .3s ease-out forwards;
+  }
+  .${ns}-hide {
+    animation: ${ns}-hide .3s ease-out forwards;
   }
   .${ns}-title {
     margin: 0;
@@ -48,7 +63,6 @@ const css = `
     line-height: 1em;
     text-align: center;
     background: #282d35;
-    font-weight: normal;
   }
   .${ns}-nav {
     right: 0;
@@ -70,13 +84,12 @@ const css = `
     background: #ff5f58;
     display: inline-block;
   }
-  .${ns}-title-errors,
-  .${ns}-title-warnings {
+  .${ns}-errors-title,
+  .${ns}-warnings-title {
     color: #ff5f58;
     padding-left: .5em;
-    font-style: normal;
   }
-  .${ns}-title-warnings {
+  .${ns}-warnings-title {
     color: #ffbd2e;
   }
   .${ns}-problems {
@@ -124,14 +137,14 @@ const css = `
 `;
 
 const html = `
-  <aside class="${ns} ${ns}-hidden" title="Build Status">
+  <aside class="${ns}" title="Build Status">
     <nav class="${ns}-nav">
       <div class="${ns}-close" title="close">×</div>
     </nav>
     <div class="${ns}-title">
       Build Status
-      <em class="${ns}-title-errors"></em>
-      <em class="${ns}-title-warnings"></em>
+      <em class="${ns}-errors-title"></em>
+      <em class="${ns}-warnings-title"></em>
     </div>
     <article class="${ns}-problems">
       <pre class="${ns}-errors"></pre>
@@ -139,8 +152,6 @@ const html = `
     </article>
   </aside>
 `;
-
-const hidden = `${ns}-hidden`;
 
 export default class Overlay {
   constructor() {
@@ -153,63 +164,69 @@ export default class Overlay {
     [this.aside] = appendHTML(html);
 
     this.close = this.aside.querySelector(`.${ns}-close`);
-    this.preErrors = this.aside.querySelector(`.${ns}-errors`);
-    this.preWarnings = this.aside.querySelector(`.${ns}-warnings`);
-    this.titleErrors = this.aside.querySelector(`.${ns}-title-errors`);
-    this.titleWarnings = this.aside.querySelector(`.${ns}-title-warnings`);
+    this.errorsList = this.aside.querySelector(`.${ns}-errors`);
+    this.warningsList = this.aside.querySelector(`.${ns}-warnings`);
+    this.errorsTitle = this.aside.querySelector(`.${ns}-errors-title`);
+    this.warningsTitle = this.aside.querySelector(`.${ns}-warnings-title`);
 
     this.close.addEventListener('click', () => {
-      this.aside.classList.add(`${ns}-hidden`);
+      this.hide();
     });
   }
 
   addErrors(errors) {
     const { length } = errors;
-    const { titleErrors } = this;
+    const { errorsTitle, errorsList } = this;
+
+    errorsList.innerHTML = '';
+    errorsTitle.innerText = '';
 
     if (length) {
-      const { preErrors } = this;
-
       for (const { moduleName, message } of errors) {
-        appendHTML(`<div><em>Error</em> in ${moduleName}<div>${message}</div></div>`, preErrors);
+        appendHTML(`<div><em>Error</em> in ${moduleName}<div>${message}</div></div>`, errorsList);
       }
 
-      titleErrors.innerText = `${length} Error(s)`;
-    } else {
-      titleErrors.innerText = '';
+      errorsTitle.innerText = `${length} Error(s)`;
     }
   }
 
   addWarnings(warnings) {
     const { length } = warnings;
-    const { titleWarnings } = this;
+    const { warningsTitle, warningsList } = this;
+
+    warningsList.innerHTML = '';
+    warningsTitle.innerText = '';
 
     if (length) {
-      const { preWarnings } = this;
-
       for (const { moduleName, message } of warnings) {
-        appendHTML(`<div><em>Warning</em> in ${moduleName}<div>${message}</div></div>`, preWarnings);
+        appendHTML(`<div><em>Warning</em> in ${moduleName}<div>${message}</div></div>`, warningsList);
       }
 
-      titleWarnings.innerText = `${length} Warning(s)`;
-    } else {
-      titleWarnings.innerText = '';
+      warningsTitle.innerText = `${length} Warning(s)`;
     }
   }
 
   show({ errors, warnings }) {
+    const show = `${ns}-show`;
+    const { classList } = this.aside;
+
     this.addErrors(errors);
     this.addWarnings(warnings);
 
-    this.aside.classList.remove(hidden);
+    if (!classList.contains(show)) {
+      classList.remove(`${ns}-hide`);
+      classList.add(show);
+    }
   }
 
   hide() {
-    this.aside.classList.add(hidden);
+    const { aside } = this;
+    const show = `${ns}-show`;
+    const { classList } = aside;
 
-    this.preErrors.innerHTML = '';
-    this.preWarnings.innerHTML = '';
-    this.titleErrors.innerText = '';
-    this.titleWarnings.innerText = '';
+    if (classList.contains(show)) {
+      classList.remove(show);
+      classList.add(`${ns}-hide`);
+    }
   }
 }

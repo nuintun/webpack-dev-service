@@ -17,31 +17,12 @@ const css = `
     height: 48px;
     font-size: 16px;
     position: fixed;
-    transform: scale(0);
-    z-index: 2147483645;
-  }
-  .${ns}-bg {
-    fill: #282d35;
-  }
-  .${ns}-track {
-    stroke-width: 10;
-    fill: rgba(0, 0, 0, 0);
-    stroke: rgb(186, 223, 172);
-    stroke-dasharray: ${perimeter};
-    stroke-dashoffset: -${perimeter};
-    transition: stroke-dashoffset .3s;
-    transform: rotate(90deg) translate(0, -80px);
-  }
-  .${ns}-value {
-    fill: #ffffff;
-    font-size: 1em;
-    text-anchor: middle;
-    font-family: monospace;
-    dominant-baseline: middle;
-  }
-  .${ns}-noselect {
     cursor: default;
     user-select: none;
+    font-style: normal;
+    font-weight: normal;
+    transform: scale(0);
+    z-index: 2147483645;
   }
   @keyframes ${ns}-show {
     0% {
@@ -64,17 +45,34 @@ const css = `
     }
   }
   .${ns}-show {
-    animation: ${ns}-show .3s;
-    animation-fill-mode: forwards;
+    animation: ${ns}-show .3s ease-out forwards;
   }
   .${ns}-hide {
-    animation: ${ns}-hide .3s;
-    animation-fill-mode: forwards;
+    animation: ${ns}-hide .3s ease-out forwards;
+  }
+  .${ns}-bg {
+    fill: #282d35;
+  }
+  .${ns}-track {
+    stroke-width: 10;
+    fill: rgba(0, 0, 0, 0);
+    stroke: rgb(186, 223, 172);
+    stroke-dasharray: ${perimeter};
+    stroke-dashoffset: -${perimeter};
+    transition: stroke-dashoffset .3s ease-out;
+    transform: rotate(90deg) translate(0, -80px);
+  }
+  .${ns}-value {
+    fill: #ffffff;
+    font-size: 1em;
+    text-anchor: middle;
+    font-family: monospace;
+    dominant-baseline: middle;
   }
 `;
 
 const html = `
-  <svg class="${ns} ${ns}-noselect" x="0" y="0" viewBox="0 0 80 80">
+  <svg class="${ns}" x="0" y="0" viewBox="0 0 80 80">
     <circle class="${ns}-bg" cx="50%" cy="50%" r="35" />
     <path class="${ns}-track" d="M5,40a35,35 0 1,0 70,0a35,35 0 1,0 -70,0" />
     <text class="${ns}-value" x="50%" y="52%">0%</text>
@@ -124,7 +122,9 @@ export default class Progress {
       }
 
       onEffectsEnd(this.svg, () => {
-        this.update(0);
+        if (!classList.contains(show)) {
+          this.update(0);
+        }
       });
     });
   }

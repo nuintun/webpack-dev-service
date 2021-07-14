@@ -420,10 +420,9 @@ function appendHTML(html, parent) {
   return nodes;
 }
 
-var ns$1 = 'wps-overlay';
-var css$1 = "\n  .".concat(ns$1, " {\n    top:0;\n    left: 0;\n    right: 0;\n    bottom: 0;\n    opacity: 1;\n    width: 100vw;\n    height: 100vh;\n    display: flex;\n    position: fixed;\n    font-size: 16px;\n    overflow: hidden;\n    z-index: 2147483644;\n    flex-direction: column;\n    font-family: monospace;\n    box-sizing: border-box;\n    background: rgba(0, 0, 0, .85);\n  }\n  @keyframes ").concat(ns$1, "-show {\n    0% {\n      opacity: 1;\n    }\n    100% {\n      opacity: 0;\n\n    }\n  }\n  .").concat(ns$1, ".").concat(ns$1, "-hidden {\n    display: none;\n    animation: ").concat(ns$1, "-show .3s;\n    animation-fill-mode:forwards;\n  }\n  .").concat(ns$1, "-title {\n    margin: 0;\n    color: #fff;\n    width: 100%;\n    padding: 1em 0;\n    line-height: 1em;\n    text-align: center;\n    background: #282d35;\n    font-weight: normal;\n  }\n  .").concat(ns$1, "-nav {\n    right: 0;\n    padding: 1em;\n    line-height: 1em;\n    position: absolute;\n    transition: transform .3s ease-in-out;\n  }\n  .").concat(ns$1, "-nav:hover {\n    transform: rotate(180deg);\n  }\n  .").concat(ns$1, "-nav .").concat(ns$1, "-close {\n    width: 1em;\n    height: 1em;\n    color: #fff;\n    cursor: pointer;\n    text-align: center;\n    border-radius: 1em;\n    background: #ff5f58;\n    display: inline-block;\n  }\n  .").concat(ns$1, "-title-errors,\n  .").concat(ns$1, "-title-warnings {\n    color: #ff5f58;\n    padding-left: .5em;\n    font-style: normal;\n  }\n  .").concat(ns$1, "-title-warnings {\n    color: #ffbd2e;\n  }\n  .").concat(ns$1, "-problems {\n    padding: 0 1em;\n    overflow-y: auto;\n    scrollbar-width: none;\n    -ms-overflow-style: none;\n    -webkit-overflow-scrolling: touch;\n  }\n  .").concat(ns$1, "-problems::-webkit-scrollbar {\n    display: none;\n  }\n  .").concat(ns$1, "-errors,\n  .").concat(ns$1, "-warnings {\n    color: #ddd;\n    margin: 1em 0;\n    display: block;\n    background: #282d35;\n    border-radius: .3em;\n    white-space: pre-wrap;\n    font-family: monospace;\n  }\n  .").concat(ns$1, "-errors > div,\n  .").concat(ns$1, "-warnings > div {\n    padding: 1em 1em 0;\n  }\n  .").concat(ns$1, "-errors > div > em,\n  .").concat(ns$1, "-warnings > div > em {\n    color: #641e16;\n    line-height: 1.5em;\n    font-style: normal;\n    padding: .1em .5em;\n    background: #ff5f58;\n    border-radius: .3em;\n    text-transform: uppercase;\n  }\n  .").concat(ns$1, "-warnings > div > em {\n    color: #3e2723;\n    background: #ffbd2e;\n  }\n  .").concat(ns$1, "-errors > div > div,\n  .").concat(ns$1, "-warnings > div > div {\n    padding: .5em 0 1em 2em;\n  }\n");
-var html$1 = "\n  <aside class=\"".concat(ns$1, " ").concat(ns$1, "-hidden\" title=\"Build Status\">\n    <nav class=\"").concat(ns$1, "-nav\">\n      <div class=\"").concat(ns$1, "-close\" title=\"close\">\xD7</div>\n    </nav>\n    <div class=\"").concat(ns$1, "-title\">\n      Build Status\n      <em class=\"").concat(ns$1, "-title-errors\"></em>\n      <em class=\"").concat(ns$1, "-title-warnings\"></em>\n    </div>\n    <article class=\"").concat(ns$1, "-problems\">\n      <pre class=\"").concat(ns$1, "-errors\"></pre>\n      <pre class=\"").concat(ns$1, "-warnings\"></pre>\n    </article>\n  </aside>\n");
-var hidden = "".concat(ns$1, "-hidden");
+var ns$1 = 'wds-overlay';
+var css$1 = "\n  .".concat(ns$1, " {\n    top:0;\n    left: 0;\n    right: 0;\n    bottom: 0;\n    opacity: 0;\n    width: 100vw;\n    height: 100vh;\n    display: flex;\n    position: fixed;\n    font-size: 16px;\n    overflow: hidden;\n    font-style: normal;\n    font-weight: normal;\n    z-index: 2147483644;\n    transform: scale(0);\n    flex-direction: column;\n    font-family: monospace;\n    box-sizing: border-box;\n    background: rgba(0, 0, 0, .85);\n  }\n  @keyframes ").concat(ns$1, "-show {\n    0% {\n      opacity: 0;\n      transform: scale(0);\n    }\n    100% {\n      opacity: 1;\n      transform: scale(1);\n    }\n  }\n  @keyframes ").concat(ns$1, "-hide {\n    0% {\n      opacity: 1;\n      transform: scale(1);\n    }\n    100% {\n      opacity: 0;\n      transform: scale(0);\n    }\n  }\n  .").concat(ns$1, "-show {\n    animation: ").concat(ns$1, "-show .3s ease-out forwards;\n  }\n  .").concat(ns$1, "-hide {\n    animation: ").concat(ns$1, "-hide .3s ease-out forwards;\n  }\n  .").concat(ns$1, "-title {\n    margin: 0;\n    color: #fff;\n    width: 100%;\n    padding: 1em 0;\n    line-height: 1em;\n    text-align: center;\n    background: #282d35;\n  }\n  .").concat(ns$1, "-nav {\n    right: 0;\n    padding: 1em;\n    line-height: 1em;\n    position: absolute;\n    transition: transform .3s ease-in-out;\n  }\n  .").concat(ns$1, "-nav:hover {\n    transform: rotate(180deg);\n  }\n  .").concat(ns$1, "-nav .").concat(ns$1, "-close {\n    width: 1em;\n    height: 1em;\n    color: #fff;\n    cursor: pointer;\n    text-align: center;\n    border-radius: 1em;\n    background: #ff5f58;\n    display: inline-block;\n  }\n  .").concat(ns$1, "-errors-title,\n  .").concat(ns$1, "-warnings-title {\n    color: #ff5f58;\n    padding-left: .5em;\n  }\n  .").concat(ns$1, "-warnings-title {\n    color: #ffbd2e;\n  }\n  .").concat(ns$1, "-problems {\n    padding: 0 1em;\n    overflow-y: auto;\n    scrollbar-width: none;\n    -ms-overflow-style: none;\n    -webkit-overflow-scrolling: touch;\n  }\n  .").concat(ns$1, "-problems::-webkit-scrollbar {\n    display: none;\n  }\n  .").concat(ns$1, "-errors,\n  .").concat(ns$1, "-warnings {\n    color: #ddd;\n    margin: 1em 0;\n    display: block;\n    background: #282d35;\n    border-radius: .3em;\n    white-space: pre-wrap;\n    font-family: monospace;\n  }\n  .").concat(ns$1, "-errors > div,\n  .").concat(ns$1, "-warnings > div {\n    padding: 1em 1em 0;\n  }\n  .").concat(ns$1, "-errors > div > em,\n  .").concat(ns$1, "-warnings > div > em {\n    color: #641e16;\n    line-height: 1.5em;\n    font-style: normal;\n    padding: .1em .5em;\n    background: #ff5f58;\n    border-radius: .3em;\n    text-transform: uppercase;\n  }\n  .").concat(ns$1, "-warnings > div > em {\n    color: #3e2723;\n    background: #ffbd2e;\n  }\n  .").concat(ns$1, "-errors > div > div,\n  .").concat(ns$1, "-warnings > div > div {\n    padding: .5em 0 1em 2em;\n  }\n");
+var html$1 = "\n  <aside class=\"".concat(ns$1, "\" title=\"Build Status\">\n    <nav class=\"").concat(ns$1, "-nav\">\n      <div class=\"").concat(ns$1, "-close\" title=\"close\">\xD7</div>\n    </nav>\n    <div class=\"").concat(ns$1, "-title\">\n      Build Status\n      <em class=\"").concat(ns$1, "-errors-title\"></em>\n      <em class=\"").concat(ns$1, "-warnings-title\"></em>\n    </div>\n    <article class=\"").concat(ns$1, "-problems\">\n      <pre class=\"").concat(ns$1, "-errors\"></pre>\n      <pre class=\"").concat(ns$1, "-warnings\"></pre>\n    </article>\n  </aside>\n");
 
 var Overlay = /*#__PURE__*/function () {
   function Overlay() {
@@ -445,23 +444,24 @@ var Overlay = /*#__PURE__*/function () {
 
       this.aside = _appendHTML2[0];
       this.close = this.aside.querySelector(".".concat(ns$1, "-close"));
-      this.preErrors = this.aside.querySelector(".".concat(ns$1, "-errors"));
-      this.preWarnings = this.aside.querySelector(".".concat(ns$1, "-warnings"));
-      this.titleErrors = this.aside.querySelector(".".concat(ns$1, "-title-errors"));
-      this.titleWarnings = this.aside.querySelector(".".concat(ns$1, "-title-warnings"));
+      this.errorsList = this.aside.querySelector(".".concat(ns$1, "-errors"));
+      this.warningsList = this.aside.querySelector(".".concat(ns$1, "-warnings"));
+      this.errorsTitle = this.aside.querySelector(".".concat(ns$1, "-errors-title"));
+      this.warningsTitle = this.aside.querySelector(".".concat(ns$1, "-warnings-title"));
       this.close.addEventListener('click', function () {
-        _this.aside.classList.add("".concat(ns$1, "-hidden"));
+        _this.hide();
       });
     }
   }, {
     key: "addErrors",
     value: function addErrors(errors) {
       var length = errors.length;
-      var titleErrors = this.titleErrors;
+      var errorsTitle = this.errorsTitle,
+          errorsList = this.errorsList;
+      errorsList.innerHTML = '';
+      errorsTitle.innerText = '';
 
       if (length) {
-        var preErrors = this.preErrors;
-
         var _iterator = _createForOfIteratorHelper(errors),
             _step;
 
@@ -470,7 +470,7 @@ var Overlay = /*#__PURE__*/function () {
             var _step$value = _step.value,
                 moduleName = _step$value.moduleName,
                 message = _step$value.message;
-            appendHTML("<div><em>Error</em> in ".concat(moduleName, "<div>").concat(message, "</div></div>"), preErrors);
+            appendHTML("<div><em>Error</em> in ".concat(moduleName, "<div>").concat(message, "</div></div>"), errorsList);
           }
         } catch (err) {
           _iterator.e(err);
@@ -478,20 +478,19 @@ var Overlay = /*#__PURE__*/function () {
           _iterator.f();
         }
 
-        titleErrors.innerText = "".concat(length, " Error(s)");
-      } else {
-        titleErrors.innerText = '';
+        errorsTitle.innerText = "".concat(length, " Error(s)");
       }
     }
   }, {
     key: "addWarnings",
     value: function addWarnings(warnings) {
       var length = warnings.length;
-      var titleWarnings = this.titleWarnings;
+      var warningsTitle = this.warningsTitle,
+          warningsList = this.warningsList;
+      warningsList.innerHTML = '';
+      warningsTitle.innerText = '';
 
       if (length) {
-        var preWarnings = this.preWarnings;
-
         var _iterator2 = _createForOfIteratorHelper(warnings),
             _step2;
 
@@ -500,7 +499,7 @@ var Overlay = /*#__PURE__*/function () {
             var _step2$value = _step2.value,
                 moduleName = _step2$value.moduleName,
                 message = _step2$value.message;
-            appendHTML("<div><em>Warning</em> in ".concat(moduleName, "<div>").concat(message, "</div></div>"), preWarnings);
+            appendHTML("<div><em>Warning</em> in ".concat(moduleName, "<div>").concat(message, "</div></div>"), warningsList);
           }
         } catch (err) {
           _iterator2.e(err);
@@ -508,9 +507,7 @@ var Overlay = /*#__PURE__*/function () {
           _iterator2.f();
         }
 
-        titleWarnings.innerText = "".concat(length, " Warning(s)");
-      } else {
-        titleWarnings.innerText = '';
+        warningsTitle.innerText = "".concat(length, " Warning(s)");
       }
     }
   }, {
@@ -518,18 +515,27 @@ var Overlay = /*#__PURE__*/function () {
     value: function show(_ref) {
       var errors = _ref.errors,
           warnings = _ref.warnings;
+      var show = "".concat(ns$1, "-show");
+      var classList = this.aside.classList;
       this.addErrors(errors);
       this.addWarnings(warnings);
-      this.aside.classList.remove(hidden);
+
+      if (!classList.contains(show)) {
+        classList.remove("".concat(ns$1, "-hide"));
+        classList.add(show);
+      }
     }
   }, {
     key: "hide",
     value: function hide() {
-      this.aside.classList.add(hidden);
-      this.preErrors.innerHTML = '';
-      this.preWarnings.innerHTML = '';
-      this.titleErrors.innerText = '';
-      this.titleWarnings.innerText = '';
+      var aside = this.aside;
+      var show = "".concat(ns$1, "-show");
+      var classList = aside.classList;
+
+      if (classList.contains(show)) {
+        classList.remove(show);
+        classList.add("".concat(ns$1, "-hide"));
+      }
     }
   }]);
 
@@ -538,8 +544,8 @@ var Overlay = /*#__PURE__*/function () {
 
 var ns = 'wds-progress';
 var perimeter = 219.99078369140625;
-var css = "\n  .".concat(ns, " {\n    opacity: 0;\n    right: 1em;\n    bottom: 1em;\n    width: 48px;\n    height: 48px;\n    font-size: 16px;\n    position: fixed;\n    transform: scale(0);\n    z-index: 2147483645;\n  }\n  .").concat(ns, "-bg {\n    fill: #282d35;\n  }\n  .").concat(ns, "-track {\n    stroke-width: 10;\n    fill: rgba(0, 0, 0, 0);\n    stroke: rgb(186, 223, 172);\n    stroke-dasharray: ").concat(perimeter, ";\n    stroke-dashoffset: -").concat(perimeter, ";\n    transition: stroke-dashoffset .3s;\n    transform: rotate(90deg) translate(0, -80px);\n  }\n  .").concat(ns, "-value {\n    fill: #ffffff;\n    font-size: 1em;\n    text-anchor: middle;\n    font-family: monospace;\n    dominant-baseline: middle;\n  }\n  .").concat(ns, "-noselect {\n    cursor: default;\n    user-select: none;\n  }\n  @keyframes ").concat(ns, "-show {\n    0% {\n      opacity: 0;\n      transform: scale(0);\n    }\n    100% {\n      opacity: 1;\n      transform: scale(1);\n    }\n  }\n  @keyframes ").concat(ns, "-hide {\n    0% {\n      opacity: 1;\n      transform: scale(1);\n    }\n    100% {\n      opacity: 0;\n      transform: scale(0);\n    }\n  }\n  .").concat(ns, "-show {\n    animation: ").concat(ns, "-show .3s;\n    animation-fill-mode: forwards;\n  }\n  .").concat(ns, "-hide {\n    animation: ").concat(ns, "-hide .3s;\n    animation-fill-mode: forwards;\n  }\n");
-var html = "\n  <svg class=\"".concat(ns, " ").concat(ns, "-noselect\" x=\"0\" y=\"0\" viewBox=\"0 0 80 80\">\n    <circle class=\"").concat(ns, "-bg\" cx=\"50%\" cy=\"50%\" r=\"35\" />\n    <path class=\"").concat(ns, "-track\" d=\"M5,40a35,35 0 1,0 70,0a35,35 0 1,0 -70,0\" />\n    <text class=\"").concat(ns, "-value\" x=\"50%\" y=\"52%\">0%</text>\n  </svg>\n");
+var css = "\n  .".concat(ns, " {\n    opacity: 0;\n    right: 1em;\n    bottom: 1em;\n    width: 48px;\n    height: 48px;\n    font-size: 16px;\n    position: fixed;\n    cursor: default;\n    user-select: none;\n    font-style: normal;\n    font-weight: normal;\n    transform: scale(0);\n    z-index: 2147483645;\n  }\n  @keyframes ").concat(ns, "-show {\n    0% {\n      opacity: 0;\n      transform: scale(0);\n    }\n    100% {\n      opacity: 1;\n      transform: scale(1);\n    }\n  }\n  @keyframes ").concat(ns, "-hide {\n    0% {\n      opacity: 1;\n      transform: scale(1);\n    }\n    100% {\n      opacity: 0;\n      transform: scale(0);\n    }\n  }\n  .").concat(ns, "-show {\n    animation: ").concat(ns, "-show .3s ease-out forwards;\n  }\n  .").concat(ns, "-hide {\n    animation: ").concat(ns, "-hide .3s ease-out forwards;\n  }\n  .").concat(ns, "-bg {\n    fill: #282d35;\n  }\n  .").concat(ns, "-track {\n    stroke-width: 10;\n    fill: rgba(0, 0, 0, 0);\n    stroke: rgb(186, 223, 172);\n    stroke-dasharray: ").concat(perimeter, ";\n    stroke-dashoffset: -").concat(perimeter, ";\n    transition: stroke-dashoffset .3s ease-out;\n    transform: rotate(90deg) translate(0, -80px);\n  }\n  .").concat(ns, "-value {\n    fill: #ffffff;\n    font-size: 1em;\n    text-anchor: middle;\n    font-family: monospace;\n    dominant-baseline: middle;\n  }\n");
+var html = "\n  <svg class=\"".concat(ns, "\" x=\"0\" y=\"0\" viewBox=\"0 0 80 80\">\n    <circle class=\"").concat(ns, "-bg\" cx=\"50%\" cy=\"50%\" r=\"35\" />\n    <path class=\"").concat(ns, "-track\" d=\"M5,40a35,35 0 1,0 70,0a35,35 0 1,0 -70,0\" />\n    <text class=\"").concat(ns, "-value\" x=\"50%\" y=\"52%\">0%</text>\n  </svg>\n");
 
 var Progress = /*#__PURE__*/function () {
   function Progress() {
@@ -594,7 +600,9 @@ var Progress = /*#__PURE__*/function () {
         }
 
         onEffectsEnd(_this.svg, function () {
-          _this.update(0);
+          if (!classList.contains(show)) {
+            _this.update(0);
+          }
         });
       });
     }
@@ -612,14 +620,14 @@ function parseMessage(message) {
 }
 
 function createWebSocket(url, protocols) {
-  var bar = new Progress();
   var overlay = new Overlay();
+  var progressBar = new Progress();
   var ws = new WebSocket(url, protocols);
 
   var progress = function progress(value) {
-    value === 0 && bar.show();
-    bar.update(value);
-    value === 100 && bar.hide();
+    value === 0 && progressBar.show();
+    progressBar.update(value);
+    value === 100 && progressBar.hide();
   };
 
   ws.onmessage = function (message) {
