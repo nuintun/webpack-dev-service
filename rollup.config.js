@@ -1,13 +1,34 @@
+import babel from '@rollup/plugin-babel';
+import resolve from '@rollup/plugin-node-resolve';
+
+const targets = { browsers: ['defaults'] };
+const corejs = { version: '^3.0.0', proposals: true };
+
 export default [
   {
     input: 'src/client/index.js',
     output: {
-      format: 'cjs',
-      interop: false,
-      exports: 'auto',
+      format: 'esm',
       file: 'client/index.js'
     },
-    external: ['ansi-html', 'html-entities']
+    plugins: [
+      resolve(),
+      babel({
+        babelHelpers: 'bundled',
+        presets: [
+          [
+            '@babel/preset-env',
+            {
+              corejs,
+              targets,
+              bugfixes: true,
+              useBuiltIns: 'usage'
+            }
+          ]
+        ]
+      })
+    ],
+    external: ['ansi-html', 'html-entities', /core-js/]
   },
   {
     input: 'src/server/index.js',
@@ -17,6 +38,7 @@ export default [
       exports: 'auto',
       file: 'index.js'
     },
+    plugins: [resolve()],
     external: ['ws', 'webpack', 'koa-compose', 'memoize-one', 'webpack-dev-middleware']
   }
 ];

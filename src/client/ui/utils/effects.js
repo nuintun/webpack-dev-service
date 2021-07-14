@@ -47,7 +47,7 @@ const [TRANSITION, TRANSITION_END] = detect(TRANSITION_MAPS);
  * @param {string} value
  */
 function toMs(value) {
-  return +value.slice(0, -1) * 1000;
+  return Number(value.slice(0, -1).replace(',', '.')) * 1000;
 }
 
 /**
@@ -117,7 +117,7 @@ export default function onEffectsEnd(node, callback) {
     if (ended < count) {
       end();
     }
-  }, timeout + 16);
+  }, timeout + 1);
 
   const event = effect === TRANSITION ? TRANSITION_END : ANIMATION_END;
 

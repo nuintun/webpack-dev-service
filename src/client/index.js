@@ -1,5 +1,9 @@
+/**
+ * @module index
+ */
+
 import reload from './reload';
-import Progress from './overlay/progress';
+import Progress from './ui/progress';
 
 function parseMessage(message) {
   try {

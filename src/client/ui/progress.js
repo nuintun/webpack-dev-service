@@ -2,7 +2,7 @@
  * @module progress
  */
 
-import onEffectsEnd from './effects';
+import onEffectsEnd from './utils/effects';
 import { appendHTML, injectCSS } from './utils';
 
 const ns = 'wds-progress';
