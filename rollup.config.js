@@ -36,7 +36,8 @@ export default [
       format: 'cjs',
       interop: false,
       exports: 'auto',
-      file: 'index.js'
+      file: 'index.js',
+      preferConst: true
     },
     plugins: [resolve()],
     external: ['ws', 'webpack', 'koa-compose', 'memoize-one', 'webpack-dev-middleware']

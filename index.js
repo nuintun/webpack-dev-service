@@ -1,10 +1,10 @@
 'use strict';
 
-var webpackDevMiddleware = require('webpack-dev-middleware');
-var WebSocket = require('ws');
-var webpack = require('webpack');
-var memoize = require('memoize-one');
-var compose = require('koa-compose');
+const webpackDevMiddleware = require('webpack-dev-middleware');
+const WebSocket = require('ws');
+const webpack = require('webpack');
+const memoize = require('memoize-one');
+const compose = require('koa-compose');
 
 /**
  * @module dev
