@@ -13,8 +13,8 @@ const css = `
     opacity: 0;
     right: 1em;
     bottom: 1em;
-    width: 50px;
-    height: 50px;
+    width: 48px;
+    height: 48px;
     font-size: 16px;
     position: fixed;
     transform: scale(0);
@@ -34,7 +34,7 @@ const css = `
   }
   .${ns}-value {
     fill: #ffffff;
-    font-size: 18px;
+    font-size: 1em;
     text-anchor: middle;
     font-family: monospace;
     dominant-baseline: middle;

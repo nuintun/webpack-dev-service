@@ -1,7 +1,12 @@
 import ReactDom from 'react-dom';
 
 function App() {
-  return 'Hello React !';
+  const styles = {
+    textAlign: 'center',
+    lineHeight: '100vh'
+  };
+
+  return <div style={styles}>Hello React !</div>;
 }
 
 module.hot && module.hot.accept();

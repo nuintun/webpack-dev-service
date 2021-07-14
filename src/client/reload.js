@@ -6,14 +6,16 @@ function isUpToDate(hash) {
   return hash === __webpack_hash__;
 }
 
-function update(hash) {
+function update(hash, onUpdated) {
   module.hot
     .check(true)
     .then(updated => {
       if (!updated) {
         window.location.reload();
       } else if (!isUpToDate(hash)) {
-        update(hash);
+        update(hash, onUpdated);
+      } else if (onUpdated) {
+        onUpdated();
       }
     })
     .catch(() => {
@@ -25,14 +27,16 @@ function update(hash) {
     });
 }
 
-export default function reload(hash, hmr) {
+export default function reload(hash, { hmr, onUpdated }) {
   if (!isUpToDate(hash)) {
     if (hmr && module.hot) {
       if (module.hot.status() === 'idle') {
-        update(hash);
+        update(hash, onUpdated);
       }
     } else {
       window.location.reload();
     }
+  } else if (onUpdated) {
+    onUpdated();
   }
 }

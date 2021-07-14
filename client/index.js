@@ -205,12 +205,14 @@ function isUpToDate(hash) {
   return hash === __webpack_hash__;
 }
 
-function update(hash) {
+function update(hash, onUpdated) {
   module.hot.check(true).then(function (updated) {
     if (!updated) {
       window.location.reload();
     } else if (!isUpToDate(hash)) {
-      update(hash);
+      update(hash, onUpdated);
+    } else if (onUpdated) {
+      onUpdated();
     }
   }).catch(function () {
     var status = module.hot.status();
@@ -221,15 +223,20 @@ function update(hash) {
   });
 }
 
-function reload(hash, hmr) {
+function reload(hash, _ref) {
+  var hmr = _ref.hmr,
+      onUpdated = _ref.onUpdated;
+
   if (!isUpToDate(hash)) {
     if (hmr && module.hot) {
       if (module.hot.status() === 'idle') {
-        update(hash);
+        update(hash, onUpdated);
       }
     } else {
       window.location.reload();
     }
+  } else if (onUpdated) {
+    onUpdated();
   }
 }
 
@@ -531,7 +538,7 @@ var Overlay = /*#__PURE__*/function () {
 
 var ns = 'wds-progress';
 var perimeter = 219.99078369140625;
-var css = "\n  .".concat(ns, " {\n    opacity: 0;\n    right: 1em;\n    bottom: 1em;\n    width: 50px;\n    height: 50px;\n    font-size: 16px;\n    position: fixed;\n    transform: scale(0);\n    z-index: 2147483645;\n  }\n  .").concat(ns, "-bg {\n    fill: #282d35;\n  }\n  .").concat(ns, "-track {\n    stroke-width: 10;\n    fill: rgba(0, 0, 0, 0);\n    stroke: rgb(186, 223, 172);\n    stroke-dasharray: ").concat(perimeter, ";\n    stroke-dashoffset: -").concat(perimeter, ";\n    transition: stroke-dashoffset .3s;\n    transform: rotate(90deg) translate(0, -80px);\n  }\n  .").concat(ns, "-value {\n    fill: #ffffff;\n    font-size: 18px;\n    text-anchor: middle;\n    font-family: monospace;\n    dominant-baseline: middle;\n  }\n  .").concat(ns, "-noselect {\n    cursor: default;\n    user-select: none;\n  }\n  @keyframes ").concat(ns, "-show {\n    0% {\n      opacity: 0;\n      transform: scale(0);\n    }\n    100% {\n      opacity: 1;\n      transform: scale(1);\n    }\n  }\n  @keyframes ").concat(ns, "-hide {\n    0% {\n      opacity: 1;\n      transform: scale(1);\n    }\n    100% {\n      opacity: 0;\n      transform: scale(0);\n    }\n  }\n  .").concat(ns, "-show {\n    animation: ").concat(ns, "-show .3s;\n    animation-fill-mode: forwards;\n  }\n  .").concat(ns, "-hide {\n    animation: ").concat(ns, "-hide .3s;\n    animation-fill-mode: forwards;\n  }\n");
+var css = "\n  .".concat(ns, " {\n    opacity: 0;\n    right: 1em;\n    bottom: 1em;\n    width: 48px;\n    height: 48px;\n    font-size: 16px;\n    position: fixed;\n    transform: scale(0);\n    z-index: 2147483645;\n  }\n  .").concat(ns, "-bg {\n    fill: #282d35;\n  }\n  .").concat(ns, "-track {\n    stroke-width: 10;\n    fill: rgba(0, 0, 0, 0);\n    stroke: rgb(186, 223, 172);\n    stroke-dasharray: ").concat(perimeter, ";\n    stroke-dashoffset: -").concat(perimeter, ";\n    transition: stroke-dashoffset .3s;\n    transform: rotate(90deg) translate(0, -80px);\n  }\n  .").concat(ns, "-value {\n    fill: #ffffff;\n    font-size: 1em;\n    text-anchor: middle;\n    font-family: monospace;\n    dominant-baseline: middle;\n  }\n  .").concat(ns, "-noselect {\n    cursor: default;\n    user-select: none;\n  }\n  @keyframes ").concat(ns, "-show {\n    0% {\n      opacity: 0;\n      transform: scale(0);\n    }\n    100% {\n      opacity: 1;\n      transform: scale(1);\n    }\n  }\n  @keyframes ").concat(ns, "-hide {\n    0% {\n      opacity: 1;\n      transform: scale(1);\n    }\n    100% {\n      opacity: 0;\n      transform: scale(0);\n    }\n  }\n  .").concat(ns, "-show {\n    animation: ").concat(ns, "-show .3s;\n    animation-fill-mode: forwards;\n  }\n  .").concat(ns, "-hide {\n    animation: ").concat(ns, "-hide .3s;\n    animation-fill-mode: forwards;\n  }\n");
 var html = "\n  <svg class=\"".concat(ns, " ").concat(ns, "-noselect\" x=\"0\" y=\"0\" viewBox=\"0 0 80 80\">\n    <circle class=\"").concat(ns, "-bg\" cx=\"50%\" cy=\"50%\" r=\"35\" />\n    <path class=\"").concat(ns, "-track\" d=\"M5,40a35,35 0 1,0 70,0a35,35 0 1,0 -70,0\" />\n    <text class=\"").concat(ns, "-value\" x=\"50%\" y=\"52%\">0%</text>\n  </svg>\n");
 
 var Progress = /*#__PURE__*/function () {
@@ -629,14 +636,20 @@ function createWebSocket(url, protocols) {
         break;
 
       case 'ok':
-        reload(payload.hash, true);
+        reload(payload.hash, {
+          hmr: true
+        });
         break;
 
       case 'problems':
-        overlay.show(_objectSpread2(_objectSpread2({}, payload), {}, {
-          warnings: payload.errors
-        }));
-        reload(payload.hash, true);
+        reload(payload.hash, {
+          hmr: true,
+          onUpdated: function onUpdated() {
+            overlay.show(_objectSpread2(_objectSpread2({}, payload), {}, {
+              warnings: payload.errors
+            }));
+          }
+        });
         break;
 
       case 'progress':

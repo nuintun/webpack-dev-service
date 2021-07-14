@@ -37,11 +37,15 @@ function createWebSocket(url, protocols) {
         overlay.hide();
         break;
       case 'ok':
-        reload(payload.hash, true);
+        reload(payload.hash, { hmr: true });
         break;
       case 'problems':
-        overlay.show({ ...payload, warnings: payload.errors });
-        reload(payload.hash, true);
+        reload(payload.hash, {
+          hmr: true,
+          onUpdated() {
+            overlay.show({ ...payload, warnings: payload.errors });
+          }
+        });
         break;
       case 'progress':
         progress(payload.value);
