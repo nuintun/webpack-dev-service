@@ -2,7 +2,6 @@
  * @module overlay
  */
 
-import onEffectsEnd from './utils/effects';
 import { appendHTML, injectCSS } from './utils';
 
 const ns = 'wds-overlay';
