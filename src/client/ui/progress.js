@@ -11,10 +11,11 @@ const perimeter = 219.99078369140625;
 const css = `
   .${ns} {
     opacity: 0;
+    right: 1em;
+    bottom: 1em;
     width: 50px;
-    right: 16px;
     height: 50px;
-    bottom: 16px;
+    font-size: 16px;
     position: fixed;
     transform: scale(0);
     z-index: 2147483645;
@@ -42,7 +43,7 @@ const css = `
     cursor: default;
     user-select: none;
   }
-  @keyframes ${ns}-fadein {
+  @keyframes ${ns}-show {
     0% {
       opacity: 0;
       transform: scale(0);
@@ -52,7 +53,7 @@ const css = `
       transform: scale(1);
     }
   }
-  @keyframes ${ns}-fadeout {
+  @keyframes ${ns}-hide {
     0% {
       opacity: 1;
       transform: scale(1);
@@ -62,12 +63,12 @@ const css = `
       transform: scale(0);
     }
   }
-  .${ns}-fadein {
-    animation: ${ns}-fadein .3s;
+  .${ns}-show {
+    animation: ${ns}-show .3s;
     animation-fill-mode: forwards;
   }
-  .${ns}-fadeout {
-    animation: ${ns}-fadeout .3s;
+  .${ns}-hide {
+    animation: ${ns}-hide .3s;
     animation-fill-mode: forwards;
   }
 `;
@@ -103,23 +104,23 @@ export default class Progress {
   }
 
   show() {
-    const fadein = `${ns}-fadein`;
+    const show = `${ns}-show`;
     const { classList } = this.svg;
 
-    if (!classList.contains(fadein)) {
-      classList.remove(`${ns}-fadeout`);
-      classList.add(fadein);
+    if (!classList.contains(show)) {
+      classList.remove(`${ns}-hide`);
+      classList.add(show);
     }
   }
 
   hide() {
     onEffectsEnd(this.track, () => {
-      const fadein = `${ns}-fadein`;
+      const show = `${ns}-show`;
       const { classList } = this.svg;
 
-      if (classList.contains(fadein)) {
-        classList.remove(fadein);
-        classList.add(`${ns}-fadeout`);
+      if (classList.contains(show)) {
+        classList.remove(show);
+        classList.add(`${ns}-hide`);
       }
 
       onEffectsEnd(this.svg, () => {

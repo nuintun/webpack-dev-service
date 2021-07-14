@@ -2,28 +2,6 @@
  * @module utils
  */
 
-function parseHTML(html) {
-  try {
-    const parser = new DOMParser();
-    const { body } = parser.parseFromString(html.trim(), 'text/html');
-
-    return body.children;
-  } catch {
-    return [];
-  }
-}
-
-export function appendHTML(html, parent) {
-  const nodes = [];
-  const stage = parent || document.body;
-
-  for (const node of parseHTML(html)) {
-    nodes.push(stage.appendChild(node));
-  }
-
-  return nodes;
-}
-
 export function injectCSS(css) {
   const style = document.createElement('style');
 
@@ -34,4 +12,17 @@ export function injectCSS(css) {
   }
 
   document.head.appendChild(style);
+}
+
+export function appendHTML(html, parent) {
+  const nodes = [];
+  const parser = new DOMParser();
+  const stage = parent || document.body;
+  const { body } = parser.parseFromString(html.trim(), 'text/html');
+
+  while (body.firstChild) {
+    nodes.push(stage.appendChild(body.firstChild));
+  }
+
+  return nodes;
 }

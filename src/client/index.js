@@ -3,6 +3,7 @@
  */
 
 import reload from './reload';
+import Overlay from './ui/overlay';
 import Progress from './ui/progress';
 
 function parseMessage(message) {
@@ -15,6 +16,7 @@ function parseMessage(message) {
 
 function createWebSocket(url, protocols) {
   const bar = new Progress();
+  const overlay = new Overlay();
   const ws = new WebSocket(url, protocols);
 
   const progress = value => {
@@ -32,11 +34,13 @@ function createWebSocket(url, protocols) {
       case 'init':
         break;
       case 'rebuild':
+        overlay.hide();
         break;
       case 'ok':
         reload(payload.hash, true);
         break;
       case 'problems':
+        overlay.show({ ...payload, warnings: payload.errors });
         reload(payload.hash, true);
         break;
       case 'progress':
