@@ -1,3 +1,4 @@
+import 'core-js/modules/es.function.name.js';
 import 'core-js/modules/es.array.concat.js';
 import 'core-js/modules/es.string.trim.js';
 import 'core-js/modules/es.number.constructor.js';
@@ -7,42 +8,46 @@ import 'core-js/modules/es.array.slice.js';
 import 'core-js/modules/es.array.map.js';
 import 'core-js/modules/es.string.split.js';
 
-function ownKeys(object, enumerableOnly) {
-  var keys = Object.keys(object);
-
-  if (Object.getOwnPropertySymbols) {
-    var symbols = Object.getOwnPropertySymbols(object);
-
-    if (enumerableOnly) {
-      symbols = symbols.filter(function (sym) {
-        return Object.getOwnPropertyDescriptor(object, sym).enumerable;
-      });
-    }
-
-    keys.push.apply(keys, symbols);
-  }
-
-  return keys;
+/**
+ * @module reload
+ */
+function isUpToDate(hash) {
+  return hash === __webpack_hash__;
 }
 
-function _objectSpread2(target) {
-  for (var i = 1; i < arguments.length; i++) {
-    var source = arguments[i] != null ? arguments[i] : {};
-
-    if (i % 2) {
-      ownKeys(Object(source), true).forEach(function (key) {
-        _defineProperty(target, key, source[key]);
-      });
-    } else if (Object.getOwnPropertyDescriptors) {
-      Object.defineProperties(target, Object.getOwnPropertyDescriptors(source));
-    } else {
-      ownKeys(Object(source)).forEach(function (key) {
-        Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
-      });
+function update(hash, onUpdated) {
+  module.hot.check(true).then(function (updated) {
+    if (!updated) {
+      window.location.reload();
+    } else if (!isUpToDate(hash)) {
+      update(hash, onUpdated);
+    } else if (onUpdated) {
+      onUpdated();
     }
-  }
+  }).catch(function () {
+    var status = module.hot.status();
 
-  return target;
+    if (status === 'abort' || status === 'fail') {
+      window.location.reload();
+    }
+  });
+}
+
+function reload(hash, _ref) {
+  var hmr = _ref.hmr,
+      onUpdated = _ref.onUpdated;
+
+  if (!isUpToDate(hash)) {
+    if (hmr && module.hot) {
+      if (module.hot.status() === 'idle') {
+        update(hash, onUpdated);
+      }
+    } else {
+      window.location.reload();
+    }
+  } else if (onUpdated) {
+    onUpdated();
+  }
 }
 
 function _classCallCheck(instance, Constructor) {
@@ -65,21 +70,6 @@ function _createClass(Constructor, protoProps, staticProps) {
   if (protoProps) _defineProperties(Constructor.prototype, protoProps);
   if (staticProps) _defineProperties(Constructor, staticProps);
   return Constructor;
-}
-
-function _defineProperty(obj, key, value) {
-  if (key in obj) {
-    Object.defineProperty(obj, key, {
-      value: value,
-      enumerable: true,
-      configurable: true,
-      writable: true
-    });
-  } else {
-    obj[key] = value;
-  }
-
-  return obj;
 }
 
 function _slicedToArray(arr, i) {
@@ -199,48 +189,6 @@ function _createForOfIteratorHelper(o, allowArrayLike) {
 }
 
 /**
- * @module reload
- */
-function isUpToDate(hash) {
-  return hash === __webpack_hash__;
-}
-
-function update(hash, onUpdated) {
-  module.hot.check(true).then(function (updated) {
-    if (!updated) {
-      window.location.reload();
-    } else if (!isUpToDate(hash)) {
-      update(hash, onUpdated);
-    } else if (onUpdated) {
-      onUpdated();
-    }
-  }).catch(function () {
-    var status = module.hot.status();
-
-    if (status === 'abort' || status === 'fail') {
-      window.location.reload();
-    }
-  });
-}
-
-function reload(hash, _ref) {
-  var hmr = _ref.hmr,
-      onUpdated = _ref.onUpdated;
-
-  if (!isUpToDate(hash)) {
-    if (hmr && module.hot) {
-      if (module.hot.status() === 'idle') {
-        update(hash, onUpdated);
-      }
-    } else {
-      window.location.reload();
-    }
-  } else if (onUpdated) {
-    onUpdated();
-  }
-}
-
-/**
  * @module utils
  */
 function injectCSS(css) {
@@ -270,8 +218,8 @@ function appendHTML(html, parent) {
 }
 
 var ns$1 = 'wds-overlay';
-var css$1 = "\n  .".concat(ns$1, " {\n    top:0;\n    left: 0;\n    right: 0;\n    bottom: 0;\n    opacity: 0;\n    width: 100vw;\n    height: 100vh;\n    display: flex;\n    position: fixed;\n    font-size: 16px;\n    overflow: hidden;\n    font-style: normal;\n    font-weight: normal;\n    z-index: 2147483644;\n    transform: scale(0);\n    flex-direction: column;\n    font-family: monospace;\n    box-sizing: border-box;\n    background: rgba(0, 0, 0, .85);\n  }\n  @keyframes ").concat(ns$1, "-show {\n    0% {\n      opacity: 0;\n      transform: scale(0);\n    }\n    100% {\n      opacity: 1;\n      transform: scale(1);\n    }\n  }\n  @keyframes ").concat(ns$1, "-hide {\n    0% {\n      opacity: 1;\n      transform: scale(1);\n    }\n    100% {\n      opacity: 0;\n      transform: scale(0);\n    }\n  }\n  .").concat(ns$1, "-show {\n    animation: ").concat(ns$1, "-show .3s ease-out forwards;\n  }\n  .").concat(ns$1, "-hide {\n    animation: ").concat(ns$1, "-hide .3s ease-out forwards;\n  }\n  .").concat(ns$1, "-title {\n    margin: 0;\n    color: #fff;\n    width: 100%;\n    padding: 1em 0;\n    line-height: 1em;\n    text-align: center;\n    background: #282d35;\n  }\n  .").concat(ns$1, "-nav {\n    right: 0;\n    padding: 1em;\n    line-height: 1em;\n    position: absolute;\n    transition: transform .3s ease-in-out;\n  }\n  .").concat(ns$1, "-nav:hover {\n    transform: rotate(180deg);\n  }\n  .").concat(ns$1, "-nav .").concat(ns$1, "-close {\n    width: 1em;\n    height: 1em;\n    color: #fff;\n    cursor: pointer;\n    text-align: center;\n    border-radius: 1em;\n    background: #ff5f58;\n    display: inline-block;\n  }\n  .").concat(ns$1, "-errors-title,\n  .").concat(ns$1, "-warnings-title {\n    color: #ff5f58;\n    padding-left: .5em;\n  }\n  .").concat(ns$1, "-warnings-title {\n    color: #ffbd2e;\n  }\n  .").concat(ns$1, "-problems {\n    padding: 0 1em;\n    overflow-y: auto;\n    scrollbar-width: none;\n    -ms-overflow-style: none;\n    -webkit-overflow-scrolling: touch;\n  }\n  .").concat(ns$1, "-problems::-webkit-scrollbar {\n    display: none;\n  }\n  .").concat(ns$1, "-errors,\n  .").concat(ns$1, "-warnings {\n    color: #ddd;\n    margin: 1em 0;\n    display: block;\n    background: #282d35;\n    border-radius: .3em;\n    white-space: pre-wrap;\n    font-family: monospace;\n  }\n  .").concat(ns$1, "-errors > div,\n  .").concat(ns$1, "-warnings > div {\n    padding: 1em 1em 0;\n  }\n  .").concat(ns$1, "-errors > div > em,\n  .").concat(ns$1, "-warnings > div > em {\n    color: #641e16;\n    line-height: 1.5em;\n    font-style: normal;\n    padding: .1em .5em;\n    background: #ff5f58;\n    border-radius: .3em;\n    text-transform: uppercase;\n  }\n  .").concat(ns$1, "-warnings > div > em {\n    color: #3e2723;\n    background: #ffbd2e;\n  }\n  .").concat(ns$1, "-errors > div > div,\n  .").concat(ns$1, "-warnings > div > div {\n    padding: .5em 0 1em 2em;\n  }\n");
-var html$1 = "\n  <aside class=\"".concat(ns$1, "\" title=\"Build Status\">\n    <nav class=\"").concat(ns$1, "-nav\">\n      <div class=\"").concat(ns$1, "-close\" title=\"close\">\xD7</div>\n    </nav>\n    <div class=\"").concat(ns$1, "-title\">\n      Build Status\n      <em class=\"").concat(ns$1, "-errors-title\"></em>\n      <em class=\"").concat(ns$1, "-warnings-title\"></em>\n    </div>\n    <article class=\"").concat(ns$1, "-problems\">\n      <pre class=\"").concat(ns$1, "-errors\"></pre>\n      <pre class=\"").concat(ns$1, "-warnings\"></pre>\n    </article>\n  </aside>\n");
+var css$1 = "\n  .".concat(ns$1, " {\n    top:0;\n    left: 0;\n    right: 0;\n    bottom: 0;\n    opacity: 0;\n    width: 100vw;\n    height: 100vh;\n    display: flex;\n    position: fixed;\n    font-size: 16px;\n    overflow: hidden;\n    font-style: normal;\n    font-weight: normal;\n    z-index: 2147483644;\n    transform: scale(0);\n    flex-direction: column;\n    font-family: monospace;\n    box-sizing: border-box;\n    background: rgba(0, 0, 0, .85);\n  }\n  @keyframes ").concat(ns$1, "-show {\n    0% {\n      opacity: 0;\n      transform: scale(0);\n    }\n    100% {\n      opacity: 1;\n      transform: scale(1);\n    }\n  }\n  @keyframes ").concat(ns$1, "-hide {\n    0% {\n      opacity: 1;\n      transform: scale(1);\n    }\n    100% {\n      opacity: 0;\n      transform: scale(0);\n    }\n  }\n  .").concat(ns$1, "-show {\n    animation: ").concat(ns$1, "-show .3s ease-out forwards;\n  }\n  .").concat(ns$1, "-hide {\n    animation: ").concat(ns$1, "-hide .3s ease-out forwards;\n  }\n  .").concat(ns$1, "-nav {\n    right: 0;\n    padding: 1em;\n    line-height: 1em;\n    position: absolute;\n    transition: transform .3s ease-in-out;\n  }\n  .").concat(ns$1, "-nav:hover {\n    transform: rotate(180deg);\n  }\n  .").concat(ns$1, "-close {\n    width: 1em;\n    height: 1em;\n    color: #fff;\n    cursor: pointer;\n    font-style: normal;\n    text-align: center;\n    border-radius: 1em;\n    font-weight: normal;\n    background: #ff5f58;\n    display: inline-block;\n  }\n  .").concat(ns$1, "-title {\n    margin: 0;\n    color: #fff;\n    width: 100%;\n    padding: 1em 0;\n    line-height: 1em;\n    text-align: center;\n    background: #282d35;\n  }\n  .").concat(ns$1, "-name {\n    font-weight: bold;\n    font-style: normal;\n    text-transform: uppercase;\n  }\n  .").concat(ns$1, "-errors-title,\n  .").concat(ns$1, "-warnings-title {\n    color: #ff5f58;\n    padding-left: .5em;\n  }\n  .").concat(ns$1, "-warnings-title {\n    color: #ffbd2e;\n  }\n  .").concat(ns$1, "-problems {\n    padding: 0 1em;\n    overflow-y: auto;\n    scrollbar-width: none;\n    -ms-overflow-style: none;\n    -webkit-overflow-scrolling: touch;\n  }\n  .").concat(ns$1, "-problems::-webkit-scrollbar {\n    display: none;\n  }\n  .").concat(ns$1, "-errors,\n  .").concat(ns$1, "-warnings {\n    color: #ddd;\n    margin: 1em 0;\n    display: block;\n    background: #282d35;\n    border-radius: .3em;\n    white-space: pre-wrap;\n    font-family: monospace;\n  }\n  .").concat(ns$1, "-errors > div,\n  .").concat(ns$1, "-warnings > div {\n    padding: 1em 1em 0;\n  }\n  .").concat(ns$1, "-errors > div > em,\n  .").concat(ns$1, "-warnings > div > em {\n    color: #641e16;\n    line-height: 1.5em;\n    font-style: normal;\n    padding: .1em .5em;\n    font-weight: normal;\n    background: #ff5f58;\n    border-radius: .3em;\n    text-transform: uppercase;\n  }\n  .").concat(ns$1, "-warnings > div > em {\n    color: #3e2723;\n    background: #ffbd2e;\n  }\n  .").concat(ns$1, "-errors > div > div,\n  .").concat(ns$1, "-warnings > div > div {\n    padding: .5em 0 1em 2em;\n  }\n");
+var html$1 = "\n  <aside class=\"".concat(ns$1, "\">\n    <nav class=\"").concat(ns$1, "-nav\">\n      <i class=\"").concat(ns$1, "-close\">\xD7</i>\n    </nav>\n    <div class=\"").concat(ns$1, "-title\">\n      <em class=\"").concat(ns$1, "-name\">Webpack</em>\n      <em class=\"").concat(ns$1, "-errors-title\"></em>\n      <em class=\"").concat(ns$1, "-warnings-title\"></em>\n    </div>\n    <article class=\"").concat(ns$1, "-problems\">\n      <pre class=\"").concat(ns$1, "-errors\"></pre>\n      <pre class=\"").concat(ns$1, "-warnings\"></pre>\n    </article>\n  </aside>\n");
 
 var Overlay = /*#__PURE__*/function () {
   function Overlay() {
@@ -292,6 +240,7 @@ var Overlay = /*#__PURE__*/function () {
       var _appendHTML2 = _slicedToArray(_appendHTML, 1);
 
       this.aside = _appendHTML2[0];
+      this.name = this.aside.querySelector(".".concat(ns$1, "-name"));
       this.close = this.aside.querySelector(".".concat(ns$1, "-close"));
       this.errorsList = this.aside.querySelector(".".concat(ns$1, "-errors"));
       this.warningsList = this.aside.querySelector(".".concat(ns$1, "-warnings"));
@@ -300,6 +249,11 @@ var Overlay = /*#__PURE__*/function () {
       this.close.addEventListener('click', function () {
         _this.hide();
       });
+    }
+  }, {
+    key: "setName",
+    value: function setName(name) {
+      this.name.innerHTML = name || 'Webpack';
     }
   }, {
     key: "addErrors",
@@ -620,15 +574,10 @@ function parseMessage(message) {
 }
 
 function createWebSocket(url, protocols) {
+  var options = {};
   var overlay = new Overlay();
-  var progressBar = new Progress();
+  var progress = new Progress();
   var ws = new WebSocket(url, protocols);
-
-  var progress = function progress(value) {
-    value === 0 && progressBar.show();
-    progressBar.update(value);
-    value === 100 && progressBar.hide();
-  };
 
   ws.onmessage = function (message) {
     var _parseMessage = parseMessage(message),
@@ -637,31 +586,37 @@ function createWebSocket(url, protocols) {
 
     switch (action) {
       case 'init':
+        options = payload.options;
+        overlay.setName(payload.name);
         break;
 
-      case 'rebuild':
-        overlay.hide();
-        break;
+      case 'progress':
+        if (options.progress) {
+          var percent = payload.value;
+          percent === 0 && progress.show();
+          progress.update(percent);
+          percent === 100 && progress.hide();
+        }
 
-      case 'ok':
-        reload(payload.hash, {
-          hmr: true
-        });
         break;
 
       case 'problems':
         reload(payload.hash, {
           hmr: true,
           onUpdated: function onUpdated() {
-            overlay.show(_objectSpread2(_objectSpread2({}, payload), {}, {
-              warnings: payload.errors
-            }));
+            if (options.errors || options.warnings) {
+              overlay.show(payload);
+            }
           }
         });
         break;
 
-      case 'progress':
-        progress(payload.value);
+      case 'ok':
+        overlay.hide();
+        progress.hide();
+        reload(payload.hash, {
+          hmr: true
+        });
         break;
     }
 

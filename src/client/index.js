@@ -15,40 +15,47 @@ function parseMessage(message) {
 }
 
 function createWebSocket(url, protocols) {
+  let name = '';
+  let options = {};
+
   const overlay = new Overlay();
-  const progressBar = new Progress();
+  const progress = new Progress();
   const ws = new WebSocket(url, protocols);
-
-  const progress = value => {
-    value === 0 && progressBar.show();
-
-    progressBar.update(value);
-
-    value === 100 && progressBar.hide();
-  };
 
   ws.onmessage = message => {
     const { action, payload } = parseMessage(message);
 
     switch (action) {
       case 'init':
+        options = payload.options;
+
+        overlay.setName(payload.name);
         break;
-      case 'rebuild':
-        overlay.hide();
-        break;
-      case 'ok':
-        reload(payload.hash, { hmr: true });
+      case 'progress':
+        if (options.progress) {
+          const percent = payload.value;
+
+          percent === 0 && progress.show();
+
+          progress.update(percent);
+
+          percent === 100 && progress.hide();
+        }
         break;
       case 'problems':
         reload(payload.hash, {
           hmr: true,
           onUpdated() {
-            overlay.show({ ...payload, warnings: payload.errors });
+            if (options.errors || options.warnings) {
+              overlay.show(payload);
+            }
           }
         });
         break;
-      case 'progress':
-        progress(payload.value);
+      case 'ok':
+        overlay.hide();
+        progress.hide();
+        reload(payload.hash, { hmr: true });
         break;
     }
 

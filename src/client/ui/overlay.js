@@ -54,15 +54,6 @@ const css = `
   .${ns}-hide {
     animation: ${ns}-hide .3s ease-out forwards;
   }
-  .${ns}-title {
-    margin: 0;
-    color: #fff;
-    width: 100%;
-    padding: 1em 0;
-    line-height: 1em;
-    text-align: center;
-    background: #282d35;
-  }
   .${ns}-nav {
     right: 0;
     padding: 1em;
@@ -73,15 +64,31 @@ const css = `
   .${ns}-nav:hover {
     transform: rotate(180deg);
   }
-  .${ns}-nav .${ns}-close {
+  .${ns}-close {
     width: 1em;
     height: 1em;
     color: #fff;
     cursor: pointer;
+    font-style: normal;
     text-align: center;
     border-radius: 1em;
+    font-weight: normal;
     background: #ff5f58;
     display: inline-block;
+  }
+  .${ns}-title {
+    margin: 0;
+    color: #fff;
+    width: 100%;
+    padding: 1em 0;
+    line-height: 1em;
+    text-align: center;
+    background: #282d35;
+  }
+  .${ns}-name {
+    font-weight: bold;
+    font-style: normal;
+    text-transform: uppercase;
   }
   .${ns}-errors-title,
   .${ns}-warnings-title {
@@ -121,6 +128,7 @@ const css = `
     line-height: 1.5em;
     font-style: normal;
     padding: .1em .5em;
+    font-weight: normal;
     background: #ff5f58;
     border-radius: .3em;
     text-transform: uppercase;
@@ -136,12 +144,12 @@ const css = `
 `;
 
 const html = `
-  <aside class="${ns}" title="Build Status">
+  <aside class="${ns}">
     <nav class="${ns}-nav">
-      <div class="${ns}-close" title="close">×</div>
+      <i class="${ns}-close">×</i>
     </nav>
     <div class="${ns}-title">
-      Build Status
+      <em class="${ns}-name">Webpack</em>
       <em class="${ns}-errors-title"></em>
       <em class="${ns}-warnings-title"></em>
     </div>
@@ -162,6 +170,7 @@ export default class Overlay {
 
     [this.aside] = appendHTML(html);
 
+    this.name = this.aside.querySelector(`.${ns}-name`);
     this.close = this.aside.querySelector(`.${ns}-close`);
     this.errorsList = this.aside.querySelector(`.${ns}-errors`);
     this.warningsList = this.aside.querySelector(`.${ns}-warnings`);
@@ -171,6 +180,10 @@ export default class Overlay {
     this.close.addEventListener('click', () => {
       this.hide();
     });
+  }
+
+  setName(name) {
+    this.name.innerHTML = name || 'Webpack';
   }
 
   addErrors(errors) {

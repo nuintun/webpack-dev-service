@@ -110,9 +110,12 @@ class HotServer {
     });
 
     server.on('connection', client => {
-      const { hmr, errors, warnings } = this.options;
+      const { hmr, progress, errors, warnings } = this.options;
 
-      this.broadcast([client], 'init', { hmr, errors, warnings });
+      this.broadcast([client], 'init', {
+        name: this.compiler.name,
+        options: { hmr, progress, errors, warnings }
+      });
 
       if (this.stats) {
         this.broadcastStats([client], this.stats);
