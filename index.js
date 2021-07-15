@@ -207,7 +207,7 @@ class HotServer {
 
         if (stats.hasErrors() || stats.hasWarnings()) {
           const { options } = this;
-          const payload = { hash, builtAt, errors: [], warnings: [] };
+          const payload = { hash, builtAt };
 
           if (options.errors) {
             payload.errors = errors;

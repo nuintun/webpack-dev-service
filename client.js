@@ -1,12 +1,12 @@
 import 'core-js/modules/es.function.name.js';
 import 'core-js/modules/es.array.concat.js';
-import 'core-js/modules/es.string.trim.js';
 import 'core-js/modules/es.number.constructor.js';
 import 'core-js/modules/es.regexp.exec.js';
 import 'core-js/modules/es.string.replace.js';
 import 'core-js/modules/es.array.slice.js';
 import 'core-js/modules/es.array.map.js';
 import 'core-js/modules/es.string.split.js';
+import 'core-js/modules/es.string.trim.js';
 
 /**
  * @module reload
@@ -189,163 +189,6 @@ function _createForOfIteratorHelper(o, allowArrayLike) {
 }
 
 /**
- * @module utils
- */
-function injectCSS(css) {
-  var style = document.createElement('style');
-
-  if (css.styleSheet) {
-    style.styleSheet.cssText = css;
-  } else {
-    style.appendChild(document.createTextNode(css));
-  }
-
-  document.head.appendChild(style);
-}
-function appendHTML(html, parent) {
-  var nodes = [];
-  var parser = new DOMParser();
-  var stage = parent || document.body;
-
-  var _parser$parseFromStri = parser.parseFromString(html.trim(), 'text/html'),
-      body = _parser$parseFromStri.body;
-
-  while (body.firstChild) {
-    nodes.push(stage.appendChild(body.firstChild));
-  }
-
-  return nodes;
-}
-
-var ns$1 = 'wds-overlay';
-var css$1 = "\n  .".concat(ns$1, " {\n    top:0;\n    left: 0;\n    right: 0;\n    bottom: 0;\n    opacity: 0;\n    width: 100vw;\n    height: 100vh;\n    display: flex;\n    position: fixed;\n    font-size: 16px;\n    overflow: hidden;\n    font-style: normal;\n    font-weight: normal;\n    z-index: 2147483644;\n    transform: scale(0);\n    flex-direction: column;\n    font-family: monospace;\n    box-sizing: border-box;\n    background: rgba(0, 0, 0, .85);\n  }\n  @keyframes ").concat(ns$1, "-show {\n    0% {\n      opacity: 0;\n      transform: scale(0);\n    }\n    100% {\n      opacity: 1;\n      transform: scale(1);\n    }\n  }\n  @keyframes ").concat(ns$1, "-hide {\n    0% {\n      opacity: 1;\n      transform: scale(1);\n    }\n    100% {\n      opacity: 0;\n      transform: scale(0);\n    }\n  }\n  .").concat(ns$1, "-show {\n    animation: ").concat(ns$1, "-show .3s ease-out forwards;\n  }\n  .").concat(ns$1, "-hide {\n    animation: ").concat(ns$1, "-hide .3s ease-out forwards;\n  }\n  .").concat(ns$1, "-nav {\n    right: 0;\n    padding: 1em;\n    line-height: 1em;\n    position: absolute;\n    transition: transform .3s ease-in-out;\n  }\n  .").concat(ns$1, "-nav:hover {\n    transform: rotate(180deg);\n  }\n  .").concat(ns$1, "-close {\n    width: 1em;\n    height: 1em;\n    color: #fff;\n    cursor: pointer;\n    font-style: normal;\n    text-align: center;\n    border-radius: 1em;\n    font-weight: normal;\n    background: #ff5f58;\n    display: inline-block;\n  }\n  .").concat(ns$1, "-title {\n    margin: 0;\n    color: #fff;\n    width: 100%;\n    padding: 1em 0;\n    line-height: 1em;\n    text-align: center;\n    background: #282d35;\n  }\n  .").concat(ns$1, "-name {\n    font-weight: bold;\n    font-style: normal;\n    text-transform: uppercase;\n  }\n  .").concat(ns$1, "-errors-title,\n  .").concat(ns$1, "-warnings-title {\n    color: #ff5f58;\n    padding-left: .5em;\n  }\n  .").concat(ns$1, "-warnings-title {\n    color: #ffbd2e;\n  }\n  .").concat(ns$1, "-problems {\n    padding: 0 1em;\n    overflow-y: auto;\n    scrollbar-width: none;\n    -ms-overflow-style: none;\n    -webkit-overflow-scrolling: touch;\n  }\n  .").concat(ns$1, "-problems::-webkit-scrollbar {\n    display: none;\n  }\n  .").concat(ns$1, "-errors,\n  .").concat(ns$1, "-warnings {\n    color: #ddd;\n    margin: 1em 0;\n    display: block;\n    background: #282d35;\n    border-radius: .3em;\n    white-space: pre-wrap;\n    font-family: monospace;\n  }\n  .").concat(ns$1, "-errors > div,\n  .").concat(ns$1, "-warnings > div {\n    padding: 1em 1em 0;\n  }\n  .").concat(ns$1, "-errors > div > em,\n  .").concat(ns$1, "-warnings > div > em {\n    color: #641e16;\n    line-height: 1.5em;\n    font-style: normal;\n    padding: .1em .5em;\n    font-weight: normal;\n    background: #ff5f58;\n    border-radius: .3em;\n    text-transform: uppercase;\n  }\n  .").concat(ns$1, "-warnings > div > em {\n    color: #3e2723;\n    background: #ffbd2e;\n  }\n  .").concat(ns$1, "-errors > div > div,\n  .").concat(ns$1, "-warnings > div > div {\n    padding: .5em 0 1em 2em;\n  }\n");
-var html$1 = "\n  <aside class=\"".concat(ns$1, "\">\n    <nav class=\"").concat(ns$1, "-nav\">\n      <i class=\"").concat(ns$1, "-close\">\xD7</i>\n    </nav>\n    <div class=\"").concat(ns$1, "-title\">\n      <em class=\"").concat(ns$1, "-name\">Webpack</em>\n      <em class=\"").concat(ns$1, "-errors-title\"></em>\n      <em class=\"").concat(ns$1, "-warnings-title\"></em>\n    </div>\n    <article class=\"").concat(ns$1, "-problems\">\n      <pre class=\"").concat(ns$1, "-errors\"></pre>\n      <pre class=\"").concat(ns$1, "-warnings\"></pre>\n    </article>\n  </aside>\n");
-
-var Overlay = /*#__PURE__*/function () {
-  function Overlay() {
-    _classCallCheck(this, Overlay);
-
-    this.init();
-  }
-
-  _createClass(Overlay, [{
-    key: "init",
-    value: function init() {
-      var _this = this;
-
-      injectCSS(css$1);
-
-      var _appendHTML = appendHTML(html$1);
-
-      var _appendHTML2 = _slicedToArray(_appendHTML, 1);
-
-      this.aside = _appendHTML2[0];
-      this.name = this.aside.querySelector(".".concat(ns$1, "-name"));
-      this.close = this.aside.querySelector(".".concat(ns$1, "-close"));
-      this.errorsList = this.aside.querySelector(".".concat(ns$1, "-errors"));
-      this.warningsList = this.aside.querySelector(".".concat(ns$1, "-warnings"));
-      this.errorsTitle = this.aside.querySelector(".".concat(ns$1, "-errors-title"));
-      this.warningsTitle = this.aside.querySelector(".".concat(ns$1, "-warnings-title"));
-      this.close.addEventListener('click', function () {
-        _this.hide();
-      });
-    }
-  }, {
-    key: "setName",
-    value: function setName(name) {
-      this.name.innerHTML = name || 'Webpack';
-    }
-  }, {
-    key: "addErrors",
-    value: function addErrors(errors) {
-      var length = errors.length;
-      var errorsTitle = this.errorsTitle,
-          errorsList = this.errorsList;
-      errorsList.innerHTML = '';
-      errorsTitle.innerText = '';
-
-      if (length) {
-        var _iterator = _createForOfIteratorHelper(errors),
-            _step;
-
-        try {
-          for (_iterator.s(); !(_step = _iterator.n()).done;) {
-            var _step$value = _step.value,
-                moduleName = _step$value.moduleName,
-                message = _step$value.message;
-            appendHTML("<div><em>Error</em> in ".concat(moduleName, "<div>").concat(message, "</div></div>"), errorsList);
-          }
-        } catch (err) {
-          _iterator.e(err);
-        } finally {
-          _iterator.f();
-        }
-
-        errorsTitle.innerText = "".concat(length, " Error(s)");
-      }
-    }
-  }, {
-    key: "addWarnings",
-    value: function addWarnings(warnings) {
-      var length = warnings.length;
-      var warningsTitle = this.warningsTitle,
-          warningsList = this.warningsList;
-      warningsList.innerHTML = '';
-      warningsTitle.innerText = '';
-
-      if (length) {
-        var _iterator2 = _createForOfIteratorHelper(warnings),
-            _step2;
-
-        try {
-          for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
-            var _step2$value = _step2.value,
-                moduleName = _step2$value.moduleName,
-                message = _step2$value.message;
-            appendHTML("<div><em>Warning</em> in ".concat(moduleName, "<div>").concat(message, "</div></div>"), warningsList);
-          }
-        } catch (err) {
-          _iterator2.e(err);
-        } finally {
-          _iterator2.f();
-        }
-
-        warningsTitle.innerText = "".concat(length, " Warning(s)");
-      }
-    }
-  }, {
-    key: "show",
-    value: function show(_ref) {
-      var errors = _ref.errors,
-          warnings = _ref.warnings;
-      var show = "".concat(ns$1, "-show");
-      var classList = this.aside.classList;
-      this.addErrors(errors);
-      this.addWarnings(warnings);
-
-      if (!classList.contains(show)) {
-        classList.remove("".concat(ns$1, "-hide"));
-        classList.add(show);
-      }
-    }
-  }, {
-    key: "hide",
-    value: function hide() {
-      var aside = this.aside;
-      var show = "".concat(ns$1, "-show");
-      var classList = aside.classList;
-
-      if (classList.contains(show)) {
-        classList.remove(show);
-        classList.add("".concat(ns$1, "-hide"));
-      }
-    }
-  }]);
-
-  return Overlay;
-}();
-
-/**
  * @module effects
  */
 // 默认样式
@@ -496,10 +339,179 @@ function onEffectsEnd(node, callback) {
   node.addEventListener(event, onEnd);
 }
 
-var ns = 'wds-progress';
-var perimeter = 219.99078369140625;
-var css = "\n  .".concat(ns, " {\n    opacity: 0;\n    right: 1em;\n    bottom: 1em;\n    width: 48px;\n    height: 48px;\n    font-size: 16px;\n    position: fixed;\n    cursor: default;\n    user-select: none;\n    font-style: normal;\n    font-weight: normal;\n    transform: scale(0);\n    z-index: 2147483645;\n  }\n  @keyframes ").concat(ns, "-show {\n    0% {\n      opacity: 0;\n      transform: scale(0);\n    }\n    100% {\n      opacity: 1;\n      transform: scale(1);\n    }\n  }\n  @keyframes ").concat(ns, "-hide {\n    0% {\n      opacity: 1;\n      transform: scale(1);\n    }\n    100% {\n      opacity: 0;\n      transform: scale(0);\n    }\n  }\n  .").concat(ns, "-show {\n    animation: ").concat(ns, "-show .3s ease-out forwards;\n  }\n  .").concat(ns, "-hide {\n    animation: ").concat(ns, "-hide .3s ease-out forwards;\n  }\n  .").concat(ns, "-bg {\n    fill: #282d35;\n  }\n  .").concat(ns, "-track {\n    stroke-width: 10;\n    fill: rgba(0, 0, 0, 0);\n    stroke: rgb(186, 223, 172);\n    stroke-dasharray: ").concat(perimeter, ";\n    stroke-dashoffset: -").concat(perimeter, ";\n    transition: stroke-dashoffset .3s ease-out;\n    transform: rotate(90deg) translate(0, -80px);\n  }\n  .").concat(ns, "-value {\n    fill: #ffffff;\n    font-size: 1em;\n    text-anchor: middle;\n    font-family: monospace;\n    dominant-baseline: middle;\n  }\n");
-var html = "\n  <svg class=\"".concat(ns, "\" x=\"0\" y=\"0\" viewBox=\"0 0 80 80\">\n    <circle class=\"").concat(ns, "-bg\" cx=\"50%\" cy=\"50%\" r=\"35\" />\n    <path class=\"").concat(ns, "-track\" d=\"M5,40a35,35 0 1,0 70,0a35,35 0 1,0 -70,0\" />\n    <text class=\"").concat(ns, "-value\" x=\"50%\" y=\"52%\">0%</text>\n  </svg>\n");
+/**
+ * @module utils
+ */
+function injectCSS(css) {
+  var style = document.createElement('style');
+
+  if (css.styleSheet) {
+    style.styleSheet.cssText = css;
+  } else {
+    style.appendChild(document.createTextNode(css));
+  }
+
+  document.head.appendChild(style);
+}
+function appendHTML(html, parent) {
+  var nodes = [];
+  var parser = new DOMParser();
+  var stage = parent || document.body;
+
+  var _parser$parseFromStri = parser.parseFromString(html.trim(), 'text/html'),
+      body = _parser$parseFromStri.body;
+
+  while (body.firstChild) {
+    nodes.push(stage.appendChild(body.firstChild));
+  }
+
+  return nodes;
+}
+
+var OVERLAY = 'wds-overlay';
+var CSS$1 = "\n  .".concat(OVERLAY, " {\n    top:0;\n    left: 0;\n    right: 0;\n    bottom: 0;\n    opacity: 0;\n    width: 100vw;\n    height: 100vh;\n    display: flex;\n    position: fixed;\n    font-size: 16px;\n    overflow: hidden;\n    font-style: normal;\n    font-weight: normal;\n    z-index: 2147483644;\n    flex-direction: column;\n    font-family: monospace;\n    box-sizing: border-box;\n    background: rgba(0, 0, 0, .85);\n    transform: scale(0) translateZ(0);\n  }\n  @keyframes ").concat(OVERLAY, "-show {\n    0% {\n      opacity: 0;\n      transform: scale(0) translateZ(0);\n    }\n    100% {\n      opacity: 1;\n      transform: scale(1) translateZ(0);\n    }\n  }\n  @keyframes ").concat(OVERLAY, "-hide {\n    0% {\n      opacity: 1;\n      transform: scale(1) translateZ(0);\n    }\n    100% {\n      opacity: 0;\n      transform: scale(0) translateZ(0);\n    }\n  }\n  .").concat(OVERLAY, "-show {\n    animation: ").concat(OVERLAY, "-show .3s ease-out forwards;\n  }\n  .").concat(OVERLAY, "-hide {\n    animation: ").concat(OVERLAY, "-hide .3s ease-out forwards;\n  }\n  .").concat(OVERLAY, "-nav {\n    right: 0;\n    padding: 1em;\n    line-height: 1em;\n    position: absolute;\n    transition: transform .3s ease-in-out;\n  }\n  .").concat(OVERLAY, "-nav:hover {\n    transform: rotate(180deg) translateZ(0);\n  }\n  .").concat(OVERLAY, "-close {\n    width: 1em;\n    height: 1em;\n    color: #fff;\n    cursor: pointer;\n    font-style: normal;\n    text-align: center;\n    border-radius: 1em;\n    font-weight: normal;\n    background: #ff5f58;\n    display: inline-block;\n  }\n  .").concat(OVERLAY, "-title {\n    margin: 0;\n    color: #fff;\n    width: 100%;\n    padding: 1em 0;\n    line-height: 1em;\n    text-align: center;\n    background: #282d35;\n  }\n  .").concat(OVERLAY, "-name {\n    font-weight: bold;\n    font-style: normal;\n    text-transform: uppercase;\n  }\n  .").concat(OVERLAY, "-errors-title,\n  .").concat(OVERLAY, "-warnings-title {\n    color: #ff5f58;\n    padding-left: .5em;\n  }\n  .").concat(OVERLAY, "-warnings-title {\n    color: #ffbd2e;\n  }\n  .").concat(OVERLAY, "-problems {\n    padding: 0 1em;\n    overflow-y: auto;\n    scrollbar-width: none;\n    -ms-overflow-style: none;\n    -webkit-overflow-scrolling: touch;\n  }\n  .").concat(OVERLAY, "-problems::-webkit-scrollbar {\n    display: none;\n  }\n  .").concat(OVERLAY, "-errors,\n  .").concat(OVERLAY, "-warnings {\n    color: #ddd;\n    margin: 1em 0;\n    display: block;\n    background: #282d35;\n    border-radius: .3em;\n    white-space: pre-wrap;\n    font-family: monospace;\n  }\n  .").concat(OVERLAY, "-errors > div,\n  .").concat(OVERLAY, "-warnings > div {\n    padding: 1em 1em 0;\n  }\n  .").concat(OVERLAY, "-errors > div > em,\n  .").concat(OVERLAY, "-warnings > div > em {\n    color: #641e16;\n    line-height: 1.5em;\n    font-style: normal;\n    padding: .1em .5em;\n    font-weight: normal;\n    background: #ff5f58;\n    border-radius: .3em;\n    text-transform: uppercase;\n  }\n  .").concat(OVERLAY, "-warnings > div > em {\n    color: #3e2723;\n    background: #ffbd2e;\n  }\n  .").concat(OVERLAY, "-errors > div > div,\n  .").concat(OVERLAY, "-warnings > div > div {\n    padding: .5em 0 1em 2em;\n  }\n");
+var DEFAULT_NAME = 'webpack';
+var HTML$1 = "\n  <aside class=\"".concat(OVERLAY, "\">\n    <nav class=\"").concat(OVERLAY, "-nav\">\n      <i class=\"").concat(OVERLAY, "-close\">\xD7</i>\n    </nav>\n    <div class=\"").concat(OVERLAY, "-title\">\n      <em class=\"").concat(OVERLAY, "-name\">").concat(DEFAULT_NAME, "</em>\n      <em class=\"").concat(OVERLAY, "-errors-title\"></em>\n      <em class=\"").concat(OVERLAY, "-warnings-title\"></em>\n    </div>\n    <article class=\"").concat(OVERLAY, "-problems\">\n      <pre class=\"").concat(OVERLAY, "-errors\"></pre>\n      <pre class=\"").concat(OVERLAY, "-warnings\"></pre>\n    </article>\n  </aside>\n");
+
+var Overlay = /*#__PURE__*/function () {
+  function Overlay() {
+    _classCallCheck(this, Overlay);
+
+    this.init();
+  }
+
+  _createClass(Overlay, [{
+    key: "init",
+    value: function init() {
+      var _this = this;
+
+      injectCSS(CSS$1);
+
+      var _appendHTML = appendHTML(HTML$1);
+
+      var _appendHTML2 = _slicedToArray(_appendHTML, 1);
+
+      this.aside = _appendHTML2[0];
+      this.name = this.aside.querySelector(".".concat(OVERLAY, "-name"));
+      this.close = this.aside.querySelector(".".concat(OVERLAY, "-close"));
+      this.errorsList = this.aside.querySelector(".".concat(OVERLAY, "-errors"));
+      this.warningsList = this.aside.querySelector(".".concat(OVERLAY, "-warnings"));
+      this.errorsTitle = this.aside.querySelector(".".concat(OVERLAY, "-errors-title"));
+      this.warningsTitle = this.aside.querySelector(".".concat(OVERLAY, "-warnings-title"));
+      this.close.addEventListener('click', function () {
+        _this.hide();
+      });
+    }
+  }, {
+    key: "setName",
+    value: function setName(name) {
+      this.name.innerHTML = name || DEFAULT_NAME;
+    }
+  }, {
+    key: "addErrors",
+    value: function addErrors() {
+      var errors = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+      var length = errors.length;
+      var errorsTitle = this.errorsTitle,
+          errorsList = this.errorsList;
+      errorsList.innerHTML = '';
+      errorsTitle.innerText = '';
+
+      if (length) {
+        errorsTitle.innerText = "".concat(length, " Error(s)");
+
+        var _iterator = _createForOfIteratorHelper(errors),
+            _step;
+
+        try {
+          for (_iterator.s(); !(_step = _iterator.n()).done;) {
+            var _step$value = _step.value,
+                moduleName = _step$value.moduleName,
+                message = _step$value.message;
+            appendHTML("<div><em>Error</em> in ".concat(moduleName, "<div>").concat(message, "</div></div>"), errorsList);
+          }
+        } catch (err) {
+          _iterator.e(err);
+        } finally {
+          _iterator.f();
+        }
+      }
+    }
+  }, {
+    key: "addWarnings",
+    value: function addWarnings() {
+      var warnings = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+      var length = warnings.length;
+      var warningsTitle = this.warningsTitle,
+          warningsList = this.warningsList;
+      warningsList.innerHTML = '';
+      warningsTitle.innerText = '';
+
+      if (length) {
+        warningsTitle.innerText = "".concat(length, " Warning(s)");
+
+        var _iterator2 = _createForOfIteratorHelper(warnings),
+            _step2;
+
+        try {
+          for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
+            var _step2$value = _step2.value,
+                moduleName = _step2$value.moduleName,
+                message = _step2$value.message;
+            appendHTML("<div><em>Warning</em> in ".concat(moduleName, "<div>").concat(message, "</div></div>"), warningsList);
+          }
+        } catch (err) {
+          _iterator2.e(err);
+        } finally {
+          _iterator2.f();
+        }
+      }
+    }
+  }, {
+    key: "isVisible",
+    value: function isVisible() {
+      return this.aside.classList.contains("".concat(OVERLAY, "-show"));
+    }
+  }, {
+    key: "show",
+    value: function show(_ref) {
+      var errors = _ref.errors,
+          warnings = _ref.warnings;
+      var classList = this.aside.classList;
+      this.addErrors(errors);
+      this.addWarnings(warnings);
+
+      if (!this.isVisible()) {
+        classList.remove("".concat(OVERLAY, "-hide"));
+        classList.add("".concat(OVERLAY, "-show"));
+      }
+    }
+  }, {
+    key: "hide",
+    value: function hide(onHidden) {
+      var aside = this.aside;
+      var classList = aside.classList;
+
+      if (this.isVisible()) {
+        classList.remove("".concat(OVERLAY, "-show"));
+        classList.add("".concat(OVERLAY, "-hide"));
+
+        if (onHidden) {
+          onEffectsEnd(aside, onHidden);
+        }
+      } else if (onHidden) {
+        onHidden();
+      }
+    }
+  }]);
+
+  return Overlay;
+}();
+
+var PROGRESS = 'wds-progress';
+var PERIMETER = 219.99078369140625;
+var CSS = "\n  .".concat(PROGRESS, " {\n    opacity: 0;\n    right: 1em;\n    bottom: 1em;\n    width: 48px;\n    height: 48px;\n    font-size: 16px;\n    position: fixed;\n    cursor: default;\n    user-select: none;\n    font-style: normal;\n    font-weight: normal;\n    z-index: 2147483645;\n    transform: scale(0) translateZ(0);\n  }\n  @keyframes ").concat(PROGRESS, "-show {\n    0% {\n      opacity: 0;\n      transform: scale(0) translateZ(0);\n    }\n    100% {\n      opacity: 1;\n      transform: scale(1) translateZ(0);\n    }\n  }\n  @keyframes ").concat(PROGRESS, "-hide {\n    0% {\n      opacity: 1;\n      transform: scale(1) translateZ(0);\n    }\n    100% {\n      opacity: 0;\n      transform: scale(0) translateZ(0);\n    }\n  }\n  .").concat(PROGRESS, "-show {\n    animation: ").concat(PROGRESS, "-show .3s ease-out forwards;\n  }\n  .").concat(PROGRESS, "-hide {\n    animation: ").concat(PROGRESS, "-hide .3s ease-out forwards;\n  }\n  .").concat(PROGRESS, "-bg {\n    fill: #282d35;\n  }\n  .").concat(PROGRESS, "-track {\n    stroke-width: 10;\n    fill: rgba(0, 0, 0, 0);\n    stroke: rgb(186, 223, 172);\n    stroke-dasharray: ").concat(PERIMETER, ";\n    stroke-dashoffset: -").concat(PERIMETER, ";\n    transition: stroke-dashoffset .3s ease-out;\n    transform: rotate(90deg) translate(0, -80px) translateZ(0);\n  }\n  .").concat(PROGRESS, "-value {\n    fill: #ffffff;\n    font-size: 1em;\n    text-anchor: middle;\n    font-family: monospace;\n    dominant-baseline: middle;\n  }\n");
+var HTML = "\n  <svg class=\"".concat(PROGRESS, "\" x=\"0\" y=\"0\" viewBox=\"0 0 80 80\">\n    <circle class=\"").concat(PROGRESS, "-bg\" cx=\"50%\" cy=\"50%\" r=\"35\" />\n    <path class=\"").concat(PROGRESS, "-track\" d=\"M5,40a35,35 0 1,0 70,0a35,35 0 1,0 -70,0\" />\n    <text class=\"").concat(PROGRESS, "-value\" x=\"50%\" y=\"52%\">0%</text>\n  </svg>\n");
 
 var Progress = /*#__PURE__*/function () {
   function Progress() {
@@ -511,32 +523,37 @@ var Progress = /*#__PURE__*/function () {
   _createClass(Progress, [{
     key: "init",
     value: function init() {
-      injectCSS(css);
+      injectCSS(CSS);
 
-      var _appendHTML = appendHTML(html);
+      var _appendHTML = appendHTML(HTML);
 
       var _appendHTML2 = _slicedToArray(_appendHTML, 1);
 
       this.svg = _appendHTML2[0];
-      this.track = this.svg.querySelector(".".concat(ns, "-track"));
-      this.value = this.svg.querySelector(".".concat(ns, "-value"));
+      this.track = this.svg.querySelector(".".concat(PROGRESS, "-track"));
+      this.value = this.svg.querySelector(".".concat(PROGRESS, "-value"));
     }
   }, {
     key: "update",
     value: function update(value) {
       this.value.innerHTML = "".concat(value, "%");
-      var offset = (100 - value) / 100 * -perimeter;
+      var offset = (100 - value) / 100 * -PERIMETER;
       this.track.setAttribute('style', "stroke-dashoffset: ".concat(offset));
+    }
+  }, {
+    key: "isVisible",
+    value: function isVisible() {
+      return this.svg.classList.contains("".concat(PROGRESS, "-show"));
     }
   }, {
     key: "show",
     value: function show() {
-      var show = "".concat(ns, "-show");
       var classList = this.svg.classList;
 
-      if (!classList.contains(show)) {
-        classList.remove("".concat(ns, "-hide"));
-        classList.add(show);
+      if (!this.isVisible()) {
+        this.update(0);
+        classList.remove("".concat(PROGRESS, "-hide"));
+        classList.add("".concat(PROGRESS, "-show"));
       }
     }
   }, {
@@ -545,19 +562,12 @@ var Progress = /*#__PURE__*/function () {
       var _this = this;
 
       onEffectsEnd(this.track, function () {
-        var show = "".concat(ns, "-show");
         var classList = _this.svg.classList;
 
-        if (classList.contains(show)) {
-          classList.remove(show);
-          classList.add("".concat(ns, "-hide"));
+        if (_this.isVisible()) {
+          classList.remove("".concat(PROGRESS, "-show"));
+          classList.add("".concat(PROGRESS, "-hide"));
         }
-
-        onEffectsEnd(_this.svg, function () {
-          if (!classList.contains(show)) {
-            _this.update(0);
-          }
-        });
       });
     }
   }]);
@@ -602,20 +612,26 @@ function createWebSocket(url, protocols) {
 
       case 'problems':
         reload(payload.hash, {
-          hmr: true,
+          hmr: options.hmr,
           onUpdated: function onUpdated() {
-            if (options.errors || options.warnings) {
-              overlay.show(payload);
+            var errors = payload.errors,
+                warnings = payload.warnings;
+
+            if (errors || warnings) {
+              overlay.show({
+                errors: errors,
+                warnings: warnings
+              });
             }
           }
         });
         break;
 
       case 'ok':
-        overlay.hide();
-        progress.hide();
-        reload(payload.hash, {
-          hmr: true
+        overlay.hide(function () {
+          reload(payload.hash, {
+            hmr: options.hmr
+          });
         });
         break;
     }

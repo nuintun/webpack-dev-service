@@ -15,7 +15,6 @@ function parseMessage(message) {
 }
 
 function createWebSocket(url, protocols) {
-  let name = '';
   let options = {};
 
   const overlay = new Overlay();
@@ -44,18 +43,20 @@ function createWebSocket(url, protocols) {
         break;
       case 'problems':
         reload(payload.hash, {
-          hmr: true,
+          hmr: options.hmr,
           onUpdated() {
-            if (options.errors || options.warnings) {
-              overlay.show(payload);
+            const { errors, warnings } = payload;
+
+            if (errors || warnings) {
+              overlay.show({ errors, warnings });
             }
           }
         });
         break;
       case 'ok':
-        overlay.hide();
-        progress.hide();
-        reload(payload.hash, { hmr: true });
+        overlay.hide(() => {
+          reload(payload.hash, { hmr: options.hmr });
+        });
         break;
     }
 

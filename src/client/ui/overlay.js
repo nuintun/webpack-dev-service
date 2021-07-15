@@ -2,12 +2,13 @@
  * @module overlay
  */
 
+import onEffectsEnd from './utils/effects';
 import { appendHTML, injectCSS } from './utils';
 
-const ns = 'wds-overlay';
+const OVERLAY = 'wds-overlay';
 
-const css = `
-  .${ns} {
+const CSS = `
+  .${OVERLAY} {
     top:0;
     left: 0;
     right: 0;
@@ -22,49 +23,49 @@ const css = `
     font-style: normal;
     font-weight: normal;
     z-index: 2147483644;
-    transform: scale(0);
     flex-direction: column;
     font-family: monospace;
     box-sizing: border-box;
     background: rgba(0, 0, 0, .85);
+    transform: scale(0) translateZ(0);
   }
-  @keyframes ${ns}-show {
+  @keyframes ${OVERLAY}-show {
     0% {
       opacity: 0;
-      transform: scale(0);
+      transform: scale(0) translateZ(0);
     }
     100% {
       opacity: 1;
-      transform: scale(1);
+      transform: scale(1) translateZ(0);
     }
   }
-  @keyframes ${ns}-hide {
+  @keyframes ${OVERLAY}-hide {
     0% {
       opacity: 1;
-      transform: scale(1);
+      transform: scale(1) translateZ(0);
     }
     100% {
       opacity: 0;
-      transform: scale(0);
+      transform: scale(0) translateZ(0);
     }
   }
-  .${ns}-show {
-    animation: ${ns}-show .3s ease-out forwards;
+  .${OVERLAY}-show {
+    animation: ${OVERLAY}-show .3s ease-out forwards;
   }
-  .${ns}-hide {
-    animation: ${ns}-hide .3s ease-out forwards;
+  .${OVERLAY}-hide {
+    animation: ${OVERLAY}-hide .3s ease-out forwards;
   }
-  .${ns}-nav {
+  .${OVERLAY}-nav {
     right: 0;
     padding: 1em;
     line-height: 1em;
     position: absolute;
     transition: transform .3s ease-in-out;
   }
-  .${ns}-nav:hover {
-    transform: rotate(180deg);
+  .${OVERLAY}-nav:hover {
+    transform: rotate(180deg) translateZ(0);
   }
-  .${ns}-close {
+  .${OVERLAY}-close {
     width: 1em;
     height: 1em;
     color: #fff;
@@ -76,7 +77,7 @@ const css = `
     background: #ff5f58;
     display: inline-block;
   }
-  .${ns}-title {
+  .${OVERLAY}-title {
     margin: 0;
     color: #fff;
     width: 100%;
@@ -85,31 +86,31 @@ const css = `
     text-align: center;
     background: #282d35;
   }
-  .${ns}-name {
+  .${OVERLAY}-name {
     font-weight: bold;
     font-style: normal;
     text-transform: uppercase;
   }
-  .${ns}-errors-title,
-  .${ns}-warnings-title {
+  .${OVERLAY}-errors-title,
+  .${OVERLAY}-warnings-title {
     color: #ff5f58;
     padding-left: .5em;
   }
-  .${ns}-warnings-title {
+  .${OVERLAY}-warnings-title {
     color: #ffbd2e;
   }
-  .${ns}-problems {
+  .${OVERLAY}-problems {
     padding: 0 1em;
     overflow-y: auto;
     scrollbar-width: none;
     -ms-overflow-style: none;
     -webkit-overflow-scrolling: touch;
   }
-  .${ns}-problems::-webkit-scrollbar {
+  .${OVERLAY}-problems::-webkit-scrollbar {
     display: none;
   }
-  .${ns}-errors,
-  .${ns}-warnings {
+  .${OVERLAY}-errors,
+  .${OVERLAY}-warnings {
     color: #ddd;
     margin: 1em 0;
     display: block;
@@ -118,12 +119,12 @@ const css = `
     white-space: pre-wrap;
     font-family: monospace;
   }
-  .${ns}-errors > div,
-  .${ns}-warnings > div {
+  .${OVERLAY}-errors > div,
+  .${OVERLAY}-warnings > div {
     padding: 1em 1em 0;
   }
-  .${ns}-errors > div > em,
-  .${ns}-warnings > div > em {
+  .${OVERLAY}-errors > div > em,
+  .${OVERLAY}-warnings > div > em {
     color: #641e16;
     line-height: 1.5em;
     font-style: normal;
@@ -133,29 +134,31 @@ const css = `
     border-radius: .3em;
     text-transform: uppercase;
   }
-  .${ns}-warnings > div > em {
+  .${OVERLAY}-warnings > div > em {
     color: #3e2723;
     background: #ffbd2e;
   }
-  .${ns}-errors > div > div,
-  .${ns}-warnings > div > div {
+  .${OVERLAY}-errors > div > div,
+  .${OVERLAY}-warnings > div > div {
     padding: .5em 0 1em 2em;
   }
 `;
 
-const html = `
-  <aside class="${ns}">
-    <nav class="${ns}-nav">
-      <i class="${ns}-close">×</i>
+const DEFAULT_NAME = 'webpack';
+
+const HTML = `
+  <aside class="${OVERLAY}">
+    <nav class="${OVERLAY}-nav">
+      <i class="${OVERLAY}-close">×</i>
     </nav>
-    <div class="${ns}-title">
-      <em class="${ns}-name">Webpack</em>
-      <em class="${ns}-errors-title"></em>
-      <em class="${ns}-warnings-title"></em>
+    <div class="${OVERLAY}-title">
+      <em class="${OVERLAY}-name">${DEFAULT_NAME}</em>
+      <em class="${OVERLAY}-errors-title"></em>
+      <em class="${OVERLAY}-warnings-title"></em>
     </div>
-    <article class="${ns}-problems">
-      <pre class="${ns}-errors"></pre>
-      <pre class="${ns}-warnings"></pre>
+    <article class="${OVERLAY}-problems">
+      <pre class="${OVERLAY}-errors"></pre>
+      <pre class="${OVERLAY}-warnings"></pre>
     </article>
   </aside>
 `;
@@ -166,16 +169,16 @@ export default class Overlay {
   }
 
   init() {
-    injectCSS(css);
+    injectCSS(CSS);
 
-    [this.aside] = appendHTML(html);
+    [this.aside] = appendHTML(HTML);
 
-    this.name = this.aside.querySelector(`.${ns}-name`);
-    this.close = this.aside.querySelector(`.${ns}-close`);
-    this.errorsList = this.aside.querySelector(`.${ns}-errors`);
-    this.warningsList = this.aside.querySelector(`.${ns}-warnings`);
-    this.errorsTitle = this.aside.querySelector(`.${ns}-errors-title`);
-    this.warningsTitle = this.aside.querySelector(`.${ns}-warnings-title`);
+    this.name = this.aside.querySelector(`.${OVERLAY}-name`);
+    this.close = this.aside.querySelector(`.${OVERLAY}-close`);
+    this.errorsList = this.aside.querySelector(`.${OVERLAY}-errors`);
+    this.warningsList = this.aside.querySelector(`.${OVERLAY}-warnings`);
+    this.errorsTitle = this.aside.querySelector(`.${OVERLAY}-errors-title`);
+    this.warningsTitle = this.aside.querySelector(`.${OVERLAY}-warnings-title`);
 
     this.close.addEventListener('click', () => {
       this.hide();
@@ -183,10 +186,10 @@ export default class Overlay {
   }
 
   setName(name) {
-    this.name.innerHTML = name || 'Webpack';
+    this.name.innerHTML = name || DEFAULT_NAME;
   }
 
-  addErrors(errors) {
+  addErrors(errors = []) {
     const { length } = errors;
     const { errorsTitle, errorsList } = this;
 
@@ -194,15 +197,15 @@ export default class Overlay {
     errorsTitle.innerText = '';
 
     if (length) {
+      errorsTitle.innerText = `${length} Error(s)`;
+
       for (const { moduleName, message } of errors) {
         appendHTML(`<div><em>Error</em> in ${moduleName}<div>${message}</div></div>`, errorsList);
       }
-
-      errorsTitle.innerText = `${length} Error(s)`;
     }
   }
 
-  addWarnings(warnings) {
+  addWarnings(warnings = []) {
     const { length } = warnings;
     const { warningsTitle, warningsList } = this;
 
@@ -210,35 +213,43 @@ export default class Overlay {
     warningsTitle.innerText = '';
 
     if (length) {
+      warningsTitle.innerText = `${length} Warning(s)`;
+
       for (const { moduleName, message } of warnings) {
         appendHTML(`<div><em>Warning</em> in ${moduleName}<div>${message}</div></div>`, warningsList);
       }
-
-      warningsTitle.innerText = `${length} Warning(s)`;
     }
   }
 
+  isVisible() {
+    return this.aside.classList.contains(`${OVERLAY}-show`);
+  }
+
   show({ errors, warnings }) {
-    const show = `${ns}-show`;
     const { classList } = this.aside;
 
     this.addErrors(errors);
     this.addWarnings(warnings);
 
-    if (!classList.contains(show)) {
-      classList.remove(`${ns}-hide`);
-      classList.add(show);
+    if (!this.isVisible()) {
+      classList.remove(`${OVERLAY}-hide`);
+      classList.add(`${OVERLAY}-show`);
     }
   }
 
-  hide() {
+  hide(onHidden) {
     const { aside } = this;
-    const show = `${ns}-show`;
     const { classList } = aside;
 
-    if (classList.contains(show)) {
-      classList.remove(show);
-      classList.add(`${ns}-hide`);
+    if (this.isVisible()) {
+      classList.remove(`${OVERLAY}-show`);
+      classList.add(`${OVERLAY}-hide`);
+
+      if (onHidden) {
+        onEffectsEnd(aside, onHidden);
+      }
+    } else if (onHidden) {
+      onHidden();
     }
   }
 }

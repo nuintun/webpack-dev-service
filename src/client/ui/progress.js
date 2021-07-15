@@ -5,11 +5,11 @@
 import onEffectsEnd from './utils/effects';
 import { appendHTML, injectCSS } from './utils';
 
-const ns = 'wds-progress';
-const perimeter = 219.99078369140625;
+const PROGRESS = 'wds-progress';
+const PERIMETER = 219.99078369140625;
 
-const css = `
-  .${ns} {
+const CSS = `
+  .${PROGRESS} {
     opacity: 0;
     right: 1em;
     bottom: 1em;
@@ -21,48 +21,48 @@ const css = `
     user-select: none;
     font-style: normal;
     font-weight: normal;
-    transform: scale(0);
     z-index: 2147483645;
+    transform: scale(0) translateZ(0);
   }
-  @keyframes ${ns}-show {
+  @keyframes ${PROGRESS}-show {
     0% {
       opacity: 0;
-      transform: scale(0);
+      transform: scale(0) translateZ(0);
     }
     100% {
       opacity: 1;
-      transform: scale(1);
+      transform: scale(1) translateZ(0);
     }
   }
-  @keyframes ${ns}-hide {
+  @keyframes ${PROGRESS}-hide {
     0% {
       opacity: 1;
-      transform: scale(1);
+      transform: scale(1) translateZ(0);
     }
     100% {
       opacity: 0;
-      transform: scale(0);
+      transform: scale(0) translateZ(0);
     }
   }
-  .${ns}-show {
-    animation: ${ns}-show .3s ease-out forwards;
+  .${PROGRESS}-show {
+    animation: ${PROGRESS}-show .3s ease-out forwards;
   }
-  .${ns}-hide {
-    animation: ${ns}-hide .3s ease-out forwards;
+  .${PROGRESS}-hide {
+    animation: ${PROGRESS}-hide .3s ease-out forwards;
   }
-  .${ns}-bg {
+  .${PROGRESS}-bg {
     fill: #282d35;
   }
-  .${ns}-track {
+  .${PROGRESS}-track {
     stroke-width: 10;
     fill: rgba(0, 0, 0, 0);
     stroke: rgb(186, 223, 172);
-    stroke-dasharray: ${perimeter};
-    stroke-dashoffset: -${perimeter};
+    stroke-dasharray: ${PERIMETER};
+    stroke-dashoffset: -${PERIMETER};
     transition: stroke-dashoffset .3s ease-out;
-    transform: rotate(90deg) translate(0, -80px);
+    transform: rotate(90deg) translate(0, -80px) translateZ(0);
   }
-  .${ns}-value {
+  .${PROGRESS}-value {
     fill: #ffffff;
     font-size: 1em;
     text-anchor: middle;
@@ -71,11 +71,11 @@ const css = `
   }
 `;
 
-const html = `
-  <svg class="${ns}" x="0" y="0" viewBox="0 0 80 80">
-    <circle class="${ns}-bg" cx="50%" cy="50%" r="35" />
-    <path class="${ns}-track" d="M5,40a35,35 0 1,0 70,0a35,35 0 1,0 -70,0" />
-    <text class="${ns}-value" x="50%" y="52%">0%</text>
+const HTML = `
+  <svg class="${PROGRESS}" x="0" y="0" viewBox="0 0 80 80">
+    <circle class="${PROGRESS}-bg" cx="50%" cy="50%" r="35" />
+    <path class="${PROGRESS}-track" d="M5,40a35,35 0 1,0 70,0a35,35 0 1,0 -70,0" />
+    <text class="${PROGRESS}-value" x="50%" y="52%">0%</text>
   </svg>
 `;
 
@@ -85,47 +85,45 @@ export default class Progress {
   }
 
   init() {
-    injectCSS(css);
+    injectCSS(CSS);
 
-    [this.svg] = appendHTML(html);
+    [this.svg] = appendHTML(HTML);
 
-    this.track = this.svg.querySelector(`.${ns}-track`);
-    this.value = this.svg.querySelector(`.${ns}-value`);
+    this.track = this.svg.querySelector(`.${PROGRESS}-track`);
+    this.value = this.svg.querySelector(`.${PROGRESS}-value`);
   }
 
   update(value) {
     this.value.innerHTML = `${value}%`;
 
-    const offset = ((100 - value) / 100) * -perimeter;
+    const offset = ((100 - value) / 100) * -PERIMETER;
 
     this.track.setAttribute('style', `stroke-dashoffset: ${offset}`);
   }
 
+  isVisible() {
+    return this.svg.classList.contains(`${PROGRESS}-show`);
+  }
+
   show() {
-    const show = `${ns}-show`;
     const { classList } = this.svg;
 
-    if (!classList.contains(show)) {
-      classList.remove(`${ns}-hide`);
-      classList.add(show);
+    if (!this.isVisible()) {
+      this.update(0);
+
+      classList.remove(`${PROGRESS}-hide`);
+      classList.add(`${PROGRESS}-show`);
     }
   }
 
   hide() {
     onEffectsEnd(this.track, () => {
-      const show = `${ns}-show`;
       const { classList } = this.svg;
 
-      if (classList.contains(show)) {
-        classList.remove(show);
-        classList.add(`${ns}-hide`);
+      if (this.isVisible()) {
+        classList.remove(`${PROGRESS}-show`);
+        classList.add(`${PROGRESS}-hide`);
       }
-
-      onEffectsEnd(this.svg, () => {
-        if (!classList.contains(show)) {
-          this.update(0);
-        }
-      });
     });
   }
 }
