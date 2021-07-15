@@ -7,7 +7,7 @@ import onEffectsEnd from './utils/effects';
 import { appendHTML, injectCSS } from './utils';
 
 const PROGRESS = 'wds-progress';
-const PERIMETER = 219.99078369140625;
+const PERIMETER = 2 * Math.PI * 36;
 
 const CSS = `
   .${PROGRESS} {
@@ -16,6 +16,7 @@ const CSS = `
     right: 16px;
     height: 48px;
     bottom: 16px;
+    display: block;
     font-size: 16px;
     position: fixed;
     cursor: default;
@@ -55,19 +56,18 @@ const CSS = `
     fill: #282d35;
   }
   .${PROGRESS}-track {
-    stroke-width: 10;
+    stroke: #badfac;
+    stroke-width: 8;
     fill: rgba(0, 0, 0, 0);
-    stroke: rgb(186, 223, 172);
-    stroke-dasharray: ${PERIMETER};
-    stroke-dashoffset: -${PERIMETER};
-    transform: rotate(90deg) translate(0, -80px) translateZ(0);
+    transition: stroke-dasharray .3s linear;
+    transform: matrix(0, -1, 1, 0, 0, 80) translateZ(0);
   }
   .${PROGRESS}-track-animate {
-    transition: stroke-dashoffset .3s ease-out;
+    transition: stroke-dasharray .3s linear;
   }
   .${PROGRESS}-value {
     fill: #ffffff;
-    font-size: 16px;
+    font-size: 18px;
     text-anchor: middle;
     font-family: monospace;
     dominant-baseline: middle;
@@ -76,18 +76,24 @@ const CSS = `
 
 const HTML = `
   <svg class="${PROGRESS}" x="0" y="0" viewBox="0 0 80 80">
-    <circle class="${PROGRESS}-bg" cx="50%" cy="50%" r="35" />
-    <path class="${PROGRESS}-track" d="M5,40a35,35 0 1,0 70,0a35,35 0 1,0 -70,0" />
+    <circle class="${PROGRESS}-bg" cx="50%" cy="50%" r="36" />
+    <circle class="${PROGRESS}-track" cx="50%" cy="50%" r="36" />
     <text class="${PROGRESS}-value" x="50%" y="52%">0%</text>
   </svg>
 `;
 
-export default class Progress {
-  constructor() {
-    this.init();
-  }
+function calcPercent(value) {
+  if (value <= 0) return 0;
 
-  init() {
+  if (value >= 100) return 1;
+
+  return value / 100;
+}
+
+export default class Progress {
+  hidden = true;
+
+  constructor() {
     injectCSS(CSS);
 
     [this.svg] = appendHTML(HTML);
@@ -99,31 +105,23 @@ export default class Progress {
   update(value) {
     this.value.innerHTML = `${value}%`;
 
-    const offset = ((100 - value) / 100) * -PERIMETER;
+    const percent = calcPercent(value);
+    const dashWidth = PERIMETER * percent;
+    const dashSpace = PERIMETER * (1 - percent);
 
-    this.track.setAttribute('style', `stroke-dashoffset: ${offset}`);
+    this.track.setAttribute('stroke-dasharray', `${dashWidth} ${dashSpace}`);
   }
 
-  animateTrack(useAnimate) {
-    const { classList } = this.track;
-    const animate = `${PROGRESS}-track-animate`;
-
-    if (useAnimate) {
-      classList.add(animate);
-    } else {
-      classList.remove(animate);
-    }
-  }
-
-  isVisible() {
-    return this.svg.classList.contains(`${PROGRESS}-show`);
+  animateTrack(animate) {
+    this.track.classList[animate ? 'add' : 'remove'](`${PROGRESS}-track-animate`);
   }
 
   show() {
-    const { classList } = this.svg;
+    if (this.hidden) {
+      this.hidden = false;
 
-    if (!this.isVisible()) {
-      this.update(0);
+      const { classList } = this.svg;
+
       this.animateTrack(true);
 
       classList.remove(`${PROGRESS}-hide`);
@@ -133,13 +131,20 @@ export default class Progress {
 
   hide() {
     onEffectsEnd(this.track, () => {
-      const { classList } = this.svg;
+      const { svg } = this;
+      const { classList } = svg;
 
-      if (this.isVisible()) {
+      if (!this.hidden) {
+        this.hidden = true;
+
+        this.animateTrack(false);
+
         classList.remove(`${PROGRESS}-show`);
         classList.add(`${PROGRESS}-hide`);
 
-        this.animateTrack(false);
+        onEffectsEnd(svg, () => {
+          classList.remove(`${PROGRESS}-hide`);
+        });
       }
     });
   }

@@ -18,14 +18,13 @@ const CSS = `
     opacity: 0;
     width: 100vw;
     height: 100vh;
-    display: flex;
+    display: block;
     position: fixed;
     font-size: 16px;
     overflow: hidden;
     font-style: normal;
     font-weight: normal;
     z-index: 2147483644;
-    flex-direction: column;
     font-family: monospace;
     box-sizing: border-box;
     background: rgba(0, 0, 0, .85);
@@ -185,11 +184,9 @@ function ansiHTML(text) {
 }
 
 export default class Overlay {
-  constructor() {
-    this.init();
-  }
+  hidden = true;
 
-  init() {
+  constructor() {
     injectCSS(CSS);
 
     [this.aside] = appendHTML(HTML);
@@ -254,35 +251,33 @@ export default class Overlay {
     return hasWarnings;
   }
 
-  isVisible() {
-    return this.aside.classList.contains(`${OVERLAY}-show`);
-  }
-
   show({ errors, warnings }) {
-    const { classList } = this.aside;
-
     const hasErrors = this.addErrors(errors);
     const hasWarnings = this.addWarnings(warnings);
 
-    if ((hasErrors || hasWarnings) && !this.isVisible()) {
+    if ((hasErrors || hasWarnings) && this.hidden) {
+      this.hidden = false;
+
+      const { classList } = this.aside;
+
       classList.remove(`${OVERLAY}-hide`);
       classList.add(`${OVERLAY}-show`);
     }
   }
 
-  hide(onHidden) {
+  hide() {
     const { aside } = this;
     const { classList } = aside;
 
-    if (this.isVisible()) {
+    if (!this.hidden) {
+      this.hidden = true;
+
       classList.remove(`${OVERLAY}-show`);
       classList.add(`${OVERLAY}-hide`);
 
-      if (onHidden) {
-        onEffectsEnd(aside, onHidden);
-      }
-    } else if (onHidden) {
-      onHidden();
+      onEffectsEnd(aside, () => {
+        classList.remove(`${OVERLAY}-hide`);
+      });
     }
   }
 }

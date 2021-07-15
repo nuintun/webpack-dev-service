@@ -2,9 +2,12 @@
  * @module index
  */
 
-import reload from './reload';
+import update from './update';
 import Overlay from './ui/overlay';
 import Progress from './ui/progress';
+
+const overlay = new Overlay();
+const progress = new Progress();
 
 const RECONNECT_INTERVAL = 3000;
 
@@ -33,8 +36,6 @@ function parseSocketURL() {
 function createWebSocket(url, protocols) {
   let options = {};
 
-  const overlay = new Overlay();
-  const progress = new Progress();
   const ws = new WebSocket(url, protocols);
 
   ws.onmessage = message => {
@@ -46,39 +47,45 @@ function createWebSocket(url, protocols) {
 
         overlay.setName(payload.name);
         break;
+      case 'rebuild':
+        if (options.progress) {
+          progress.update(0);
+        }
+        break;
       case 'progress':
         if (options.progress) {
           const percent = payload.value;
 
-          percent === 0 && progress.show();
+          if (percent === 0) {
+            progress.show();
+          }
 
-          progress.update(percent);
+          progress.update(payload.value);
 
-          percent === 100 && progress.hide();
+          if (percent === 100) {
+            progress.hide();
+          }
         }
         break;
       case 'problems':
-        reload(payload.hash, {
-          hmr: options.hmr,
-          onUpdated() {
-            const problems = {};
+        update(payload.hash, options.hmr).then(() => {
+          const problems = {};
 
-            if (options.errors) {
-              problems.errors = payload.errors;
-            }
-
-            if (options.warnings) {
-              problems.warnings = payload.warnings;
-            }
-
-            overlay.show(problems);
+          if (options.errors) {
+            problems.errors = payload.errors;
           }
+
+          if (options.warnings) {
+            problems.warnings = payload.warnings;
+          }
+
+          overlay.show(problems);
         });
         break;
       case 'ok':
-        overlay.hide(() => {
-          reload(payload.hash, { hmr: options.hmr });
-        });
+        overlay.hide();
+
+        update(payload.hash, options.hmr);
         break;
     }
 
@@ -86,6 +93,8 @@ function createWebSocket(url, protocols) {
   };
 
   ws.onclose = () => {
+    progress.hide();
+
     setTimeout(() => {
       createWebSocket(url, protocols);
     }, RECONNECT_INTERVAL);

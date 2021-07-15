@@ -7,6 +7,7 @@ import 'core-js/modules/web.dom-collections.iterator.js';
 import 'core-js/modules/web.url.js';
 import 'core-js/modules/es.array.concat.js';
 import 'core-js/modules/es.function.name.js';
+import 'core-js/modules/es.promise.js';
 import 'core-js/modules/es.object.keys.js';
 import 'core-js/modules/es.string.repeat.js';
 import ansiRegex from 'ansi-regex';
@@ -17,45 +18,52 @@ import 'core-js/modules/es.string.split.js';
 import 'core-js/modules/es.string.trim.js';
 
 /**
- * @module reload
+ * @module update
  */
+var RELOAD_DELAY = 360;
+
+function deferReload() {
+  setTimeout(function () {
+    window.location.reload();
+  }, RELOAD_DELAY);
+}
+
 function isUpToDate(hash) {
   return hash === __webpack_hash__;
 }
 
-function update(hash, onUpdated) {
+function hotUpdate(hash, onUpdated) {
   module.hot.check(true).then(function (updated) {
     if (!updated) {
-      window.location.reload();
+      deferReload();
     } else if (!isUpToDate(hash)) {
-      update(hash, onUpdated);
-    } else if (onUpdated) {
+      hotUpdate(hash, onUpdated);
+    } else {
       onUpdated();
     }
   }).catch(function () {
     var status = module.hot.status();
 
     if (status === 'abort' || status === 'fail') {
-      window.location.reload();
+      deferReload();
     }
   });
 }
 
-function reload(hash, _ref) {
-  var hmr = _ref.hmr,
-      onUpdated = _ref.onUpdated;
-
-  if (!isUpToDate(hash)) {
-    if (hmr && module.hot) {
-      if (module.hot.status() === 'idle') {
-        update(hash, onUpdated);
+function update(hash, hmr) {
+  return new Promise(function (resolve) {
+    if (!isUpToDate(hash)) {
+      if (hmr && module.hot) {
+        if (module.hot.status() === 'idle') {
+          hotUpdate(hash, resolve);
+        }
+      } else {
+        deferReload();
       }
     } else {
-      window.location.reload();
+      resolve();
     }
-  } else if (onUpdated) {
-    onUpdated();
-  }
+  });
 }
 
 function ownKeys(object, enumerableOnly) {
@@ -583,7 +591,7 @@ function appendHTML(html, parent) {
 }
 
 var OVERLAY = 'wds-overlay';
-var CSS$1 = "\n  .".concat(OVERLAY, " {\n    top:0;\n    left: 0;\n    right: 0;\n    bottom: 0;\n    opacity: 0;\n    width: 100vw;\n    height: 100vh;\n    display: flex;\n    position: fixed;\n    font-size: 16px;\n    overflow: hidden;\n    font-style: normal;\n    font-weight: normal;\n    z-index: 2147483644;\n    flex-direction: column;\n    font-family: monospace;\n    box-sizing: border-box;\n    background: rgba(0, 0, 0, .85);\n    transform: scale(0) translateZ(0);\n  }\n  @keyframes ").concat(OVERLAY, "-show {\n    0% {\n      opacity: 0;\n      transform: scale(0) translateZ(0);\n    }\n    100% {\n      opacity: 1;\n      transform: scale(1) translateZ(0);\n    }\n  }\n  @keyframes ").concat(OVERLAY, "-hide {\n    0% {\n      opacity: 1;\n      transform: scale(1) translateZ(0);\n    }\n    100% {\n      opacity: 0;\n      transform: scale(0) translateZ(0);\n    }\n  }\n  .").concat(OVERLAY, "-show {\n    animation: ").concat(OVERLAY, "-show .3s ease-out forwards;\n  }\n  .").concat(OVERLAY, "-hide {\n    animation: ").concat(OVERLAY, "-hide .3s ease-out forwards;\n  }\n  .").concat(OVERLAY, "-nav {\n    right: 0;\n    padding: 16px;\n    line-height: 16px;\n    position: absolute;\n    transition: transform .3s ease-in-out;\n  }\n  .").concat(OVERLAY, "-nav:hover {\n    transform: rotate(180deg) translateZ(0);\n  }\n  .").concat(OVERLAY, "-close {\n    width: 16px;\n    height: 16px;\n    color: #fff;\n    cursor: pointer;\n    font-style: normal;\n    text-align: center;\n    border-radius: 16px;\n    font-weight: normal;\n    background: #ff5f58;\n    display: inline-block;\n  }\n  .").concat(OVERLAY, "-title {\n    margin: 0;\n    color: #fff;\n    width: 100%;\n    padding: 16px 0;\n    line-height: 16px;\n    text-align: center;\n    background: #282d35;\n  }\n  .").concat(OVERLAY, "-name {\n    font-weight: bold;\n    font-style: normal;\n    text-transform: uppercase;\n  }\n  .").concat(OVERLAY, "-errors-title,\n  .").concat(OVERLAY, "-warnings-title {\n    color: #ff5f58;\n    padding-left: 8px;\n  }\n  .").concat(OVERLAY, "-warnings-title {\n    color: #ffbd2e;\n  }\n  .").concat(OVERLAY, "-problems {\n    padding: 0 16px;\n    overflow-y: auto;\n    scrollbar-width: none;\n    -ms-overflow-style: none;\n    -webkit-overflow-scrolling: touch;\n  }\n  .").concat(OVERLAY, "-problems::-webkit-scrollbar {\n    display: none;\n  }\n  .").concat(OVERLAY, "-errors,\n  .").concat(OVERLAY, "-warnings {\n    color: #ddd;\n    margin: 16px 0;\n    display: block;\n    border-radius: 4px;\n    background: #282d35;\n    white-space: pre-wrap;\n    font-family: monospace;\n  }\n  .").concat(OVERLAY, "-errors > div,\n  .").concat(OVERLAY, "-warnings > div {\n    font-size: 15px;\n    padding: 16px 16px 0;\n  }\n  .").concat(OVERLAY, "-errors > div > em,\n  .").concat(OVERLAY, "-warnings > div > em {\n    color: #641e16;\n    padding: 2px 8px;\n    font-style: normal;\n    border-radius: 4px;\n    font-weight: normal;\n    background: #ff5f58;\n    display: inline-block;\n    text-transform: uppercase;\n  }\n  .").concat(OVERLAY, "-warnings > div > em {\n    color: #3e2723;\n    background: #ffbd2e;\n  }\n  .").concat(OVERLAY, "-errors > div > div,\n  .").concat(OVERLAY, "-warnings > div > div {\n    font-size: 13px;\n    padding: 8px 0 16px 16px;\n  }\n");
+var CSS$1 = "\n  .".concat(OVERLAY, " {\n    top:0;\n    left: 0;\n    right: 0;\n    bottom: 0;\n    opacity: 0;\n    width: 100vw;\n    height: 100vh;\n    display: block;\n    position: fixed;\n    font-size: 16px;\n    overflow: hidden;\n    font-style: normal;\n    font-weight: normal;\n    z-index: 2147483644;\n    font-family: monospace;\n    box-sizing: border-box;\n    background: rgba(0, 0, 0, .85);\n    transform: scale(0) translateZ(0);\n  }\n  @keyframes ").concat(OVERLAY, "-show {\n    0% {\n      opacity: 0;\n      transform: scale(0) translateZ(0);\n    }\n    100% {\n      opacity: 1;\n      transform: scale(1) translateZ(0);\n    }\n  }\n  @keyframes ").concat(OVERLAY, "-hide {\n    0% {\n      opacity: 1;\n      transform: scale(1) translateZ(0);\n    }\n    100% {\n      opacity: 0;\n      transform: scale(0) translateZ(0);\n    }\n  }\n  .").concat(OVERLAY, "-show {\n    animation: ").concat(OVERLAY, "-show .3s ease-out forwards;\n  }\n  .").concat(OVERLAY, "-hide {\n    animation: ").concat(OVERLAY, "-hide .3s ease-out forwards;\n  }\n  .").concat(OVERLAY, "-nav {\n    right: 0;\n    padding: 16px;\n    line-height: 16px;\n    position: absolute;\n    transition: transform .3s ease-in-out;\n  }\n  .").concat(OVERLAY, "-nav:hover {\n    transform: rotate(180deg) translateZ(0);\n  }\n  .").concat(OVERLAY, "-close {\n    width: 16px;\n    height: 16px;\n    color: #fff;\n    cursor: pointer;\n    font-style: normal;\n    text-align: center;\n    border-radius: 16px;\n    font-weight: normal;\n    background: #ff5f58;\n    display: inline-block;\n  }\n  .").concat(OVERLAY, "-title {\n    margin: 0;\n    color: #fff;\n    width: 100%;\n    padding: 16px 0;\n    line-height: 16px;\n    text-align: center;\n    background: #282d35;\n  }\n  .").concat(OVERLAY, "-name {\n    font-weight: bold;\n    font-style: normal;\n    text-transform: uppercase;\n  }\n  .").concat(OVERLAY, "-errors-title,\n  .").concat(OVERLAY, "-warnings-title {\n    color: #ff5f58;\n    padding-left: 8px;\n  }\n  .").concat(OVERLAY, "-warnings-title {\n    color: #ffbd2e;\n  }\n  .").concat(OVERLAY, "-problems {\n    padding: 0 16px;\n    overflow-y: auto;\n    scrollbar-width: none;\n    -ms-overflow-style: none;\n    -webkit-overflow-scrolling: touch;\n  }\n  .").concat(OVERLAY, "-problems::-webkit-scrollbar {\n    display: none;\n  }\n  .").concat(OVERLAY, "-errors,\n  .").concat(OVERLAY, "-warnings {\n    color: #ddd;\n    margin: 16px 0;\n    display: block;\n    border-radius: 4px;\n    background: #282d35;\n    white-space: pre-wrap;\n    font-family: monospace;\n  }\n  .").concat(OVERLAY, "-errors > div,\n  .").concat(OVERLAY, "-warnings > div {\n    font-size: 15px;\n    padding: 16px 16px 0;\n  }\n  .").concat(OVERLAY, "-errors > div > em,\n  .").concat(OVERLAY, "-warnings > div > em {\n    color: #641e16;\n    padding: 2px 8px;\n    font-style: normal;\n    border-radius: 4px;\n    font-weight: normal;\n    background: #ff5f58;\n    display: inline-block;\n    text-transform: uppercase;\n  }\n  .").concat(OVERLAY, "-warnings > div > em {\n    color: #3e2723;\n    background: #ffbd2e;\n  }\n  .").concat(OVERLAY, "-errors > div > div,\n  .").concat(OVERLAY, "-warnings > div > div {\n    font-size: 13px;\n    padding: 8px 0 16px 16px;\n  }\n");
 var DEFAULT_NAME = 'webpack';
 var HTML$1 = "\n  <aside class=\"".concat(OVERLAY, "\">\n    <nav class=\"").concat(OVERLAY, "-nav\">\n      <i class=\"").concat(OVERLAY, "-close\">\xD7</i>\n    </nav>\n    <div class=\"").concat(OVERLAY, "-title\">\n      <em class=\"").concat(OVERLAY, "-name\">").concat(DEFAULT_NAME, "</em>\n      <em class=\"").concat(OVERLAY, "-errors-title\"></em>\n      <em class=\"").concat(OVERLAY, "-warnings-title\"></em>\n    </div>\n    <article class=\"").concat(OVERLAY, "-problems\">\n      <pre class=\"").concat(OVERLAY, "-errors\"></pre>\n      <pre class=\"").concat(OVERLAY, "-warnings\"></pre>\n    </article>\n  </aside>\n");
 var ANSI = new Ansi({
@@ -605,34 +613,31 @@ function ansiHTML(text) {
 
 var Overlay = /*#__PURE__*/function () {
   function Overlay() {
+    var _this = this;
+
     _classCallCheck(this, Overlay);
 
-    this.init();
+    _defineProperty(this, "hidden", true);
+
+    injectCSS(CSS$1);
+
+    var _appendHTML = appendHTML(HTML$1);
+
+    var _appendHTML2 = _slicedToArray(_appendHTML, 1);
+
+    this.aside = _appendHTML2[0];
+    this.name = this.aside.querySelector(".".concat(OVERLAY, "-name"));
+    this.close = this.aside.querySelector(".".concat(OVERLAY, "-close"));
+    this.errorsList = this.aside.querySelector(".".concat(OVERLAY, "-errors"));
+    this.warningsList = this.aside.querySelector(".".concat(OVERLAY, "-warnings"));
+    this.errorsTitle = this.aside.querySelector(".".concat(OVERLAY, "-errors-title"));
+    this.warningsTitle = this.aside.querySelector(".".concat(OVERLAY, "-warnings-title"));
+    this.close.addEventListener('click', function () {
+      _this.hide();
+    });
   }
 
   _createClass(Overlay, [{
-    key: "init",
-    value: function init() {
-      var _this = this;
-
-      injectCSS(CSS$1);
-
-      var _appendHTML = appendHTML(HTML$1);
-
-      var _appendHTML2 = _slicedToArray(_appendHTML, 1);
-
-      this.aside = _appendHTML2[0];
-      this.name = this.aside.querySelector(".".concat(OVERLAY, "-name"));
-      this.close = this.aside.querySelector(".".concat(OVERLAY, "-close"));
-      this.errorsList = this.aside.querySelector(".".concat(OVERLAY, "-errors"));
-      this.warningsList = this.aside.querySelector(".".concat(OVERLAY, "-warnings"));
-      this.errorsTitle = this.aside.querySelector(".".concat(OVERLAY, "-errors-title"));
-      this.warningsTitle = this.aside.querySelector(".".concat(OVERLAY, "-warnings-title"));
-      this.close.addEventListener('click', function () {
-        _this.hide();
-      });
-    }
-  }, {
     key: "setName",
     value: function setName(name) {
       this.name.innerHTML = name || DEFAULT_NAME;
@@ -708,39 +713,33 @@ var Overlay = /*#__PURE__*/function () {
       return hasWarnings;
     }
   }, {
-    key: "isVisible",
-    value: function isVisible() {
-      return this.aside.classList.contains("".concat(OVERLAY, "-show"));
-    }
-  }, {
     key: "show",
     value: function show(_ref) {
       var errors = _ref.errors,
           warnings = _ref.warnings;
-      var classList = this.aside.classList;
       var hasErrors = this.addErrors(errors);
       var hasWarnings = this.addWarnings(warnings);
 
-      if ((hasErrors || hasWarnings) && !this.isVisible()) {
+      if ((hasErrors || hasWarnings) && this.hidden) {
+        this.hidden = false;
+        var classList = this.aside.classList;
         classList.remove("".concat(OVERLAY, "-hide"));
         classList.add("".concat(OVERLAY, "-show"));
       }
     }
   }, {
     key: "hide",
-    value: function hide(onHidden) {
+    value: function hide() {
       var aside = this.aside;
       var classList = aside.classList;
 
-      if (this.isVisible()) {
+      if (!this.hidden) {
+        this.hidden = true;
         classList.remove("".concat(OVERLAY, "-show"));
         classList.add("".concat(OVERLAY, "-hide"));
-
-        if (onHidden) {
-          onEffectsEnd(aside, onHidden);
-        }
-      } else if (onHidden) {
-        onHidden();
+        onEffectsEnd(aside, function () {
+          classList.remove("".concat(OVERLAY, "-hide"));
+        });
       }
     }
   }]);
@@ -749,61 +748,53 @@ var Overlay = /*#__PURE__*/function () {
 }();
 
 var PROGRESS = 'wds-progress';
-var PERIMETER = 219.99078369140625;
-var CSS = "\n  .".concat(PROGRESS, " {\n    opacity: 0;\n    width: 48px;\n    right: 16px;\n    height: 48px;\n    bottom: 16px;\n    font-size: 16px;\n    position: fixed;\n    cursor: default;\n    user-select: none;\n    font-style: normal;\n    font-weight: normal;\n    z-index: 2147483645;\n    transform: scale(0) translateZ(0);\n  }\n  @keyframes ").concat(PROGRESS, "-show {\n    0% {\n      opacity: 0;\n      transform: scale(0) translateZ(0);\n    }\n    100% {\n      opacity: 1;\n      transform: scale(1) translateZ(0);\n    }\n  }\n  @keyframes ").concat(PROGRESS, "-hide {\n    0% {\n      opacity: 1;\n      transform: scale(1) translateZ(0);\n    }\n    100% {\n      opacity: 0;\n      transform: scale(0) translateZ(0);\n    }\n  }\n  .").concat(PROGRESS, "-show {\n    animation: ").concat(PROGRESS, "-show .3s ease-out forwards;\n  }\n  .").concat(PROGRESS, "-hide {\n    animation: ").concat(PROGRESS, "-hide .3s ease-out forwards;\n  }\n  .").concat(PROGRESS, "-bg {\n    fill: #282d35;\n  }\n  .").concat(PROGRESS, "-track {\n    stroke-width: 10;\n    fill: rgba(0, 0, 0, 0);\n    stroke: rgb(186, 223, 172);\n    stroke-dasharray: ").concat(PERIMETER, ";\n    stroke-dashoffset: -").concat(PERIMETER, ";\n    transform: rotate(90deg) translate(0, -80px) translateZ(0);\n  }\n  .").concat(PROGRESS, "-track-animate {\n    transition: stroke-dashoffset .3s ease-out;\n  }\n  .").concat(PROGRESS, "-value {\n    fill: #ffffff;\n    font-size: 16px;\n    text-anchor: middle;\n    font-family: monospace;\n    dominant-baseline: middle;\n  }\n");
-var HTML = "\n  <svg class=\"".concat(PROGRESS, "\" x=\"0\" y=\"0\" viewBox=\"0 0 80 80\">\n    <circle class=\"").concat(PROGRESS, "-bg\" cx=\"50%\" cy=\"50%\" r=\"35\" />\n    <path class=\"").concat(PROGRESS, "-track\" d=\"M5,40a35,35 0 1,0 70,0a35,35 0 1,0 -70,0\" />\n    <text class=\"").concat(PROGRESS, "-value\" x=\"50%\" y=\"52%\">0%</text>\n  </svg>\n");
+var PERIMETER = 2 * Math.PI * 36;
+var CSS = "\n  .".concat(PROGRESS, " {\n    opacity: 0;\n    width: 48px;\n    right: 16px;\n    height: 48px;\n    bottom: 16px;\n    display: block;\n    font-size: 16px;\n    position: fixed;\n    cursor: default;\n    user-select: none;\n    font-style: normal;\n    font-weight: normal;\n    z-index: 2147483645;\n    transform: scale(0) translateZ(0);\n  }\n  @keyframes ").concat(PROGRESS, "-show {\n    0% {\n      opacity: 0;\n      transform: scale(0) translateZ(0);\n    }\n    100% {\n      opacity: 1;\n      transform: scale(1) translateZ(0);\n    }\n  }\n  @keyframes ").concat(PROGRESS, "-hide {\n    0% {\n      opacity: 1;\n      transform: scale(1) translateZ(0);\n    }\n    100% {\n      opacity: 0;\n      transform: scale(0) translateZ(0);\n    }\n  }\n  .").concat(PROGRESS, "-show {\n    animation: ").concat(PROGRESS, "-show .3s ease-out forwards;\n  }\n  .").concat(PROGRESS, "-hide {\n    animation: ").concat(PROGRESS, "-hide .3s ease-out forwards;\n  }\n  .").concat(PROGRESS, "-bg {\n    fill: #282d35;\n  }\n  .").concat(PROGRESS, "-track {\n    stroke: #badfac;\n    stroke-width: 8;\n    fill: rgba(0, 0, 0, 0);\n    transition: stroke-dasharray .3s linear;\n    transform: matrix(0, -1, 1, 0, 0, 80) translateZ(0);\n  }\n  .").concat(PROGRESS, "-track-animate {\n    transition: stroke-dasharray .3s linear;\n  }\n  .").concat(PROGRESS, "-value {\n    fill: #ffffff;\n    font-size: 18px;\n    text-anchor: middle;\n    font-family: monospace;\n    dominant-baseline: middle;\n  }\n");
+var HTML = "\n  <svg class=\"".concat(PROGRESS, "\" x=\"0\" y=\"0\" viewBox=\"0 0 80 80\">\n    <circle class=\"").concat(PROGRESS, "-bg\" cx=\"50%\" cy=\"50%\" r=\"36\" />\n    <circle class=\"").concat(PROGRESS, "-track\" cx=\"50%\" cy=\"50%\" r=\"36\" />\n    <text class=\"").concat(PROGRESS, "-value\" x=\"50%\" y=\"52%\">0%</text>\n  </svg>\n");
+
+function calcPercent(value) {
+  if (value <= 0) return 0;
+  if (value >= 100) return 1;
+  return value / 100;
+}
 
 var Progress = /*#__PURE__*/function () {
   function Progress() {
     _classCallCheck(this, Progress);
 
-    this.init();
+    _defineProperty(this, "hidden", true);
+
+    injectCSS(CSS);
+
+    var _appendHTML = appendHTML(HTML);
+
+    var _appendHTML2 = _slicedToArray(_appendHTML, 1);
+
+    this.svg = _appendHTML2[0];
+    this.track = this.svg.querySelector(".".concat(PROGRESS, "-track"));
+    this.value = this.svg.querySelector(".".concat(PROGRESS, "-value"));
   }
 
   _createClass(Progress, [{
-    key: "init",
-    value: function init() {
-      injectCSS(CSS);
-
-      var _appendHTML = appendHTML(HTML);
-
-      var _appendHTML2 = _slicedToArray(_appendHTML, 1);
-
-      this.svg = _appendHTML2[0];
-      this.track = this.svg.querySelector(".".concat(PROGRESS, "-track"));
-      this.value = this.svg.querySelector(".".concat(PROGRESS, "-value"));
-    }
-  }, {
     key: "update",
     value: function update(value) {
       this.value.innerHTML = "".concat(value, "%");
-      var offset = (100 - value) / 100 * -PERIMETER;
-      this.track.setAttribute('style', "stroke-dashoffset: ".concat(offset));
+      var percent = calcPercent(value);
+      var dashWidth = PERIMETER * percent;
+      var dashSpace = PERIMETER * (1 - percent);
+      this.track.setAttribute('stroke-dasharray', "".concat(dashWidth, " ").concat(dashSpace));
     }
   }, {
     key: "animateTrack",
-    value: function animateTrack(useAnimate) {
-      var classList = this.track.classList;
-      var animate = "".concat(PROGRESS, "-track-animate");
-
-      if (useAnimate) {
-        classList.add(animate);
-      } else {
-        classList.remove(animate);
-      }
-    }
-  }, {
-    key: "isVisible",
-    value: function isVisible() {
-      return this.svg.classList.contains("".concat(PROGRESS, "-show"));
+    value: function animateTrack(animate) {
+      this.track.classList[animate ? 'add' : 'remove']("".concat(PROGRESS, "-track-animate"));
     }
   }, {
     key: "show",
     value: function show() {
-      var classList = this.svg.classList;
-
-      if (!this.isVisible()) {
-        this.update(0);
+      if (this.hidden) {
+        this.hidden = false;
+        var classList = this.svg.classList;
         this.animateTrack(true);
         classList.remove("".concat(PROGRESS, "-hide"));
         classList.add("".concat(PROGRESS, "-show"));
@@ -815,13 +806,19 @@ var Progress = /*#__PURE__*/function () {
       var _this = this;
 
       onEffectsEnd(this.track, function () {
-        var classList = _this.svg.classList;
+        var svg = _this.svg;
+        var classList = svg.classList;
 
-        if (_this.isVisible()) {
-          classList.remove("".concat(PROGRESS, "-show"));
-          classList.add("".concat(PROGRESS, "-hide"));
+        if (!_this.hidden) {
+          _this.hidden = true;
 
           _this.animateTrack(false);
+
+          classList.remove("".concat(PROGRESS, "-show"));
+          classList.add("".concat(PROGRESS, "-hide"));
+          onEffectsEnd(svg, function () {
+            classList.remove("".concat(PROGRESS, "-hide"));
+          });
         }
       });
     }
@@ -830,6 +827,8 @@ var Progress = /*#__PURE__*/function () {
   return Progress;
 }();
 
+var overlay = new Overlay();
+var progress = new Progress();
 var RECONNECT_INTERVAL = 3000;
 
 function parseMessage(message) {
@@ -854,8 +853,6 @@ function parseSocketURL() {
 
 function createWebSocket(url, protocols) {
   var options = {};
-  var overlay = new Overlay();
-  var progress = new Progress();
   var ws = new WebSocket(url, protocols);
 
   ws.onmessage = function (message) {
@@ -869,41 +866,49 @@ function createWebSocket(url, protocols) {
         overlay.setName(payload.name);
         break;
 
+      case 'rebuild':
+        if (options.progress) {
+          progress.update(0);
+        }
+
+        break;
+
       case 'progress':
         if (options.progress) {
           var percent = payload.value;
-          percent === 0 && progress.show();
-          progress.update(percent);
-          percent === 100 && progress.hide();
+
+          if (percent === 0) {
+            progress.show();
+          }
+
+          progress.update(payload.value);
+
+          if (percent === 100) {
+            progress.hide();
+          }
         }
 
         break;
 
       case 'problems':
-        reload(payload.hash, {
-          hmr: options.hmr,
-          onUpdated: function onUpdated() {
-            var problems = {};
+        update(payload.hash, options.hmr).then(function () {
+          var problems = {};
 
-            if (options.errors) {
-              problems.errors = payload.errors;
-            }
-
-            if (options.warnings) {
-              problems.warnings = payload.warnings;
-            }
-
-            overlay.show(problems);
+          if (options.errors) {
+            problems.errors = payload.errors;
           }
+
+          if (options.warnings) {
+            problems.warnings = payload.warnings;
+          }
+
+          overlay.show(problems);
         });
         break;
 
       case 'ok':
-        overlay.hide(function () {
-          reload(payload.hash, {
-            hmr: options.hmr
-          });
-        });
+        overlay.hide();
+        update(payload.hash, options.hmr);
         break;
     }
 
@@ -914,6 +919,7 @@ function createWebSocket(url, protocols) {
   };
 
   ws.onclose = function () {
+    progress.hide();
     setTimeout(function () {
       createWebSocket(url, protocols);
     }, RECONNECT_INTERVAL);
