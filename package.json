@@ -1,9 +1,10 @@
 {
   "name": "webpack-dev-server-middleware",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "main": "index.js",
   "description": "A development and hot reload middleware for Koa2.",
   "scripts": {
+    "prepublishOnly": "npm run build",
     "build": "rollup -c rollup.config.js",
     "test": "npm run build && cd tests && node webpack"
   },
