@@ -750,7 +750,7 @@ var Overlay = /*#__PURE__*/function () {
 
 var PROGRESS = 'wds-progress';
 var PERIMETER = 219.99078369140625;
-var CSS = "\n  .".concat(PROGRESS, " {\n    opacity: 0;\n    width: 48px;\n    right: 16px;\n    height: 48px;\n    bottom: 16px;\n    font-size: 16px;\n    position: fixed;\n    cursor: default;\n    user-select: none;\n    font-style: normal;\n    font-weight: normal;\n    z-index: 2147483645;\n    transform: scale(0) translateZ(0);\n  }\n  @keyframes ").concat(PROGRESS, "-show {\n    0% {\n      opacity: 0;\n      transform: scale(0) translateZ(0);\n    }\n    100% {\n      opacity: 1;\n      transform: scale(1) translateZ(0);\n    }\n  }\n  @keyframes ").concat(PROGRESS, "-hide {\n    0% {\n      opacity: 1;\n      transform: scale(1) translateZ(0);\n    }\n    100% {\n      opacity: 0;\n      transform: scale(0) translateZ(0);\n    }\n  }\n  .").concat(PROGRESS, "-show {\n    animation: ").concat(PROGRESS, "-show .3s ease-out forwards;\n  }\n  .").concat(PROGRESS, "-hide {\n    animation: ").concat(PROGRESS, "-hide .3s ease-out forwards;\n  }\n  .").concat(PROGRESS, "-bg {\n    fill: #282d35;\n  }\n  .").concat(PROGRESS, "-track {\n    stroke-width: 10;\n    fill: rgba(0, 0, 0, 0);\n    stroke: rgb(186, 223, 172);\n    stroke-dasharray: ").concat(PERIMETER, ";\n    stroke-dashoffset: -").concat(PERIMETER, ";\n    transition: stroke-dashoffset .3s ease-out;\n    transform: rotate(90deg) translate(0, -80px) translateZ(0);\n  }\n  .").concat(PROGRESS, "-value {\n    fill: #ffffff;\n    font-size: 16px;\n    text-anchor: middle;\n    font-family: monospace;\n    dominant-baseline: middle;\n  }\n");
+var CSS = "\n  .".concat(PROGRESS, " {\n    opacity: 0;\n    width: 48px;\n    right: 16px;\n    height: 48px;\n    bottom: 16px;\n    font-size: 16px;\n    position: fixed;\n    cursor: default;\n    user-select: none;\n    font-style: normal;\n    font-weight: normal;\n    z-index: 2147483645;\n    transform: scale(0) translateZ(0);\n  }\n  @keyframes ").concat(PROGRESS, "-show {\n    0% {\n      opacity: 0;\n      transform: scale(0) translateZ(0);\n    }\n    100% {\n      opacity: 1;\n      transform: scale(1) translateZ(0);\n    }\n  }\n  @keyframes ").concat(PROGRESS, "-hide {\n    0% {\n      opacity: 1;\n      transform: scale(1) translateZ(0);\n    }\n    100% {\n      opacity: 0;\n      transform: scale(0) translateZ(0);\n    }\n  }\n  .").concat(PROGRESS, "-show {\n    animation: ").concat(PROGRESS, "-show .3s ease-out forwards;\n  }\n  .").concat(PROGRESS, "-hide {\n    animation: ").concat(PROGRESS, "-hide .3s ease-out forwards;\n  }\n  .").concat(PROGRESS, "-bg {\n    fill: #282d35;\n  }\n  .").concat(PROGRESS, "-track {\n    stroke-width: 10;\n    fill: rgba(0, 0, 0, 0);\n    stroke: rgb(186, 223, 172);\n    stroke-dasharray: ").concat(PERIMETER, ";\n    stroke-dashoffset: -").concat(PERIMETER, ";\n    transform: rotate(90deg) translate(0, -80px) translateZ(0);\n  }\n  .").concat(PROGRESS, "-track-animate {\n    transition: stroke-dashoffset .3s ease-out;\n  }\n  .").concat(PROGRESS, "-value {\n    fill: #ffffff;\n    font-size: 16px;\n    text-anchor: middle;\n    font-family: monospace;\n    dominant-baseline: middle;\n  }\n");
 var HTML = "\n  <svg class=\"".concat(PROGRESS, "\" x=\"0\" y=\"0\" viewBox=\"0 0 80 80\">\n    <circle class=\"").concat(PROGRESS, "-bg\" cx=\"50%\" cy=\"50%\" r=\"35\" />\n    <path class=\"").concat(PROGRESS, "-track\" d=\"M5,40a35,35 0 1,0 70,0a35,35 0 1,0 -70,0\" />\n    <text class=\"").concat(PROGRESS, "-value\" x=\"50%\" y=\"52%\">0%</text>\n  </svg>\n");
 
 var Progress = /*#__PURE__*/function () {
@@ -781,6 +781,18 @@ var Progress = /*#__PURE__*/function () {
       this.track.setAttribute('style', "stroke-dashoffset: ".concat(offset));
     }
   }, {
+    key: "animateTrack",
+    value: function animateTrack(useAnimate) {
+      var classList = this.track.classList;
+      var animate = "".concat(PROGRESS, "-track-animate");
+
+      if (useAnimate) {
+        classList.add(animate);
+      } else {
+        classList.remove(animate);
+      }
+    }
+  }, {
     key: "isVisible",
     value: function isVisible() {
       return this.svg.classList.contains("".concat(PROGRESS, "-show"));
@@ -792,6 +804,7 @@ var Progress = /*#__PURE__*/function () {
 
       if (!this.isVisible()) {
         this.update(0);
+        this.animateTrack(true);
         classList.remove("".concat(PROGRESS, "-hide"));
         classList.add("".concat(PROGRESS, "-show"));
       }
@@ -807,6 +820,8 @@ var Progress = /*#__PURE__*/function () {
         if (_this.isVisible()) {
           classList.remove("".concat(PROGRESS, "-show"));
           classList.add("".concat(PROGRESS, "-hide"));
+
+          _this.animateTrack(false);
         }
       });
     }

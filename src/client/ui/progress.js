@@ -60,8 +60,10 @@ const CSS = `
     stroke: rgb(186, 223, 172);
     stroke-dasharray: ${PERIMETER};
     stroke-dashoffset: -${PERIMETER};
-    transition: stroke-dashoffset .3s ease-out;
     transform: rotate(90deg) translate(0, -80px) translateZ(0);
+  }
+  .${PROGRESS}-track-animate {
+    transition: stroke-dashoffset .3s ease-out;
   }
   .${PROGRESS}-value {
     fill: #ffffff;
@@ -102,6 +104,17 @@ export default class Progress {
     this.track.setAttribute('style', `stroke-dashoffset: ${offset}`);
   }
 
+  animateTrack(useAnimate) {
+    const { classList } = this.track;
+    const animate = `${PROGRESS}-track-animate`;
+
+    if (useAnimate) {
+      classList.add(animate);
+    } else {
+      classList.remove(animate);
+    }
+  }
+
   isVisible() {
     return this.svg.classList.contains(`${PROGRESS}-show`);
   }
@@ -111,6 +124,7 @@ export default class Progress {
 
     if (!this.isVisible()) {
       this.update(0);
+      this.animateTrack(true);
 
       classList.remove(`${PROGRESS}-hide`);
       classList.add(`${PROGRESS}-show`);
@@ -124,6 +138,8 @@ export default class Progress {
       if (this.isVisible()) {
         classList.remove(`${PROGRESS}-show`);
         classList.add(`${PROGRESS}-hide`);
+
+        this.animateTrack(false);
       }
     });
   }
