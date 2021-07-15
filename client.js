@@ -43,8 +43,8 @@ function hotUpdate(hash, onUpdated) {
     }
   }).catch(function () {
     switch (module.hot.status()) {
-      case 'abort':
       case 'fail':
+      case 'abort':
         deferReload();
     }
   });
@@ -55,13 +55,14 @@ function update(hash, hmr) {
     if (!isUpToDate(hash)) {
       if (hmr && module.hot) {
         switch (module.hot.status()) {
+          case 'fail':
+          case 'abort':
+            deferReload();
+            break;
+
           case 'idle':
             hotUpdate(hash, resolve);
             break;
-
-          case 'abort':
-          case 'fail':
-            deferReload();
         }
       } else {
         deferReload();
