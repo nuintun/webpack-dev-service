@@ -31,7 +31,6 @@
     "bufferutil": "^4.0.3",
     "koa-compose": "^4.1.0",
     "memoize-one": "^5.2.1",
-    "html-entities": "^2.3.2",
     "utf-8-validate": "^5.0.5",
     "webpack-dev-middleware": "^5.0.0"
   },

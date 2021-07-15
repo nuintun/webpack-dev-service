@@ -28,7 +28,7 @@ export default [
         ]
       })
     ],
-    external: ['ansi-html', 'html-entities', /core-js/]
+    external: [/core-js/]
   },
   {
     input: 'src/server/index.js',

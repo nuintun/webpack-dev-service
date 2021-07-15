@@ -2,6 +2,7 @@
  * @module overlay
  */
 
+import Ansi from './utils/ansi';
 import onEffectsEnd from './utils/effects';
 import { appendHTML, injectCSS } from './utils';
 
@@ -57,8 +58,8 @@ const CSS = `
   }
   .${OVERLAY}-nav {
     right: 0;
-    padding: 1em;
-    line-height: 1em;
+    padding: 16px;
+    line-height: 16px;
     position: absolute;
     transition: transform .3s ease-in-out;
   }
@@ -66,13 +67,13 @@ const CSS = `
     transform: rotate(180deg) translateZ(0);
   }
   .${OVERLAY}-close {
-    width: 1em;
-    height: 1em;
+    width: 16px;
+    height: 16px;
     color: #fff;
     cursor: pointer;
     font-style: normal;
     text-align: center;
-    border-radius: 1em;
+    border-radius: 16px;
     font-weight: normal;
     background: #ff5f58;
     display: inline-block;
@@ -81,8 +82,8 @@ const CSS = `
     margin: 0;
     color: #fff;
     width: 100%;
-    padding: 1em 0;
-    line-height: 1em;
+    padding: 16px 0;
+    line-height: 16px;
     text-align: center;
     background: #282d35;
   }
@@ -94,13 +95,13 @@ const CSS = `
   .${OVERLAY}-errors-title,
   .${OVERLAY}-warnings-title {
     color: #ff5f58;
-    padding-left: .5em;
+    padding-left: 8px;
   }
   .${OVERLAY}-warnings-title {
     color: #ffbd2e;
   }
   .${OVERLAY}-problems {
-    padding: 0 1em;
+    padding: 0 16px;
     overflow-y: auto;
     scrollbar-width: none;
     -ms-overflow-style: none;
@@ -112,26 +113,27 @@ const CSS = `
   .${OVERLAY}-errors,
   .${OVERLAY}-warnings {
     color: #ddd;
-    margin: 1em 0;
+    margin: 16px 0;
     display: block;
+    border-radius: 4px;
     background: #282d35;
-    border-radius: .3em;
     white-space: pre-wrap;
     font-family: monospace;
   }
   .${OVERLAY}-errors > div,
   .${OVERLAY}-warnings > div {
-    padding: 1em 1em 0;
+    font-size: 15px;
+    padding: 16px 16px 0;
   }
   .${OVERLAY}-errors > div > em,
   .${OVERLAY}-warnings > div > em {
     color: #641e16;
-    line-height: 1.5em;
+    padding: 2px 8px;
     font-style: normal;
-    padding: .1em .5em;
+    border-radius: 4px;
     font-weight: normal;
     background: #ff5f58;
-    border-radius: .3em;
+    display: inline-block;
     text-transform: uppercase;
   }
   .${OVERLAY}-warnings > div > em {
@@ -140,7 +142,8 @@ const CSS = `
   }
   .${OVERLAY}-errors > div > div,
   .${OVERLAY}-warnings > div > div {
-    padding: .5em 0 1em 2em;
+    font-size: 13px;
+    padding: 8px 0 16px 16px;
   }
 `;
 
@@ -162,6 +165,8 @@ const HTML = `
     </article>
   </aside>
 `;
+
+const ANSI = new Ansi();
 
 export default class Overlay {
   constructor() {
@@ -200,7 +205,10 @@ export default class Overlay {
       errorsTitle.innerText = `${length} Error(s)`;
 
       for (const { moduleName, message } of errors) {
-        appendHTML(`<div><em>Error</em> in ${moduleName}<div>${message}</div></div>`, errorsList);
+        const src = ANSI.convert(moduleName);
+        const details = ANSI.convert(message);
+
+        appendHTML(`<div><em>Error</em> in ${src}<div>${details}</div></div>`, errorsList);
       }
     }
   }
@@ -216,7 +224,10 @@ export default class Overlay {
       warningsTitle.innerText = `${length} Warning(s)`;
 
       for (const { moduleName, message } of warnings) {
-        appendHTML(`<div><em>Warning</em> in ${moduleName}<div>${message}</div></div>`, warningsList);
+        const src = ANSI.convert(moduleName);
+        const details = ANSI.convert(message);
+
+        appendHTML(`<div><em>Warning</em> in ${src}<div>${details}</div></div>`, warningsList);
       }
     }
   }

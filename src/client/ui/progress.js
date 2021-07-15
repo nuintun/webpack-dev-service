@@ -11,10 +11,10 @@ const PERIMETER = 219.99078369140625;
 const CSS = `
   .${PROGRESS} {
     opacity: 0;
-    right: 1em;
-    bottom: 1em;
     width: 48px;
+    right: 16px;
     height: 48px;
+    bottom: 16px;
     font-size: 16px;
     position: fixed;
     cursor: default;
@@ -64,7 +64,7 @@ const CSS = `
   }
   .${PROGRESS}-value {
     fill: #ffffff;
-    font-size: 1em;
+    font-size: 16px;
     text-anchor: middle;
     font-family: monospace;
     dominant-baseline: middle;
