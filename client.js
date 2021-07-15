@@ -636,14 +636,15 @@ var Overlay = /*#__PURE__*/function () {
     key: "addErrors",
     value: function addErrors() {
       var errors = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
-      var length = errors.length;
+      var count = errors.length;
+      var hasErrors = count > 0;
       var errorsTitle = this.errorsTitle,
           errorsList = this.errorsList;
       errorsList.innerHTML = '';
       errorsTitle.innerText = '';
 
-      if (length) {
-        errorsTitle.innerText = "".concat(length, " Error(s)");
+      if (hasErrors) {
+        errorsTitle.innerText = "".concat(count, " Error(s)");
 
         var _iterator = _createForOfIteratorHelper(errors),
             _step;
@@ -663,19 +664,22 @@ var Overlay = /*#__PURE__*/function () {
           _iterator.f();
         }
       }
+
+      return hasErrors;
     }
   }, {
     key: "addWarnings",
     value: function addWarnings() {
       var warnings = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
-      var length = warnings.length;
+      var count = warnings.length;
+      var hasWarnings = count > 0;
       var warningsTitle = this.warningsTitle,
           warningsList = this.warningsList;
       warningsList.innerHTML = '';
       warningsTitle.innerText = '';
 
-      if (length) {
-        warningsTitle.innerText = "".concat(length, " Warning(s)");
+      if (hasWarnings) {
+        warningsTitle.innerText = "".concat(count, " Warning(s)");
 
         var _iterator2 = _createForOfIteratorHelper(warnings),
             _step2;
@@ -695,6 +699,8 @@ var Overlay = /*#__PURE__*/function () {
           _iterator2.f();
         }
       }
+
+      return hasWarnings;
     }
   }, {
     key: "isVisible",
@@ -707,10 +713,10 @@ var Overlay = /*#__PURE__*/function () {
       var errors = _ref.errors,
           warnings = _ref.warnings;
       var classList = this.aside.classList;
-      this.addErrors(errors);
-      this.addWarnings(warnings);
+      var hasErrors = this.addErrors(errors);
+      var hasWarnings = this.addWarnings(warnings);
 
-      if (!this.isVisible()) {
+      if ((hasErrors || hasWarnings) && !this.isVisible()) {
         classList.remove("".concat(OVERLAY, "-hide"));
         classList.add("".concat(OVERLAY, "-show"));
       }
@@ -843,15 +849,17 @@ function createWebSocket(url, protocols) {
         reload(payload.hash, {
           hmr: options.hmr,
           onUpdated: function onUpdated() {
-            var errors = payload.errors,
-                warnings = payload.warnings;
+            var problems = {};
 
-            if (errors || warnings) {
-              overlay.show({
-                errors: errors,
-                warnings: warnings
-              });
+            if (options.errors) {
+              problems.errors = payload.errors;
             }
+
+            if (options.warnings) {
+              problems.warnings = payload.warnings;
+            }
+
+            overlay.show(problems);
           }
         });
         break;

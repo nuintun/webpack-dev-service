@@ -45,11 +45,17 @@ function createWebSocket(url, protocols) {
         reload(payload.hash, {
           hmr: options.hmr,
           onUpdated() {
-            const { errors, warnings } = payload;
+            const problems = {};
 
-            if (errors || warnings) {
-              overlay.show({ errors, warnings });
+            if (options.errors) {
+              problems.errors = payload.errors;
             }
+
+            if (options.warnings) {
+              problems.warnings = payload.warnings;
+            }
+
+            overlay.show(problems);
           }
         });
         break;

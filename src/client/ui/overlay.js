@@ -211,14 +211,15 @@ export default class Overlay {
   }
 
   addErrors(errors = []) {
-    const { length } = errors;
+    const count = errors.length;
+    const hasErrors = count > 0;
     const { errorsTitle, errorsList } = this;
 
     errorsList.innerHTML = '';
     errorsTitle.innerText = '';
 
-    if (length) {
-      errorsTitle.innerText = `${length} Error(s)`;
+    if (hasErrors) {
+      errorsTitle.innerText = `${count} Error(s)`;
 
       for (const { moduleName, message } of errors) {
         const src = ansiHTML(moduleName);
@@ -227,17 +228,20 @@ export default class Overlay {
         appendHTML(`<div><em>Error</em> in ${src}<div>${details}</div></div>`, errorsList);
       }
     }
+
+    return hasErrors;
   }
 
   addWarnings(warnings = []) {
-    const { length } = warnings;
+    const count = warnings.length;
+    const hasWarnings = count > 0;
     const { warningsTitle, warningsList } = this;
 
     warningsList.innerHTML = '';
     warningsTitle.innerText = '';
 
-    if (length) {
-      warningsTitle.innerText = `${length} Warning(s)`;
+    if (hasWarnings) {
+      warningsTitle.innerText = `${count} Warning(s)`;
 
       for (const { moduleName, message } of warnings) {
         const src = ansiHTML(moduleName);
@@ -246,6 +250,8 @@ export default class Overlay {
         appendHTML(`<div><em>Warning</em> in ${src}<div>${details}</div></div>`, warningsList);
       }
     }
+
+    return hasWarnings;
   }
 
   isVisible() {
@@ -255,10 +261,10 @@ export default class Overlay {
   show({ errors, warnings }) {
     const { classList } = this.aside;
 
-    this.addErrors(errors);
-    this.addWarnings(warnings);
+    const hasErrors = this.addErrors(errors);
+    const hasWarnings = this.addWarnings(warnings);
 
-    if (!this.isVisible()) {
+    if ((hasErrors || hasWarnings) && !this.isVisible()) {
       classList.remove(`${OVERLAY}-hide`);
       classList.add(`${OVERLAY}-show`);
     }
