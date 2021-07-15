@@ -6,12 +6,28 @@ import reload from './reload';
 import Overlay from './ui/overlay';
 import Progress from './ui/progress';
 
+const RECONNECT_INTERVAL = 3000;
+
 function parseMessage(message) {
   try {
     return JSON.parse(message.data);
   } catch {
     return {};
   }
+}
+
+function parseHost(host) {
+  return host ? host.replace(/\/+$/, '') : location.host;
+}
+
+function parseSocketURL() {
+  const query = __resourceQuery || '';
+  const params = new URLSearchParams(query);
+
+  const host = parseHost(params.get('host'));
+  const tls = params.has('tls') || location.protocol === 'https:';
+
+  return `${tls ? 'wss' : 'ws'}://${host}${__WDS_HOT_SOCKET_PATH__}`;
 }
 
 function createWebSocket(url, protocols) {
@@ -69,9 +85,11 @@ function createWebSocket(url, protocols) {
     window.postMessage({ action: `webpack-hot-${action}`, payload }, '*');
   };
 
-  ws.onclose = event => {
-    console.log(event);
+  ws.onclose = () => {
+    setTimeout(() => {
+      createWebSocket(url, protocols);
+    }, RECONNECT_INTERVAL);
   };
 }
 
-createWebSocket('ws://127.0.0.1:8000/hmr');
+createWebSocket(parseSocketURL());

@@ -1,7 +1,12 @@
-import 'core-js/modules/es.function.name.js';
-import 'core-js/modules/es.array.concat.js';
 import 'core-js/modules/es.regexp.exec.js';
 import 'core-js/modules/es.string.replace.js';
+import 'core-js/modules/es.array.iterator.js';
+import 'core-js/modules/es.object.to-string.js';
+import 'core-js/modules/es.string.iterator.js';
+import 'core-js/modules/web.dom-collections.iterator.js';
+import 'core-js/modules/web.url.js';
+import 'core-js/modules/es.array.concat.js';
+import 'core-js/modules/es.function.name.js';
 import 'core-js/modules/es.object.keys.js';
 import 'core-js/modules/es.string.repeat.js';
 import ansiRegex from 'ansi-regex';
@@ -810,12 +815,26 @@ var Progress = /*#__PURE__*/function () {
   return Progress;
 }();
 
+var RECONNECT_INTERVAL = 3000;
+
 function parseMessage(message) {
   try {
     return JSON.parse(message.data);
   } catch (_unused) {
     return {};
   }
+}
+
+function parseHost(host) {
+  return host ? host.replace(/\/+$/, '') : location.host;
+}
+
+function parseSocketURL() {
+  var query = __resourceQuery || '';
+  var params = new URLSearchParams(query);
+  var host = parseHost(params.get('host'));
+  var tls = params.has('tls') || location.protocol === 'https:';
+  return "".concat(tls ? 'wss' : 'ws', "://").concat(host).concat(__WDS_HOT_SOCKET_PATH__);
 }
 
 function createWebSocket(url, protocols) {
@@ -879,9 +898,11 @@ function createWebSocket(url, protocols) {
     }, '*');
   };
 
-  ws.onclose = function (event) {
-    console.log(event);
+  ws.onclose = function () {
+    setTimeout(function () {
+      createWebSocket(url, protocols);
+    }, RECONNECT_INTERVAL);
   };
 }
 
-createWebSocket('ws://127.0.0.1:8000/hmr');
+createWebSocket(parseSocketURL());

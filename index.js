@@ -141,6 +141,12 @@ class HotServer {
     const plugins = [];
     const { options } = this;
 
+    plugins.push(
+      new webpack.DefinePlugin({
+        __WDS_HOT_SOCKET_PATH__: JSON.stringify(options.path)
+      })
+    );
+
     if (options.hmr) {
       plugins.push(new webpack.HotModuleReplacementPlugin());
     }
