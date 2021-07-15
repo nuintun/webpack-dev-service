@@ -21,7 +21,7 @@ const DEFAULT_STATS = {
 
 const DEFAULT_OPTIONS = {
   hmr: true,
-  path: '/hmr',
+  path: '/hot',
   errors: true,
   warnings: true,
   progress: true
