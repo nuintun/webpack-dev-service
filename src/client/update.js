@@ -27,10 +27,10 @@ function hotUpdate(hash, onUpdated) {
       }
     })
     .catch(() => {
-      const status = module.hot.status();
-
-      if (status === 'abort' || status === 'fail') {
-        deferReload();
+      switch (module.hot.status()) {
+        case 'abort':
+        case 'fail':
+          deferReload();
       }
     });
 }
@@ -39,8 +39,13 @@ export default function update(hash, hmr) {
   return new Promise(resolve => {
     if (!isUpToDate(hash)) {
       if (hmr && module.hot) {
-        if (module.hot.status() === 'idle') {
-          hotUpdate(hash, resolve);
+        switch (module.hot.status()) {
+          case 'idle':
+            hotUpdate(hash, resolve);
+            break;
+          case 'abort':
+          case 'fail':
+            deferReload();
         }
       } else {
         deferReload();
