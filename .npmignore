@@ -97,3 +97,10 @@ tools
 # Tests directories
 test
 tests
+
+# Prettier files
+.prettierrc
+.prettierignore
+
+# Rollup files
+rollup.config.js
