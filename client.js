@@ -1,8 +1,11 @@
 import 'core-js/modules/es.function.name.js';
 import 'core-js/modules/es.array.concat.js';
-import 'core-js/modules/es.number.constructor.js';
 import 'core-js/modules/es.regexp.exec.js';
 import 'core-js/modules/es.string.replace.js';
+import 'core-js/modules/es.object.keys.js';
+import 'core-js/modules/es.string.repeat.js';
+import ansiRegex from 'ansi-regex';
+import 'core-js/modules/es.number.constructor.js';
 import 'core-js/modules/es.array.slice.js';
 import 'core-js/modules/es.array.map.js';
 import 'core-js/modules/es.string.split.js';
@@ -50,6 +53,44 @@ function reload(hash, _ref) {
   }
 }
 
+function ownKeys(object, enumerableOnly) {
+  var keys = Object.keys(object);
+
+  if (Object.getOwnPropertySymbols) {
+    var symbols = Object.getOwnPropertySymbols(object);
+
+    if (enumerableOnly) {
+      symbols = symbols.filter(function (sym) {
+        return Object.getOwnPropertyDescriptor(object, sym).enumerable;
+      });
+    }
+
+    keys.push.apply(keys, symbols);
+  }
+
+  return keys;
+}
+
+function _objectSpread2(target) {
+  for (var i = 1; i < arguments.length; i++) {
+    var source = arguments[i] != null ? arguments[i] : {};
+
+    if (i % 2) {
+      ownKeys(Object(source), true).forEach(function (key) {
+        _defineProperty(target, key, source[key]);
+      });
+    } else if (Object.getOwnPropertyDescriptors) {
+      Object.defineProperties(target, Object.getOwnPropertyDescriptors(source));
+    } else {
+      ownKeys(Object(source)).forEach(function (key) {
+        Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
+      });
+    }
+  }
+
+  return target;
+}
+
 function _classCallCheck(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
@@ -70,6 +111,21 @@ function _createClass(Constructor, protoProps, staticProps) {
   if (protoProps) _defineProperties(Constructor.prototype, protoProps);
   if (staticProps) _defineProperties(Constructor, staticProps);
   return Constructor;
+}
+
+function _defineProperty(obj, key, value) {
+  if (key in obj) {
+    Object.defineProperty(obj, key, {
+      value: value,
+      enumerable: true,
+      configurable: true,
+      writable: true
+    });
+  } else {
+    obj[key] = value;
+  }
+
+  return obj;
 }
 
 function _slicedToArray(arr, i) {
@@ -188,18 +244,153 @@ function _createForOfIteratorHelper(o, allowArrayLike) {
   };
 }
 
-/**
- * @module ansi
- */
+var ANSI_RE = ansiRegex();
+var DEFAULT_COLORS = {
+  black: '#000',
+  red: '#ff0000',
+  green: '#209805',
+  yellow: '#e8bf03',
+  blue: '#0000ff',
+  magenta: '#ff00ff',
+  cyan: '#00ffee',
+  lightgrey: '#f0f0f0',
+  darkgrey: '#888',
+  // [Foregroud, Background]
+  reset: ['#fff', '#000']
+};
+var STYLES = {
+  30: 'black',
+  31: 'red',
+  32: 'green',
+  33: 'yellow',
+  34: 'blue',
+  35: 'magenta',
+  36: 'cyan',
+  37: 'lightgrey'
+};
+var OPEN_TAGS = {
+  // Bold
+  1: 'font-weight: bold;',
+  // Dim
+  2: 'opacity: 0.5;',
+  // Italic
+  3: '<i>',
+  // Underscore
+  4: '<u>',
+  // Hidden
+  8: 'display: none;',
+  // Delete
+  9: '<del>'
+};
+var CLOSE_TAGS = {
+  // Reset italic
+  23: '</i>',
+  // Reset underscore
+  24: '</u>',
+  // Reset delete
+  29: '</del>'
+};
+
+for (var _i = 0, _arr = [0, 21, 22, 27, 28, 39, 49]; _i < _arr.length; _i++) {
+  var code = _arr[_i];
+  CLOSE_TAGS[code] = '</span>';
+}
+
+function encodeHTML(text) {
+  return String(text).replace(/[<>]/g, function (match) {
+    return "&#6".concat(match === '<' ? 0 : 2, ";");
+  });
+}
+
+function resolveTags(colors) {
+  colors = _objectSpread2(_objectSpread2({}, DEFAULT_COLORS), colors);
+
+  var open = _objectSpread2({}, OPEN_TAGS);
+
+  var close = _objectSpread2({}, CLOSE_TAGS);
+
+  var _colors$reset = _slicedToArray(colors.reset, 2),
+      foregroud = _colors$reset[0],
+      background = _colors$reset[1]; // Reset all
+
+
+  open[0] = "font-weight: normal; opacity: 1; color: ".concat(foregroud, " ; background: ").concat(background); // Inverse
+
+  open[7] = "color: ".concat(background, "; background: ").concat(foregroud); // Dark grey
+
+  open[90] = "color: ".concat(colors.darkgrey);
+
+  for (var _i2 = 0, _Object$keys = Object.keys(STYLES); _i2 < _Object$keys.length; _i2++) {
+    var _code = _Object$keys[_i2];
+    var style = STYLES[_code];
+    var color = colors[style] || foregroud;
+    open[_code] = "color: ".concat(color, ";");
+    open[~~_code + 10] = "background: ".concat(color, ";");
+  }
+
+  return {
+    open: open,
+    close: close
+  };
+}
+
 var Ansi = /*#__PURE__*/function () {
-  function Ansi() {
+  function Ansi(colors) {
     _classCallCheck(this, Ansi);
+
+    var _resolveTags = resolveTags(colors),
+        open = _resolveTags.open,
+        close = _resolveTags.close;
+
+    this.open = open;
+    this.close = close;
   }
 
   _createClass(Ansi, [{
     key: "convert",
-    value: function convert(source) {
-      return source;
+    value: function convert(text) {
+      text = encodeHTML(text); // Returns the text if the string has no ANSI escape code
+
+      if (!ANSI_RE.test(text)) return text; // Cache opened sequence
+
+      var codes = [];
+      var open = this.open,
+          close = this.close; // Replace with markup
+
+      var html = text.replace(/\033\[(\d+)*m/g, function (_match, code) {
+        var openTag = open[code];
+
+        if (openTag) {
+          // If current sequence has been opened, close it.
+          if (!!~codes.indexOf(code)) {
+            // eslint-disable-line no-extra-boolean-cast
+            codes.pop();
+            return '</span>';
+          } // Open tag.
+
+
+          codes.push(code);
+          return openTag[0] === '<' ? openTag : "<span style=\"".concat(openTag, "\">");
+        }
+
+        var closeTag = close[code];
+
+        if (closeTag) {
+          // Pop sequence
+          codes.pop();
+          return closeTag;
+        }
+
+        return '';
+      }); // Make sure tags are closed.
+
+      var length = codes.length;
+
+      if (length) {
+        html += '</span>'.repeat(length);
+      }
+
+      return html;
     }
   }]);
 
@@ -390,7 +581,22 @@ var OVERLAY = 'wds-overlay';
 var CSS$1 = "\n  .".concat(OVERLAY, " {\n    top:0;\n    left: 0;\n    right: 0;\n    bottom: 0;\n    opacity: 0;\n    width: 100vw;\n    height: 100vh;\n    display: flex;\n    position: fixed;\n    font-size: 16px;\n    overflow: hidden;\n    font-style: normal;\n    font-weight: normal;\n    z-index: 2147483644;\n    flex-direction: column;\n    font-family: monospace;\n    box-sizing: border-box;\n    background: rgba(0, 0, 0, .85);\n    transform: scale(0) translateZ(0);\n  }\n  @keyframes ").concat(OVERLAY, "-show {\n    0% {\n      opacity: 0;\n      transform: scale(0) translateZ(0);\n    }\n    100% {\n      opacity: 1;\n      transform: scale(1) translateZ(0);\n    }\n  }\n  @keyframes ").concat(OVERLAY, "-hide {\n    0% {\n      opacity: 1;\n      transform: scale(1) translateZ(0);\n    }\n    100% {\n      opacity: 0;\n      transform: scale(0) translateZ(0);\n    }\n  }\n  .").concat(OVERLAY, "-show {\n    animation: ").concat(OVERLAY, "-show .3s ease-out forwards;\n  }\n  .").concat(OVERLAY, "-hide {\n    animation: ").concat(OVERLAY, "-hide .3s ease-out forwards;\n  }\n  .").concat(OVERLAY, "-nav {\n    right: 0;\n    padding: 16px;\n    line-height: 16px;\n    position: absolute;\n    transition: transform .3s ease-in-out;\n  }\n  .").concat(OVERLAY, "-nav:hover {\n    transform: rotate(180deg) translateZ(0);\n  }\n  .").concat(OVERLAY, "-close {\n    width: 16px;\n    height: 16px;\n    color: #fff;\n    cursor: pointer;\n    font-style: normal;\n    text-align: center;\n    border-radius: 16px;\n    font-weight: normal;\n    background: #ff5f58;\n    display: inline-block;\n  }\n  .").concat(OVERLAY, "-title {\n    margin: 0;\n    color: #fff;\n    width: 100%;\n    padding: 16px 0;\n    line-height: 16px;\n    text-align: center;\n    background: #282d35;\n  }\n  .").concat(OVERLAY, "-name {\n    font-weight: bold;\n    font-style: normal;\n    text-transform: uppercase;\n  }\n  .").concat(OVERLAY, "-errors-title,\n  .").concat(OVERLAY, "-warnings-title {\n    color: #ff5f58;\n    padding-left: 8px;\n  }\n  .").concat(OVERLAY, "-warnings-title {\n    color: #ffbd2e;\n  }\n  .").concat(OVERLAY, "-problems {\n    padding: 0 16px;\n    overflow-y: auto;\n    scrollbar-width: none;\n    -ms-overflow-style: none;\n    -webkit-overflow-scrolling: touch;\n  }\n  .").concat(OVERLAY, "-problems::-webkit-scrollbar {\n    display: none;\n  }\n  .").concat(OVERLAY, "-errors,\n  .").concat(OVERLAY, "-warnings {\n    color: #ddd;\n    margin: 16px 0;\n    display: block;\n    border-radius: 4px;\n    background: #282d35;\n    white-space: pre-wrap;\n    font-family: monospace;\n  }\n  .").concat(OVERLAY, "-errors > div,\n  .").concat(OVERLAY, "-warnings > div {\n    font-size: 15px;\n    padding: 16px 16px 0;\n  }\n  .").concat(OVERLAY, "-errors > div > em,\n  .").concat(OVERLAY, "-warnings > div > em {\n    color: #641e16;\n    padding: 2px 8px;\n    font-style: normal;\n    border-radius: 4px;\n    font-weight: normal;\n    background: #ff5f58;\n    display: inline-block;\n    text-transform: uppercase;\n  }\n  .").concat(OVERLAY, "-warnings > div > em {\n    color: #3e2723;\n    background: #ffbd2e;\n  }\n  .").concat(OVERLAY, "-errors > div > div,\n  .").concat(OVERLAY, "-warnings > div > div {\n    font-size: 13px;\n    padding: 8px 0 16px 16px;\n  }\n");
 var DEFAULT_NAME = 'webpack';
 var HTML$1 = "\n  <aside class=\"".concat(OVERLAY, "\">\n    <nav class=\"").concat(OVERLAY, "-nav\">\n      <i class=\"").concat(OVERLAY, "-close\">\xD7</i>\n    </nav>\n    <div class=\"").concat(OVERLAY, "-title\">\n      <em class=\"").concat(OVERLAY, "-name\">").concat(DEFAULT_NAME, "</em>\n      <em class=\"").concat(OVERLAY, "-errors-title\"></em>\n      <em class=\"").concat(OVERLAY, "-warnings-title\"></em>\n    </div>\n    <article class=\"").concat(OVERLAY, "-problems\">\n      <pre class=\"").concat(OVERLAY, "-errors\"></pre>\n      <pre class=\"").concat(OVERLAY, "-warnings\"></pre>\n    </article>\n  </aside>\n");
-var ANSI = new Ansi();
+var ANSI = new Ansi({
+  black: '#181818',
+  red: '#ff3348',
+  green: '#3fff4f',
+  yellow: '#ffd30e',
+  blue: '#169be0',
+  magenta: '#f840b7',
+  cyan: '#0ad8e9',
+  lightgrey: '#ebe7e3',
+  darkgrey: '#6d7891',
+  reset: ['#fff', '#282d35']
+});
+
+function ansiHTML(text) {
+  return ANSI.convert(text);
+}
 
 var Overlay = /*#__PURE__*/function () {
   function Overlay() {
@@ -447,8 +653,8 @@ var Overlay = /*#__PURE__*/function () {
             var _step$value = _step.value,
                 moduleName = _step$value.moduleName,
                 message = _step$value.message;
-            var src = ANSI.convert(moduleName);
-            var details = ANSI.convert(message);
+            var src = ansiHTML(moduleName);
+            var details = ansiHTML(message);
             appendHTML("<div><em>Error</em> in ".concat(src, "<div>").concat(details, "</div></div>"), errorsList);
           }
         } catch (err) {
@@ -479,8 +685,8 @@ var Overlay = /*#__PURE__*/function () {
             var _step2$value = _step2.value,
                 moduleName = _step2$value.moduleName,
                 message = _step2$value.message;
-            var src = ANSI.convert(moduleName);
-            var details = ANSI.convert(message);
+            var src = ansiHTML(moduleName);
+            var details = ansiHTML(message);
             appendHTML("<div><em>Warning</em> in ".concat(src, "<div>").concat(details, "</div></div>"), warningsList);
           }
         } catch (err) {

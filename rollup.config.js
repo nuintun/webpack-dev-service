@@ -28,7 +28,7 @@ export default [
         ]
       })
     ],
-    external: [/core-js/]
+    external: [/core-js/, 'ansi-regex']
   },
   {
     input: 'src/server/index.js',

@@ -1,5 +1,6 @@
 /**
  * @module overlay
+ * @see https://github.com/shellscape/webpack-plugin-serve
  */
 
 import Ansi from './utils/ansi';
@@ -166,7 +167,22 @@ const HTML = `
   </aside>
 `;
 
-const ANSI = new Ansi();
+const ANSI = new Ansi({
+  black: '#181818',
+  red: '#ff3348',
+  green: '#3fff4f',
+  yellow: '#ffd30e',
+  blue: '#169be0',
+  magenta: '#f840b7',
+  cyan: '#0ad8e9',
+  lightgrey: '#ebe7e3',
+  darkgrey: '#6d7891',
+  reset: ['#fff', '#282d35']
+});
+
+function ansiHTML(text) {
+  return ANSI.convert(text);
+}
 
 export default class Overlay {
   constructor() {
@@ -205,8 +221,8 @@ export default class Overlay {
       errorsTitle.innerText = `${length} Error(s)`;
 
       for (const { moduleName, message } of errors) {
-        const src = ANSI.convert(moduleName);
-        const details = ANSI.convert(message);
+        const src = ansiHTML(moduleName);
+        const details = ansiHTML(message);
 
         appendHTML(`<div><em>Error</em> in ${src}<div>${details}</div></div>`, errorsList);
       }
@@ -224,8 +240,8 @@ export default class Overlay {
       warningsTitle.innerText = `${length} Warning(s)`;
 
       for (const { moduleName, message } of warnings) {
-        const src = ANSI.convert(moduleName);
-        const details = ANSI.convert(message);
+        const src = ansiHTML(moduleName);
+        const details = ansiHTML(message);
 
         appendHTML(`<div><em>Warning</em> in ${src}<div>${details}</div></div>`, warningsList);
       }

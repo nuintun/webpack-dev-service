@@ -1,5 +1,6 @@
 /**
  * @module progress
+ * @see https://github.com/shellscape/webpack-plugin-serve
  */
 
 import onEffectsEnd from './utils/effects';
