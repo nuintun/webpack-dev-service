@@ -23,11 +23,11 @@ const CSS = `
     font-style: normal;
     font-weight: normal;
     z-index: 2147483644;
-    font-family: monospace;
     box-sizing: border-box;
     background: rgba(0, 0, 0, .85);
     transform: scale(0) translateZ(0);
     transition: transform .3s ease-out;
+    font-family: Menlo, Consolas, monospace;
   }
   .${OVERLAY}-show {
     transform: scale(1) translateZ(0);
@@ -95,12 +95,13 @@ const CSS = `
     border-radius: 4px;
     background: #282d35;
     white-space: pre-wrap;
-    font-family: monospace;
+    font-family: Menlo, Consolas, monospace;
   }
   .${OVERLAY}-errors > div,
   .${OVERLAY}-warnings > div {
     font-size: 15px;
     padding: 16px 16px 0;
+    overflow-wrap: break-word;
   }
   .${OVERLAY}-errors > div > em,
   .${OVERLAY}-warnings > div > em {
@@ -121,6 +122,7 @@ const CSS = `
   .${OVERLAY}-warnings > div > div {
     font-size: 13px;
     padding: 8px 0 16px 16px;
+    overflow-wrap: break-word;
   }
 `;
 
