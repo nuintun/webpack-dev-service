@@ -123,6 +123,9 @@ const CSS = `
     padding: 8px 0 16px 16px;
     overflow-wrap: break-word;
   }
+  .${OVERLAY}-hidden {
+    display: none;
+  }
 `;
 
 const DEFAULT_NAME = 'webpack';
@@ -190,21 +193,29 @@ export default class Overlay {
     };
     const [name, problemTitle, problemList] = problemMaps[type];
 
-    problemList.innerHTML = '';
-    problemTitle.innerText = '';
-
     const count = problems.length;
     const hasProblems = count > 0;
+    const hidden = `${OVERLAY}-hidden`;
 
     if (hasProblems) {
+      let html = '';
+
       problemTitle.innerText = `${count} ${name}(s)`;
 
       for (const { moduleName, message } of problems) {
         const src = ansiHTML(moduleName);
         const details = ansiHTML(message);
 
-        appendHTML(`<div><em>${name}</em> in ${src}<div>${details}</div></div>`, problemList);
+        html += `<div><em>${name}</em> in ${src}<div>${details}</div></div>`;
       }
+
+      problemList.innerHTML = html;
+
+      problemList.classList.remove(hidden);
+      problemTitle.classList.remove(hidden);
+    } else {
+      problemList.classList.add(hidden);
+      problemTitle.classList.add(hidden);
     }
 
     return hasProblems;
