@@ -5,6 +5,9 @@
 import update from './update';
 import Overlay from './ui/overlay';
 import Progress from './ui/progress';
+import { strip } from './ui/utils/ansi';
+
+let forceReload = false;
 
 const overlay = new Overlay();
 const progress = new Progress();
@@ -16,6 +19,18 @@ function parseMessage(message) {
     return JSON.parse(message.data);
   } catch {
     return {};
+  }
+}
+
+function printProblems(type, problems) {
+  const nameMaps = {
+    errors: ['Error', 'error'],
+    warnings: ['Warning', 'warn']
+  };
+  const [name, method] = nameMaps[type];
+
+  for (const { moduleName, message } of problems) {
+    console[method](`${name} in ${moduleName}\r\n${strip(message)}`);
   }
 }
 
@@ -31,6 +46,39 @@ function parseSocketURL() {
   const tls = params.has('tls') || location.protocol === 'https:';
 
   return `${tls ? 'wss' : 'ws'}://${host}${__WDS_HOT_SOCKET_PATH__}`;
+}
+
+function progressResolver({ value }, options) {
+  if (options.progress) {
+    if (value === 0) {
+      progress.show();
+    }
+
+    progress.update(value);
+
+    if (value === 100) {
+      progress.hide();
+    }
+  }
+}
+
+function problemsResolver({ errors, warnings }, options) {
+  const problems = { errors: [], warnings: [] };
+  const { errors: errorsOverlay, warnings: warningsOverlay } = options.overlay;
+
+  if (errorsOverlay) {
+    problems.errors = errors;
+  } else {
+    printProblems('errors', errors);
+  }
+
+  if (warningsOverlay) {
+    problems.warnings = warnings;
+  } else {
+    printProblems('warnings', warnings);
+  }
+
+  overlay.show(problems);
 }
 
 function createWebSocket(url, protocols) {
@@ -53,39 +101,23 @@ function createWebSocket(url, protocols) {
         }
         break;
       case 'progress':
-        if (options.progress) {
-          const percent = payload.value;
-
-          if (percent === 0) {
-            progress.show();
-          }
-
-          progress.update(payload.value);
-
-          if (percent === 100) {
-            progress.hide();
-          }
-        }
+        progressResolver(payload, options);
         break;
       case 'problems':
-        update(payload.hash, options.hmr).then(() => {
-          const problems = {};
+        if (payload.errors.length > 0) {
+          forceReload = true;
 
-          if (options.errors) {
-            problems.errors = payload.errors;
-          }
-
-          if (options.warnings) {
-            problems.warnings = payload.warnings;
-          }
-
-          overlay.show(problems);
-        });
+          problemsResolver(payload, options);
+        } else {
+          update(payload.hash, options.hmr, forceReload, () => {
+            problemsResolver(payload, options);
+          });
+        }
         break;
       case 'ok':
         overlay.hide();
 
-        update(payload.hash, options.hmr);
+        update(payload.hash, options.hmr, forceReload);
         break;
     }
 

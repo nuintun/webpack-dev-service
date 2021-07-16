@@ -2,7 +2,7 @@
  * @module update
  */
 
-const RELOAD_DELAY = 360;
+const RELOAD_DELAY = 300;
 
 function deferReload() {
   setTimeout(() => {
@@ -20,10 +20,10 @@ function hotUpdate(hash, onUpdated) {
     .then(updated => {
       if (!updated) {
         deferReload();
-      } else if (!isUpToDate(hash)) {
-        hotUpdate(hash, onUpdated);
-      } else {
+      } else if (isUpToDate(hash)) {
         onUpdated();
+      } else {
+        hotUpdate(hash, onUpdated);
       }
     })
     .catch(() => {
@@ -35,24 +35,22 @@ function hotUpdate(hash, onUpdated) {
     });
 }
 
-export default function update(hash, hmr) {
-  return new Promise(resolve => {
-    if (!isUpToDate(hash)) {
-      if (hmr && module.hot) {
-        switch (module.hot.status()) {
-          case 'fail':
-          case 'abort':
-            deferReload();
-            break;
-          case 'idle':
-            hotUpdate(hash, resolve);
-            break;
-        }
-      } else {
+export default function update(hash, hmr, forceReload, onUpdated = () => {}) {
+  if (forceReload) {
+    deferReload();
+  } else if (isUpToDate(hash)) {
+    onUpdated();
+  } else if (hmr && module.hot) {
+    switch (module.hot.status()) {
+      case 'fail':
+      case 'abort':
         deferReload();
-      }
-    } else {
-      resolve();
+        break;
+      case 'idle':
+        hotUpdate(hash, onUpdated);
+        break;
     }
-  });
+  } else {
+    deferReload();
+  }
 }

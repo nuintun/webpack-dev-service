@@ -1,8 +1,5 @@
 /**
  * @module index
- * @license MIT
- * @author nuintun
- * @description Webpack dev and hot middleware for koa2
  */
 
 import dev from './dev';

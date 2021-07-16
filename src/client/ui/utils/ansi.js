@@ -150,3 +150,7 @@ export default class Ansi {
     return html;
   }
 }
+
+export function strip(text) {
+  return text ? text.replace(ANSI_RE, '') : '';
+}

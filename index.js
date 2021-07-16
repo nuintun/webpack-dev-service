@@ -8,9 +8,6 @@ const compose = require('koa-compose');
 
 /**
  * @module dev
- * @license MIT
- * @author nuintun
- * @description Webpack dev middleware for koa2
  */
 
 function dev(compiler, options) {
@@ -49,9 +46,6 @@ function dev(compiler, options) {
 
 /**
  * @module hot
- * @license MIT
- * @author nuintun
- * @description Webpack hmr middleware for koa2
  */
 
 const DEFAULT_STATS = {
@@ -67,9 +61,11 @@ const DEFAULT_STATS = {
 const DEFAULT_OPTIONS = {
   hmr: true,
   path: '/hot',
-  errors: true,
-  warnings: true,
-  progress: true
+  progress: true,
+  overlay: {
+    errors: true,
+    warnings: true
+  }
 };
 
 const WEBSOCKET_RE = /^websocket$/i;
@@ -84,12 +80,25 @@ function isUpgradable(context, detector) {
   return upgrade && detector.test(upgrade.trim());
 }
 
+function resolveOptions(options) {
+  const { overlay } = options;
+  const configure = { ...DEFAULT_OPTIONS, ...options };
+
+  if (overlay === false) {
+    configure.overlay = { errors: false, warnings: false };
+  } else {
+    configure.overlay = { ...DEFAULT_OPTIONS.overlay, ...overlay };
+  }
+
+  return configure;
+}
+
 class HotServer {
   name = 'webpack-hot-middleware';
 
   constructor(compiler, options) {
     this.compiler = compiler;
-    this.options = { ...DEFAULT_OPTIONS, ...options };
+    this.options = resolveOptions(options);
     this.logger = compiler.getInfrastructureLogger(this.name);
     this.server = new WebSocket.Server({ path: this.options.path, noServer: true });
 
@@ -110,11 +119,11 @@ class HotServer {
     });
 
     server.on('connection', client => {
-      const { hmr, progress, errors, warnings } = this.options;
+      const { hmr, progress, overlay } = this.options;
 
       this.broadcast([client], 'init', {
         name: this.compiler.name,
-        options: { hmr, progress, errors, warnings }
+        options: { hmr, progress, overlay }
       });
 
       if (this.stats) {
@@ -212,18 +221,7 @@ class HotServer {
         const { hash, builtAt, errors, warnings } = parseStats(stats);
 
         if (stats.hasErrors() || stats.hasWarnings()) {
-          const { options } = this;
-          const payload = { hash, builtAt };
-
-          if (options.errors) {
-            payload.errors = errors;
-          }
-
-          if (options.warnings) {
-            payload.warnings = warnings;
-          }
-
-          this.broadcast(clients, 'problems', payload);
+          this.broadcast(clients, 'problems', { hash, builtAt, errors, warnings });
         } else {
           this.broadcast(clients, 'ok', { hash, builtAt });
         }
@@ -250,9 +248,6 @@ function hot(compiler, options = {}) {
 
 /**
  * @module index
- * @license MIT
- * @author nuintun
- * @description Webpack dev and hot middleware for koa2
  */
 
 function assign(dest, ...sources) {

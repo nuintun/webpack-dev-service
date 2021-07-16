@@ -82,13 +82,11 @@ const compiler = webpack({
 
 const app = new Koa();
 const fs = createMemfs();
-
-const server = dev(compiler, {
-  outputFileSystem: fs
-});
+const server = dev(compiler, { index: false, outputFileSystem: fs });
+const logger = compiler.getInfrastructureLogger('webpack-dev-middleware');
 
 server.waitUntilValid(() => {
-  console.log(`server run at: \u001B[36mhttp://127.0.0.1:8000\u001B[0m`);
+  logger.info(`server run at: \u001B[36mhttp://127.0.0.1:8000\u001B[0m`);
 });
 
 app.use(server);

@@ -11,7 +11,6 @@ const PERIMETER = 2 * Math.PI * 36;
 
 const CSS = `
   .${PROGRESS} {
-    opacity: 0;
     width: 48px;
     right: 16px;
     height: 48px;
@@ -25,32 +24,10 @@ const CSS = `
     font-weight: normal;
     z-index: 2147483645;
     transform: scale(0) translateZ(0);
-  }
-  @keyframes ${PROGRESS}-show {
-    0% {
-      opacity: 0;
-      transform: scale(0) translateZ(0);
-    }
-    100% {
-      opacity: 1;
-      transform: scale(1) translateZ(0);
-    }
-  }
-  @keyframes ${PROGRESS}-hide {
-    0% {
-      opacity: 1;
-      transform: scale(1) translateZ(0);
-    }
-    100% {
-      opacity: 0;
-      transform: scale(0) translateZ(0);
-    }
+    transition: transform .3s ease-out;
   }
   .${PROGRESS}-show {
-    animation: ${PROGRESS}-show .3s ease-out forwards;
-  }
-  .${PROGRESS}-hide {
-    animation: ${PROGRESS}-hide .3s ease-out forwards;
+    transform: scale(1) translateZ(0);
   }
   .${PROGRESS}-bg {
     fill: #282d35;
@@ -61,9 +38,6 @@ const CSS = `
     fill: rgba(0, 0, 0, 0);
     transition: stroke-dasharray .3s linear;
     transform: matrix(0, -1, 1, 0, 0, 80) translateZ(0);
-  }
-  .${PROGRESS}-track-animate {
-    transition: stroke-dasharray .3s linear;
   }
   .${PROGRESS}-value {
     fill: #ffffff;
@@ -112,19 +86,12 @@ export default class Progress {
     this.track.setAttribute('stroke-dasharray', `${dashWidth} ${dashSpace}`);
   }
 
-  animateTrack(animate) {
-    this.track.classList[animate ? 'add' : 'remove'](`${PROGRESS}-track-animate`);
-  }
-
   show() {
     if (this.hidden) {
       this.hidden = false;
 
       const { classList } = this.svg;
 
-      this.animateTrack(true);
-
-      classList.remove(`${PROGRESS}-hide`);
       classList.add(`${PROGRESS}-show`);
     }
   }
@@ -137,14 +104,7 @@ export default class Progress {
       if (!this.hidden) {
         this.hidden = true;
 
-        this.animateTrack(false);
-
         classList.remove(`${PROGRESS}-show`);
-        classList.add(`${PROGRESS}-hide`);
-
-        onEffectsEnd(svg, () => {
-          classList.remove(`${PROGRESS}-hide`);
-        });
       }
     });
   }

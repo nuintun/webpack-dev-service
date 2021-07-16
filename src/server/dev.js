@@ -1,8 +1,5 @@
 /**
  * @module dev
- * @license MIT
- * @author nuintun
- * @description Webpack dev middleware for koa2
  */
 
 import webpackDevMiddleware from 'webpack-dev-middleware';

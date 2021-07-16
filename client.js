@@ -1,3 +1,4 @@
+import 'core-js/modules/es.array.concat.js';
 import 'core-js/modules/es.regexp.exec.js';
 import 'core-js/modules/es.string.replace.js';
 import 'core-js/modules/es.array.iterator.js';
@@ -5,73 +6,15 @@ import 'core-js/modules/es.object.to-string.js';
 import 'core-js/modules/es.string.iterator.js';
 import 'core-js/modules/web.dom-collections.iterator.js';
 import 'core-js/modules/web.url.js';
-import 'core-js/modules/es.array.concat.js';
 import 'core-js/modules/es.function.name.js';
-import 'core-js/modules/es.promise.js';
 import 'core-js/modules/es.object.keys.js';
 import 'core-js/modules/es.string.repeat.js';
 import ansiRegex from 'ansi-regex';
+import 'core-js/modules/es.string.trim.js';
 import 'core-js/modules/es.number.constructor.js';
 import 'core-js/modules/es.array.slice.js';
 import 'core-js/modules/es.array.map.js';
 import 'core-js/modules/es.string.split.js';
-import 'core-js/modules/es.string.trim.js';
-
-/**
- * @module update
- */
-var RELOAD_DELAY = 360;
-
-function deferReload() {
-  setTimeout(function () {
-    window.location.reload();
-  }, RELOAD_DELAY);
-}
-
-function isUpToDate(hash) {
-  return hash === __webpack_hash__;
-}
-
-function hotUpdate(hash, onUpdated) {
-  module.hot.check(true).then(function (updated) {
-    if (!updated) {
-      deferReload();
-    } else if (!isUpToDate(hash)) {
-      hotUpdate(hash, onUpdated);
-    } else {
-      onUpdated();
-    }
-  }).catch(function () {
-    switch (module.hot.status()) {
-      case 'fail':
-      case 'abort':
-        deferReload();
-    }
-  });
-}
-
-function update(hash, hmr) {
-  return new Promise(function (resolve) {
-    if (!isUpToDate(hash)) {
-      if (hmr && module.hot) {
-        switch (module.hot.status()) {
-          case 'fail':
-          case 'abort':
-            deferReload();
-            break;
-
-          case 'idle':
-            hotUpdate(hash, resolve);
-            break;
-        }
-      } else {
-        deferReload();
-      }
-    } else {
-      resolve();
-    }
-  });
-}
 
 function ownKeys(object, enumerableOnly) {
   var keys = Object.keys(object);
@@ -264,6 +207,62 @@ function _createForOfIteratorHelper(o, allowArrayLike) {
   };
 }
 
+/**
+ * @module update
+ */
+var RELOAD_DELAY = 300;
+
+function deferReload() {
+  setTimeout(function () {
+    window.location.reload();
+  }, RELOAD_DELAY);
+}
+
+function isUpToDate(hash) {
+  return hash === __webpack_hash__;
+}
+
+function hotUpdate(hash, onUpdated) {
+  module.hot.check(true).then(function (updated) {
+    if (!updated) {
+      deferReload();
+    } else if (isUpToDate(hash)) {
+      onUpdated();
+    } else {
+      hotUpdate(hash, onUpdated);
+    }
+  }).catch(function () {
+    switch (module.hot.status()) {
+      case 'fail':
+      case 'abort':
+        deferReload();
+    }
+  });
+}
+
+function update(hash, hmr, forceReload) {
+  var onUpdated = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : function () {};
+
+  if (forceReload) {
+    deferReload();
+  } else if (isUpToDate(hash)) {
+    onUpdated();
+  } else if (hmr && module.hot) {
+    switch (module.hot.status()) {
+      case 'fail':
+      case 'abort':
+        deferReload();
+        break;
+
+      case 'idle':
+        hotUpdate(hash, onUpdated);
+        break;
+    }
+  } else {
+    deferReload();
+  }
+}
+
 var ANSI_RE = ansiRegex();
 var DEFAULT_COLORS = {
   black: '#000',
@@ -415,6 +414,162 @@ var Ansi = /*#__PURE__*/function () {
   }]);
 
   return Ansi;
+}();
+function strip(text) {
+  return text ? text.replace(ANSI_RE, '') : '';
+}
+
+/**
+ * @module utils
+ */
+function injectCSS(css) {
+  var style = document.createElement('style');
+
+  if (css.styleSheet) {
+    style.styleSheet.cssText = css;
+  } else {
+    style.appendChild(document.createTextNode(css));
+  }
+
+  document.head.appendChild(style);
+}
+function appendHTML(html, parent) {
+  var nodes = [];
+  var parser = new DOMParser();
+  var stage = parent || document.body;
+
+  var _parser$parseFromStri = parser.parseFromString(html.trim(), 'text/html'),
+      body = _parser$parseFromStri.body;
+
+  while (body.firstChild) {
+    nodes.push(stage.appendChild(body.firstChild));
+  }
+
+  return nodes;
+}
+
+var OVERLAY = 'wds-overlay';
+var CSS$1 = "\n  .".concat(OVERLAY, " {\n    top:0;\n    left: 0;\n    right: 0;\n    bottom: 0;\n    width: 100vw;\n    height: 100vh;\n    display: block;\n    position: fixed;\n    font-size: 16px;\n    overflow: hidden;\n    font-style: normal;\n    font-weight: normal;\n    z-index: 2147483644;\n    font-family: monospace;\n    box-sizing: border-box;\n    background: rgba(0, 0, 0, .85);\n    transform: scale(0) translateZ(0);\n    transition: transform .3s ease-out;\n  }\n  .").concat(OVERLAY, "-show {\n    transform: scale(1) translateZ(0);\n  }\n  .").concat(OVERLAY, "-nav {\n    right: 0;\n    padding: 16px;\n    line-height: 16px;\n    position: absolute;\n    transform: rotate(0) translateZ(0);\n    transition: transform .3s ease-in-out;\n  }\n  .").concat(OVERLAY, "-nav:hover {\n    transform: rotate(180deg) translateZ(0);\n  }\n  .").concat(OVERLAY, "-close {\n    width: 16px;\n    height: 16px;\n    color: #fff;\n    cursor: pointer;\n    font-style: normal;\n    text-align: center;\n    border-radius: 16px;\n    font-weight: normal;\n    background: #ff5f58;\n    display: inline-block;\n  }\n  .").concat(OVERLAY, "-title {\n    margin: 0;\n    color: #fff;\n    width: 100%;\n    padding: 16px 0;\n    line-height: 16px;\n    text-align: center;\n    background: #282d35;\n  }\n  .").concat(OVERLAY, "-name {\n    font-weight: bold;\n    font-style: normal;\n    text-transform: uppercase;\n  }\n  .").concat(OVERLAY, "-errors-title,\n  .").concat(OVERLAY, "-warnings-title {\n    color: #ff5f58;\n    padding-left: 8px;\n  }\n  .").concat(OVERLAY, "-warnings-title {\n    color: #ffbd2e;\n  }\n  .").concat(OVERLAY, "-problems {\n    padding: 0 16px;\n    overflow-y: auto;\n    scrollbar-width: none;\n    -ms-overflow-style: none;\n    -webkit-overflow-scrolling: touch;\n  }\n  .").concat(OVERLAY, "-problems::-webkit-scrollbar {\n    display: none;\n  }\n  .").concat(OVERLAY, "-errors,\n  .").concat(OVERLAY, "-warnings {\n    color: #ddd;\n    margin: 16px 0;\n    display: block;\n    border-radius: 4px;\n    background: #282d35;\n    white-space: pre-wrap;\n    font-family: monospace;\n  }\n  .").concat(OVERLAY, "-errors > div,\n  .").concat(OVERLAY, "-warnings > div {\n    font-size: 15px;\n    padding: 16px 16px 0;\n  }\n  .").concat(OVERLAY, "-errors > div > em,\n  .").concat(OVERLAY, "-warnings > div > em {\n    color: #641e16;\n    padding: 2px 8px;\n    font-style: normal;\n    border-radius: 4px;\n    font-weight: normal;\n    background: #ff5f58;\n    display: inline-block;\n    text-transform: uppercase;\n  }\n  .").concat(OVERLAY, "-warnings > div > em {\n    color: #3e2723;\n    background: #ffbd2e;\n  }\n  .").concat(OVERLAY, "-errors > div > div,\n  .").concat(OVERLAY, "-warnings > div > div {\n    font-size: 13px;\n    padding: 8px 0 16px 16px;\n  }\n");
+var DEFAULT_NAME = 'webpack';
+var HTML$1 = "\n  <aside class=\"".concat(OVERLAY, "\">\n    <nav class=\"").concat(OVERLAY, "-nav\">\n      <i class=\"").concat(OVERLAY, "-close\">\xD7</i>\n    </nav>\n    <div class=\"").concat(OVERLAY, "-title\">\n      <em class=\"").concat(OVERLAY, "-name\">").concat(DEFAULT_NAME, "</em>\n      <em class=\"").concat(OVERLAY, "-errors-title\"></em>\n      <em class=\"").concat(OVERLAY, "-warnings-title\"></em>\n    </div>\n    <article class=\"").concat(OVERLAY, "-problems\">\n      <pre class=\"").concat(OVERLAY, "-errors\"></pre>\n      <pre class=\"").concat(OVERLAY, "-warnings\"></pre>\n    </article>\n  </aside>\n");
+var ANSI = new Ansi({
+  black: '#181818',
+  red: '#ff3348',
+  green: '#3fff4f',
+  yellow: '#ffd30e',
+  blue: '#169be0',
+  magenta: '#f840b7',
+  cyan: '#0ad8e9',
+  lightgrey: '#ebe7e3',
+  darkgrey: '#6d7891',
+  reset: ['#fff', '#282d35']
+});
+
+function ansiHTML(text) {
+  return ANSI.convert(text);
+}
+
+var Overlay = /*#__PURE__*/function () {
+  function Overlay() {
+    var _this = this;
+
+    _classCallCheck(this, Overlay);
+
+    _defineProperty(this, "hidden", true);
+
+    injectCSS(CSS$1);
+
+    var _appendHTML = appendHTML(HTML$1);
+
+    var _appendHTML2 = _slicedToArray(_appendHTML, 1);
+
+    this.aside = _appendHTML2[0];
+    this.name = this.aside.querySelector(".".concat(OVERLAY, "-name"));
+    this.close = this.aside.querySelector(".".concat(OVERLAY, "-close"));
+    this.errorsList = this.aside.querySelector(".".concat(OVERLAY, "-errors"));
+    this.warningsList = this.aside.querySelector(".".concat(OVERLAY, "-warnings"));
+    this.errorsTitle = this.aside.querySelector(".".concat(OVERLAY, "-errors-title"));
+    this.warningsTitle = this.aside.querySelector(".".concat(OVERLAY, "-warnings-title"));
+    this.close.addEventListener('click', function () {
+      _this.hide();
+    });
+  }
+
+  _createClass(Overlay, [{
+    key: "setName",
+    value: function setName(name) {
+      this.name.innerHTML = name || DEFAULT_NAME;
+    }
+  }, {
+    key: "problems",
+    value: function problems(type, _problems) {
+      var problemMaps = {
+        errors: ['Error', this.errorsTitle, this.errorsList],
+        warnings: ['Warning', this.warningsTitle, this.warningsList]
+      };
+
+      var _problemMaps$type = _slicedToArray(problemMaps[type], 3),
+          name = _problemMaps$type[0],
+          problemTitle = _problemMaps$type[1],
+          problemList = _problemMaps$type[2];
+
+      problemList.innerHTML = '';
+      problemTitle.innerText = '';
+      var count = _problems.length;
+      var hasProblems = count > 0;
+
+      if (hasProblems) {
+        problemTitle.innerText = "".concat(count, " ").concat(name, "(s)");
+
+        var _iterator = _createForOfIteratorHelper(_problems),
+            _step;
+
+        try {
+          for (_iterator.s(); !(_step = _iterator.n()).done;) {
+            var _step$value = _step.value,
+                moduleName = _step$value.moduleName,
+                message = _step$value.message;
+            var src = ansiHTML(moduleName);
+            var details = ansiHTML(message);
+            appendHTML("<div><em>".concat(name, "</em> in ").concat(src, "<div>").concat(details, "</div></div>"), problemList);
+          }
+        } catch (err) {
+          _iterator.e(err);
+        } finally {
+          _iterator.f();
+        }
+      }
+
+      return hasProblems;
+    }
+  }, {
+    key: "show",
+    value: function show(_ref) {
+      var errors = _ref.errors,
+          warnings = _ref.warnings;
+      var hasErrors = this.problems('errors', errors);
+      var hasWarnings = this.problems('warnings', warnings);
+
+      if (this.hidden && (hasErrors || hasWarnings)) {
+        this.hidden = false;
+        var classList = this.aside.classList;
+        classList.add("".concat(OVERLAY, "-show"));
+      }
+    }
+  }, {
+    key: "hide",
+    value: function hide() {
+      var aside = this.aside;
+      var classList = aside.classList;
+
+      if (!this.hidden) {
+        this.hidden = true;
+        classList.remove("".concat(OVERLAY, "-show"));
+      }
+    }
+  }]);
+
+  return Overlay;
 }();
 
 /**
@@ -568,195 +723,9 @@ function onEffectsEnd(node, callback) {
   node.addEventListener(event, onEnd);
 }
 
-/**
- * @module utils
- */
-function injectCSS(css) {
-  var style = document.createElement('style');
-
-  if (css.styleSheet) {
-    style.styleSheet.cssText = css;
-  } else {
-    style.appendChild(document.createTextNode(css));
-  }
-
-  document.head.appendChild(style);
-}
-function appendHTML(html, parent) {
-  var nodes = [];
-  var parser = new DOMParser();
-  var stage = parent || document.body;
-
-  var _parser$parseFromStri = parser.parseFromString(html.trim(), 'text/html'),
-      body = _parser$parseFromStri.body;
-
-  while (body.firstChild) {
-    nodes.push(stage.appendChild(body.firstChild));
-  }
-
-  return nodes;
-}
-
-var OVERLAY = 'wds-overlay';
-var CSS$1 = "\n  .".concat(OVERLAY, " {\n    top:0;\n    left: 0;\n    right: 0;\n    bottom: 0;\n    opacity: 0;\n    width: 100vw;\n    height: 100vh;\n    display: block;\n    position: fixed;\n    font-size: 16px;\n    overflow: hidden;\n    font-style: normal;\n    font-weight: normal;\n    z-index: 2147483644;\n    font-family: monospace;\n    box-sizing: border-box;\n    background: rgba(0, 0, 0, .85);\n    transform: scale(0) translateZ(0);\n  }\n  @keyframes ").concat(OVERLAY, "-show {\n    0% {\n      opacity: 0;\n      transform: scale(0) translateZ(0);\n    }\n    100% {\n      opacity: 1;\n      transform: scale(1) translateZ(0);\n    }\n  }\n  @keyframes ").concat(OVERLAY, "-hide {\n    0% {\n      opacity: 1;\n      transform: scale(1) translateZ(0);\n    }\n    100% {\n      opacity: 0;\n      transform: scale(0) translateZ(0);\n    }\n  }\n  .").concat(OVERLAY, "-show {\n    animation: ").concat(OVERLAY, "-show .3s ease-out forwards;\n  }\n  .").concat(OVERLAY, "-hide {\n    animation: ").concat(OVERLAY, "-hide .3s ease-out forwards;\n  }\n  .").concat(OVERLAY, "-nav {\n    right: 0;\n    padding: 16px;\n    line-height: 16px;\n    position: absolute;\n    transition: transform .3s ease-in-out;\n  }\n  .").concat(OVERLAY, "-nav:hover {\n    transform: rotate(180deg) translateZ(0);\n  }\n  .").concat(OVERLAY, "-close {\n    width: 16px;\n    height: 16px;\n    color: #fff;\n    cursor: pointer;\n    font-style: normal;\n    text-align: center;\n    border-radius: 16px;\n    font-weight: normal;\n    background: #ff5f58;\n    display: inline-block;\n  }\n  .").concat(OVERLAY, "-title {\n    margin: 0;\n    color: #fff;\n    width: 100%;\n    padding: 16px 0;\n    line-height: 16px;\n    text-align: center;\n    background: #282d35;\n  }\n  .").concat(OVERLAY, "-name {\n    font-weight: bold;\n    font-style: normal;\n    text-transform: uppercase;\n  }\n  .").concat(OVERLAY, "-errors-title,\n  .").concat(OVERLAY, "-warnings-title {\n    color: #ff5f58;\n    padding-left: 8px;\n  }\n  .").concat(OVERLAY, "-warnings-title {\n    color: #ffbd2e;\n  }\n  .").concat(OVERLAY, "-problems {\n    padding: 0 16px;\n    overflow-y: auto;\n    scrollbar-width: none;\n    -ms-overflow-style: none;\n    -webkit-overflow-scrolling: touch;\n  }\n  .").concat(OVERLAY, "-problems::-webkit-scrollbar {\n    display: none;\n  }\n  .").concat(OVERLAY, "-errors,\n  .").concat(OVERLAY, "-warnings {\n    color: #ddd;\n    margin: 16px 0;\n    display: block;\n    border-radius: 4px;\n    background: #282d35;\n    white-space: pre-wrap;\n    font-family: monospace;\n  }\n  .").concat(OVERLAY, "-errors > div,\n  .").concat(OVERLAY, "-warnings > div {\n    font-size: 15px;\n    padding: 16px 16px 0;\n  }\n  .").concat(OVERLAY, "-errors > div > em,\n  .").concat(OVERLAY, "-warnings > div > em {\n    color: #641e16;\n    padding: 2px 8px;\n    font-style: normal;\n    border-radius: 4px;\n    font-weight: normal;\n    background: #ff5f58;\n    display: inline-block;\n    text-transform: uppercase;\n  }\n  .").concat(OVERLAY, "-warnings > div > em {\n    color: #3e2723;\n    background: #ffbd2e;\n  }\n  .").concat(OVERLAY, "-errors > div > div,\n  .").concat(OVERLAY, "-warnings > div > div {\n    font-size: 13px;\n    padding: 8px 0 16px 16px;\n  }\n");
-var DEFAULT_NAME = 'webpack';
-var HTML$1 = "\n  <aside class=\"".concat(OVERLAY, "\">\n    <nav class=\"").concat(OVERLAY, "-nav\">\n      <i class=\"").concat(OVERLAY, "-close\">\xD7</i>\n    </nav>\n    <div class=\"").concat(OVERLAY, "-title\">\n      <em class=\"").concat(OVERLAY, "-name\">").concat(DEFAULT_NAME, "</em>\n      <em class=\"").concat(OVERLAY, "-errors-title\"></em>\n      <em class=\"").concat(OVERLAY, "-warnings-title\"></em>\n    </div>\n    <article class=\"").concat(OVERLAY, "-problems\">\n      <pre class=\"").concat(OVERLAY, "-errors\"></pre>\n      <pre class=\"").concat(OVERLAY, "-warnings\"></pre>\n    </article>\n  </aside>\n");
-var ANSI = new Ansi({
-  black: '#181818',
-  red: '#ff3348',
-  green: '#3fff4f',
-  yellow: '#ffd30e',
-  blue: '#169be0',
-  magenta: '#f840b7',
-  cyan: '#0ad8e9',
-  lightgrey: '#ebe7e3',
-  darkgrey: '#6d7891',
-  reset: ['#fff', '#282d35']
-});
-
-function ansiHTML(text) {
-  return ANSI.convert(text);
-}
-
-var Overlay = /*#__PURE__*/function () {
-  function Overlay() {
-    var _this = this;
-
-    _classCallCheck(this, Overlay);
-
-    _defineProperty(this, "hidden", true);
-
-    injectCSS(CSS$1);
-
-    var _appendHTML = appendHTML(HTML$1);
-
-    var _appendHTML2 = _slicedToArray(_appendHTML, 1);
-
-    this.aside = _appendHTML2[0];
-    this.name = this.aside.querySelector(".".concat(OVERLAY, "-name"));
-    this.close = this.aside.querySelector(".".concat(OVERLAY, "-close"));
-    this.errorsList = this.aside.querySelector(".".concat(OVERLAY, "-errors"));
-    this.warningsList = this.aside.querySelector(".".concat(OVERLAY, "-warnings"));
-    this.errorsTitle = this.aside.querySelector(".".concat(OVERLAY, "-errors-title"));
-    this.warningsTitle = this.aside.querySelector(".".concat(OVERLAY, "-warnings-title"));
-    this.close.addEventListener('click', function () {
-      _this.hide();
-    });
-  }
-
-  _createClass(Overlay, [{
-    key: "setName",
-    value: function setName(name) {
-      this.name.innerHTML = name || DEFAULT_NAME;
-    }
-  }, {
-    key: "addErrors",
-    value: function addErrors() {
-      var errors = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
-      var count = errors.length;
-      var hasErrors = count > 0;
-      var errorsTitle = this.errorsTitle,
-          errorsList = this.errorsList;
-      errorsList.innerHTML = '';
-      errorsTitle.innerText = '';
-
-      if (hasErrors) {
-        errorsTitle.innerText = "".concat(count, " Error(s)");
-
-        var _iterator = _createForOfIteratorHelper(errors),
-            _step;
-
-        try {
-          for (_iterator.s(); !(_step = _iterator.n()).done;) {
-            var _step$value = _step.value,
-                moduleName = _step$value.moduleName,
-                message = _step$value.message;
-            var src = ansiHTML(moduleName);
-            var details = ansiHTML(message);
-            appendHTML("<div><em>Error</em> in ".concat(src, "<div>").concat(details, "</div></div>"), errorsList);
-          }
-        } catch (err) {
-          _iterator.e(err);
-        } finally {
-          _iterator.f();
-        }
-      }
-
-      return hasErrors;
-    }
-  }, {
-    key: "addWarnings",
-    value: function addWarnings() {
-      var warnings = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
-      var count = warnings.length;
-      var hasWarnings = count > 0;
-      var warningsTitle = this.warningsTitle,
-          warningsList = this.warningsList;
-      warningsList.innerHTML = '';
-      warningsTitle.innerText = '';
-
-      if (hasWarnings) {
-        warningsTitle.innerText = "".concat(count, " Warning(s)");
-
-        var _iterator2 = _createForOfIteratorHelper(warnings),
-            _step2;
-
-        try {
-          for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
-            var _step2$value = _step2.value,
-                moduleName = _step2$value.moduleName,
-                message = _step2$value.message;
-            var src = ansiHTML(moduleName);
-            var details = ansiHTML(message);
-            appendHTML("<div><em>Warning</em> in ".concat(src, "<div>").concat(details, "</div></div>"), warningsList);
-          }
-        } catch (err) {
-          _iterator2.e(err);
-        } finally {
-          _iterator2.f();
-        }
-      }
-
-      return hasWarnings;
-    }
-  }, {
-    key: "show",
-    value: function show(_ref) {
-      var errors = _ref.errors,
-          warnings = _ref.warnings;
-      var hasErrors = this.addErrors(errors);
-      var hasWarnings = this.addWarnings(warnings);
-
-      if ((hasErrors || hasWarnings) && this.hidden) {
-        this.hidden = false;
-        var classList = this.aside.classList;
-        classList.remove("".concat(OVERLAY, "-hide"));
-        classList.add("".concat(OVERLAY, "-show"));
-      }
-    }
-  }, {
-    key: "hide",
-    value: function hide() {
-      var aside = this.aside;
-      var classList = aside.classList;
-
-      if (!this.hidden) {
-        this.hidden = true;
-        classList.remove("".concat(OVERLAY, "-show"));
-        classList.add("".concat(OVERLAY, "-hide"));
-        onEffectsEnd(aside, function () {
-          classList.remove("".concat(OVERLAY, "-hide"));
-        });
-      }
-    }
-  }]);
-
-  return Overlay;
-}();
-
 var PROGRESS = 'wds-progress';
 var PERIMETER = 2 * Math.PI * 36;
-var CSS = "\n  .".concat(PROGRESS, " {\n    opacity: 0;\n    width: 48px;\n    right: 16px;\n    height: 48px;\n    bottom: 16px;\n    display: block;\n    font-size: 16px;\n    position: fixed;\n    cursor: default;\n    user-select: none;\n    font-style: normal;\n    font-weight: normal;\n    z-index: 2147483645;\n    transform: scale(0) translateZ(0);\n  }\n  @keyframes ").concat(PROGRESS, "-show {\n    0% {\n      opacity: 0;\n      transform: scale(0) translateZ(0);\n    }\n    100% {\n      opacity: 1;\n      transform: scale(1) translateZ(0);\n    }\n  }\n  @keyframes ").concat(PROGRESS, "-hide {\n    0% {\n      opacity: 1;\n      transform: scale(1) translateZ(0);\n    }\n    100% {\n      opacity: 0;\n      transform: scale(0) translateZ(0);\n    }\n  }\n  .").concat(PROGRESS, "-show {\n    animation: ").concat(PROGRESS, "-show .3s ease-out forwards;\n  }\n  .").concat(PROGRESS, "-hide {\n    animation: ").concat(PROGRESS, "-hide .3s ease-out forwards;\n  }\n  .").concat(PROGRESS, "-bg {\n    fill: #282d35;\n  }\n  .").concat(PROGRESS, "-track {\n    stroke: #badfac;\n    stroke-width: 8;\n    fill: rgba(0, 0, 0, 0);\n    transition: stroke-dasharray .3s linear;\n    transform: matrix(0, -1, 1, 0, 0, 80) translateZ(0);\n  }\n  .").concat(PROGRESS, "-track-animate {\n    transition: stroke-dasharray .3s linear;\n  }\n  .").concat(PROGRESS, "-value {\n    fill: #ffffff;\n    font-size: 18px;\n    text-anchor: middle;\n    font-family: monospace;\n    dominant-baseline: middle;\n  }\n");
+var CSS = "\n  .".concat(PROGRESS, " {\n    width: 48px;\n    right: 16px;\n    height: 48px;\n    bottom: 16px;\n    display: block;\n    font-size: 16px;\n    position: fixed;\n    cursor: default;\n    user-select: none;\n    font-style: normal;\n    font-weight: normal;\n    z-index: 2147483645;\n    transform: scale(0) translateZ(0);\n    transition: transform .3s ease-out;\n  }\n  .").concat(PROGRESS, "-show {\n    transform: scale(1) translateZ(0);\n  }\n  .").concat(PROGRESS, "-bg {\n    fill: #282d35;\n  }\n  .").concat(PROGRESS, "-track {\n    stroke: #badfac;\n    stroke-width: 8;\n    fill: rgba(0, 0, 0, 0);\n    transition: stroke-dasharray .3s linear;\n    transform: matrix(0, -1, 1, 0, 0, 80) translateZ(0);\n  }\n  .").concat(PROGRESS, "-value {\n    fill: #ffffff;\n    font-size: 18px;\n    text-anchor: middle;\n    font-family: monospace;\n    dominant-baseline: middle;\n  }\n");
 var HTML = "\n  <svg class=\"".concat(PROGRESS, "\" x=\"0\" y=\"0\" viewBox=\"0 0 80 80\">\n    <circle class=\"").concat(PROGRESS, "-bg\" cx=\"50%\" cy=\"50%\" r=\"36\" />\n    <circle class=\"").concat(PROGRESS, "-track\" cx=\"50%\" cy=\"50%\" r=\"36\" />\n    <text class=\"").concat(PROGRESS, "-value\" x=\"50%\" y=\"52%\">0%</text>\n  </svg>\n");
 
 function calcPercent(value) {
@@ -792,18 +761,11 @@ var Progress = /*#__PURE__*/function () {
       this.track.setAttribute('stroke-dasharray', "".concat(dashWidth, " ").concat(dashSpace));
     }
   }, {
-    key: "animateTrack",
-    value: function animateTrack(animate) {
-      this.track.classList[animate ? 'add' : 'remove']("".concat(PROGRESS, "-track-animate"));
-    }
-  }, {
     key: "show",
     value: function show() {
       if (this.hidden) {
         this.hidden = false;
         var classList = this.svg.classList;
-        this.animateTrack(true);
-        classList.remove("".concat(PROGRESS, "-hide"));
         classList.add("".concat(PROGRESS, "-show"));
       }
     }
@@ -818,14 +780,7 @@ var Progress = /*#__PURE__*/function () {
 
         if (!_this.hidden) {
           _this.hidden = true;
-
-          _this.animateTrack(false);
-
           classList.remove("".concat(PROGRESS, "-show"));
-          classList.add("".concat(PROGRESS, "-hide"));
-          onEffectsEnd(svg, function () {
-            classList.remove("".concat(PROGRESS, "-hide"));
-          });
         }
       });
     }
@@ -834,6 +789,7 @@ var Progress = /*#__PURE__*/function () {
   return Progress;
 }();
 
+var forceReload = false;
 var overlay = new Overlay();
 var progress = new Progress();
 var RECONNECT_INTERVAL = 3000;
@@ -843,6 +799,33 @@ function parseMessage(message) {
     return JSON.parse(message.data);
   } catch (_unused) {
     return {};
+  }
+}
+
+function printProblems(type, problems) {
+  var nameMaps = {
+    errors: ['Error', 'error'],
+    warnings: ['Warning', 'warn']
+  };
+
+  var _nameMaps$type = _slicedToArray(nameMaps[type], 2),
+      name = _nameMaps$type[0],
+      method = _nameMaps$type[1];
+
+  var _iterator = _createForOfIteratorHelper(problems),
+      _step;
+
+  try {
+    for (_iterator.s(); !(_step = _iterator.n()).done;) {
+      var _step$value = _step.value,
+          moduleName = _step$value.moduleName,
+          message = _step$value.message;
+      console[method]("".concat(name, " in ").concat(moduleName, "\r\n").concat(strip(message)));
+    }
+  } catch (err) {
+    _iterator.e(err);
+  } finally {
+    _iterator.f();
   }
 }
 
@@ -856,6 +839,48 @@ function parseSocketURL() {
   var host = parseHost(params.get('host'));
   var tls = params.has('tls') || location.protocol === 'https:';
   return "".concat(tls ? 'wss' : 'ws', "://").concat(host).concat(__WDS_HOT_SOCKET_PATH__);
+}
+
+function progressResolver(_ref, options) {
+  var value = _ref.value;
+
+  if (options.progress) {
+    if (value === 0) {
+      progress.show();
+    }
+
+    progress.update(value);
+
+    if (value === 100) {
+      progress.hide();
+    }
+  }
+}
+
+function problemsResolver(_ref2, options) {
+  var errors = _ref2.errors,
+      warnings = _ref2.warnings;
+  var problems = {
+    errors: [],
+    warnings: []
+  };
+  var _options$overlay = options.overlay,
+      errorsOverlay = _options$overlay.errors,
+      warningsOverlay = _options$overlay.warnings;
+
+  if (errorsOverlay) {
+    problems.errors = errors;
+  } else {
+    printProblems('errors', errors);
+  }
+
+  if (warningsOverlay) {
+    problems.warnings = warnings;
+  } else {
+    printProblems('warnings', warnings);
+  }
+
+  overlay.show(problems);
 }
 
 function createWebSocket(url, protocols) {
@@ -881,41 +906,24 @@ function createWebSocket(url, protocols) {
         break;
 
       case 'progress':
-        if (options.progress) {
-          var percent = payload.value;
+        progressResolver(payload, options);
+        break;
 
-          if (percent === 0) {
-            progress.show();
-          }
-
-          progress.update(payload.value);
-
-          if (percent === 100) {
-            progress.hide();
-          }
+      case 'problems':
+        if (payload.errors.length > 0) {
+          forceReload = true;
+          problemsResolver(payload, options);
+        } else {
+          update(payload.hash, options.hmr, forceReload, function () {
+            problemsResolver(payload, options);
+          });
         }
 
         break;
 
-      case 'problems':
-        update(payload.hash, options.hmr).then(function () {
-          var problems = {};
-
-          if (options.errors) {
-            problems.errors = payload.errors;
-          }
-
-          if (options.warnings) {
-            problems.warnings = payload.warnings;
-          }
-
-          overlay.show(problems);
-        });
-        break;
-
       case 'ok':
         overlay.hide();
-        update(payload.hash, options.hmr);
+        update(payload.hash, options.hmr, forceReload);
         break;
     }
 

@@ -4,7 +4,6 @@
  */
 
 import Ansi from './utils/ansi';
-import onEffectsEnd from './utils/effects';
 import { appendHTML, injectCSS } from './utils';
 
 const OVERLAY = 'wds-overlay';
@@ -15,7 +14,6 @@ const CSS = `
     left: 0;
     right: 0;
     bottom: 0;
-    opacity: 0;
     width: 100vw;
     height: 100vh;
     display: block;
@@ -29,38 +27,17 @@ const CSS = `
     box-sizing: border-box;
     background: rgba(0, 0, 0, .85);
     transform: scale(0) translateZ(0);
-  }
-  @keyframes ${OVERLAY}-show {
-    0% {
-      opacity: 0;
-      transform: scale(0) translateZ(0);
-    }
-    100% {
-      opacity: 1;
-      transform: scale(1) translateZ(0);
-    }
-  }
-  @keyframes ${OVERLAY}-hide {
-    0% {
-      opacity: 1;
-      transform: scale(1) translateZ(0);
-    }
-    100% {
-      opacity: 0;
-      transform: scale(0) translateZ(0);
-    }
+    transition: transform .3s ease-out;
   }
   .${OVERLAY}-show {
-    animation: ${OVERLAY}-show .3s ease-out forwards;
-  }
-  .${OVERLAY}-hide {
-    animation: ${OVERLAY}-hide .3s ease-out forwards;
+    transform: scale(1) translateZ(0);
   }
   .${OVERLAY}-nav {
     right: 0;
     padding: 16px;
     line-height: 16px;
     position: absolute;
+    transform: rotate(0) translateZ(0);
     transition: transform .3s ease-in-out;
   }
   .${OVERLAY}-nav:hover {
@@ -207,60 +184,42 @@ export default class Overlay {
     this.name.innerHTML = name || DEFAULT_NAME;
   }
 
-  addErrors(errors = []) {
-    const count = errors.length;
-    const hasErrors = count > 0;
-    const { errorsTitle, errorsList } = this;
+  problems(type, problems) {
+    const problemMaps = {
+      errors: ['Error', this.errorsTitle, this.errorsList],
+      warnings: ['Warning', this.warningsTitle, this.warningsList]
+    };
+    const [name, problemTitle, problemList] = problemMaps[type];
 
-    errorsList.innerHTML = '';
-    errorsTitle.innerText = '';
+    problemList.innerHTML = '';
+    problemTitle.innerText = '';
 
-    if (hasErrors) {
-      errorsTitle.innerText = `${count} Error(s)`;
+    const count = problems.length;
+    const hasProblems = count > 0;
 
-      for (const { moduleName, message } of errors) {
+    if (hasProblems) {
+      problemTitle.innerText = `${count} ${name}(s)`;
+
+      for (const { moduleName, message } of problems) {
         const src = ansiHTML(moduleName);
         const details = ansiHTML(message);
 
-        appendHTML(`<div><em>Error</em> in ${src}<div>${details}</div></div>`, errorsList);
+        appendHTML(`<div><em>${name}</em> in ${src}<div>${details}</div></div>`, problemList);
       }
     }
 
-    return hasErrors;
-  }
-
-  addWarnings(warnings = []) {
-    const count = warnings.length;
-    const hasWarnings = count > 0;
-    const { warningsTitle, warningsList } = this;
-
-    warningsList.innerHTML = '';
-    warningsTitle.innerText = '';
-
-    if (hasWarnings) {
-      warningsTitle.innerText = `${count} Warning(s)`;
-
-      for (const { moduleName, message } of warnings) {
-        const src = ansiHTML(moduleName);
-        const details = ansiHTML(message);
-
-        appendHTML(`<div><em>Warning</em> in ${src}<div>${details}</div></div>`, warningsList);
-      }
-    }
-
-    return hasWarnings;
+    return hasProblems;
   }
 
   show({ errors, warnings }) {
-    const hasErrors = this.addErrors(errors);
-    const hasWarnings = this.addWarnings(warnings);
+    const hasErrors = this.problems('errors', errors);
+    const hasWarnings = this.problems('warnings', warnings);
 
-    if ((hasErrors || hasWarnings) && this.hidden) {
+    if (this.hidden && (hasErrors || hasWarnings)) {
       this.hidden = false;
 
       const { classList } = this.aside;
 
-      classList.remove(`${OVERLAY}-hide`);
       classList.add(`${OVERLAY}-show`);
     }
   }
@@ -273,11 +232,6 @@ export default class Overlay {
       this.hidden = true;
 
       classList.remove(`${OVERLAY}-show`);
-      classList.add(`${OVERLAY}-hide`);
-
-      onEffectsEnd(aside, () => {
-        classList.remove(`${OVERLAY}-hide`);
-      });
     }
   }
 }

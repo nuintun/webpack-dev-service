@@ -98,6 +98,9 @@ tools
 test
 tests
 
+# Editor config
+.editorconfig
+
 # Prettier files
 .prettierrc
 .prettierignore

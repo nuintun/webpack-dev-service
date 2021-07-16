@@ -1,6 +1,6 @@
 {
   "name": "webpack-dev-server-middleware",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "main": "index.js",
   "description": "A development and hot reload middleware for Koa2.",
   "scripts": {
@@ -51,8 +51,8 @@
     "babel-loader": "^8.2.2",
     "@babel/preset-env": "^7.14.7",
     "html-webpack-plugin": "^5.3.2",
-    "@rollup/plugin-babel": "^5.3.0",
     "@babel/preset-react": "^7.14.5",
-    "@rollup/plugin-node-resolve": "^13.0.0"
+    "@rollup/plugin-babel": "^5.3.0",
+    "@rollup/plugin-node-resolve": "^13.0.2"
   }
 }
