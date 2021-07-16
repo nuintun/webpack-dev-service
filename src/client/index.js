@@ -7,12 +7,14 @@ import Overlay from './ui/overlay';
 import Progress from './ui/progress';
 import { strip } from './ui/utils/ansi';
 
+let retryTimes = 0;
 let forceReload = false;
 
 const overlay = new Overlay();
 const progress = new Progress();
 
-const RECONNECT_INTERVAL = 3000;
+const MAX_RETRY_TIMES = 10;
+const RETRY_INTERVAL = 3000;
 
 function parseMessage(message) {
   try {
@@ -86,6 +88,10 @@ function createWebSocket(url, protocols) {
 
   const ws = new WebSocket(url, protocols);
 
+  ws.onopen = () => {
+    retryTimes = 0;
+  };
+
   ws.onmessage = message => {
     const { action, payload } = parseMessage(message);
 
@@ -127,9 +133,11 @@ function createWebSocket(url, protocols) {
   ws.onclose = () => {
     progress.hide();
 
-    setTimeout(() => {
-      createWebSocket(url, protocols);
-    }, RECONNECT_INTERVAL);
+    if (retryTimes++ < MAX_RETRY_TIMES) {
+      setTimeout(() => {
+        createWebSocket(url, protocols);
+      }, RETRY_INTERVAL);
+    }
   };
 }
 

@@ -18,7 +18,7 @@ function hotUpdate(hash, onUpdated) {
   module.hot
     .check(true)
     .then(updated => {
-      if (!updated) {
+      if (updated?.length === 0) {
         deferReload();
       } else if (isUpToDate(hash)) {
         onUpdated();
@@ -26,13 +26,7 @@ function hotUpdate(hash, onUpdated) {
         hotUpdate(hash, onUpdated);
       }
     })
-    .catch(() => {
-      switch (module.hot.status()) {
-        case 'fail':
-        case 'abort':
-          deferReload();
-      }
-    });
+    .catch(deferReload);
 }
 
 export default function update(hash, hmr, forceReload, onUpdated = () => {}) {
@@ -41,15 +35,7 @@ export default function update(hash, hmr, forceReload, onUpdated = () => {}) {
   } else if (isUpToDate(hash)) {
     onUpdated();
   } else if (hmr && module.hot) {
-    switch (module.hot.status()) {
-      case 'fail':
-      case 'abort':
-        deferReload();
-        break;
-      case 'idle':
-        hotUpdate(hash, onUpdated);
-        break;
-    }
+    hotUpdate(hash, onUpdated);
   } else {
     deferReload();
   }

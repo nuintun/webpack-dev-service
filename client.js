@@ -224,20 +224,14 @@ function isUpToDate(hash) {
 
 function hotUpdate(hash, onUpdated) {
   module.hot.check(true).then(function (updated) {
-    if (!updated) {
+    if ((updated === null || updated === void 0 ? void 0 : updated.length) === 0) {
       deferReload();
     } else if (isUpToDate(hash)) {
       onUpdated();
     } else {
       hotUpdate(hash, onUpdated);
     }
-  }).catch(function () {
-    switch (module.hot.status()) {
-      case 'fail':
-      case 'abort':
-        deferReload();
-    }
-  });
+  }).catch(deferReload);
 }
 
 function update(hash, hmr, forceReload) {
@@ -248,16 +242,7 @@ function update(hash, hmr, forceReload) {
   } else if (isUpToDate(hash)) {
     onUpdated();
   } else if (hmr && module.hot) {
-    switch (module.hot.status()) {
-      case 'fail':
-      case 'abort':
-        deferReload();
-        break;
-
-      case 'idle':
-        hotUpdate(hash, onUpdated);
-        break;
-    }
+    hotUpdate(hash, onUpdated);
   } else {
     deferReload();
   }
@@ -789,10 +774,12 @@ var Progress = /*#__PURE__*/function () {
   return Progress;
 }();
 
+var retryTimes = 0;
 var forceReload = false;
 var overlay = new Overlay();
 var progress = new Progress();
-var RECONNECT_INTERVAL = 3000;
+var MAX_RETRY_TIMES = 10;
+var RETRY_INTERVAL = 3000;
 
 function parseMessage(message) {
   try {
@@ -887,6 +874,10 @@ function createWebSocket(url, protocols) {
   var options = {};
   var ws = new WebSocket(url, protocols);
 
+  ws.onopen = function () {
+    retryTimes = 0;
+  };
+
   ws.onmessage = function (message) {
     var _parseMessage = parseMessage(message),
         action = _parseMessage.action,
@@ -935,9 +926,12 @@ function createWebSocket(url, protocols) {
 
   ws.onclose = function () {
     progress.hide();
-    setTimeout(function () {
-      createWebSocket(url, protocols);
-    }, RECONNECT_INTERVAL);
+
+    if (retryTimes++ < MAX_RETRY_TIMES) {
+      setTimeout(function () {
+        createWebSocket(url, protocols);
+      }, RETRY_INTERVAL);
+    }
   };
 }
 
