@@ -16,13 +16,14 @@ const CSS = `
     bottom: 0;
     width: 100vw;
     height: 100vh;
-    display: block;
+    display: flex;
     position: fixed;
     font-size: 16px;
     overflow: hidden;
     font-style: normal;
     font-weight: normal;
     z-index: 2147483644;
+    flex-direction: column;
     box-sizing: border-box;
     background: rgba(0, 0, 0, .85);
     transform: scale(0) translateZ(0);
