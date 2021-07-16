@@ -59,10 +59,11 @@ const CSS = `
     margin: 0;
     color: #fff;
     width: 100%;
-    padding: 16px 0;
+    padding: 16px;
     line-height: 16px;
     text-align: center;
     background: #282d35;
+    overflow-wrap: break-word;
   }
   .${OVERLAY}-name {
     font-weight: bold;
