@@ -24,7 +24,7 @@ const CSS = `
     font-weight: normal;
     z-index: 2147483645;
     transform: scale(0) translateZ(0);
-    transition: transform .3s ease-out;
+    transition: transform .25s ease-out;
   }
   .${PROGRESS}-show {
     transform: scale(1) translateZ(0);
@@ -36,7 +36,7 @@ const CSS = `
     stroke: #badfac;
     stroke-width: 8;
     fill: rgba(0, 0, 0, 0);
-    transition: stroke-dasharray .3s linear;
+    transition: stroke-dasharray .25s linear;
     transform: matrix(0, -1, 1, 0, 0, 80) translateZ(0);
   }
   .${PROGRESS}-value {

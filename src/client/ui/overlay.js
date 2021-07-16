@@ -26,44 +26,41 @@ const CSS = `
     box-sizing: border-box;
     background: rgba(0, 0, 0, .85);
     transform: scale(0) translateZ(0);
-    transition: transform .3s ease-out;
+    transition: transform .25s ease-out;
     font-family: Menlo, Consolas, monospace;
   }
   .${OVERLAY}-show {
     transform: scale(1) translateZ(0);
   }
-  .${OVERLAY}-nav {
-    right: 0;
-    padding: 16px;
+  .${OVERLAY}-close {
+    top: 16px;
+    right: 16px;
+    width: 16px;
+    color: #fff;
+    height: 16px;
+    cursor: pointer;
     line-height: 16px;
     position: absolute;
-    transform: rotate(0) translateZ(0);
-    transition: transform .3s ease-in-out;
-  }
-  .${OVERLAY}-nav:hover {
-    transform: rotate(180deg) translateZ(0);
-  }
-  .${OVERLAY}-close {
-    width: 16px;
-    height: 16px;
-    color: #fff;
-    cursor: pointer;
     font-style: normal;
     text-align: center;
     border-radius: 16px;
     font-weight: normal;
     background: #ff5f58;
     display: inline-block;
+    transform: rotate(0) translateZ(0);
+    transition: transform .25s ease-in-out;
+  }
+  .${OVERLAY}-close:hover {
+    transform: rotate(180deg) translateZ(0);
   }
   .${OVERLAY}-title {
     margin: 0;
     color: #fff;
-    width: 100%;
-    padding: 16px;
     line-height: 16px;
     text-align: center;
     background: #282d35;
     overflow-wrap: break-word;
+    padding: 16px 48px 16px 16px;
   }
   .${OVERLAY}-name {
     font-weight: bold;
@@ -131,9 +128,7 @@ const DEFAULT_NAME = 'webpack';
 
 const HTML = `
   <aside class="${OVERLAY}">
-    <nav class="${OVERLAY}-nav">
-      <i class="${OVERLAY}-close">×</i>
-    </nav>
+    <i class="${OVERLAY}-close">×</i>
     <div class="${OVERLAY}-title">
       <em class="${OVERLAY}-name">${DEFAULT_NAME}</em>
       <em class="${OVERLAY}-errors-title"></em>
