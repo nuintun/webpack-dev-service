@@ -28,7 +28,7 @@ const CSS = `
     background: rgba(0, 0, 0, .85);
     transform: scale(0) translateZ(0);
     transition: transform .25s ease-out;
-    font-family: Menlo, Consolas, monospace;
+    font-family: Menlo, "Lucida Console", monospace;
   }
   .${OVERLAY}-show {
     transform: scale(1) translateZ(0);
@@ -48,6 +48,7 @@ const CSS = `
     font-weight: normal;
     background: #ff5f58;
     display: inline-block;
+    font-family: monospace;
     transform: rotate(0) translateZ(0);
     transition: transform .25s ease-in-out;
   }
@@ -72,6 +73,7 @@ const CSS = `
   .${OVERLAY}-warnings-title {
     color: #ff5f58;
     padding-left: 8px;
+    font-style: normal;
   }
   .${OVERLAY}-warnings-title {
     color: #ffbd2e;
@@ -94,18 +96,18 @@ const CSS = `
     border-radius: 4px;
     background: #282d35;
     white-space: pre-wrap;
-    font-family: Menlo, Consolas, monospace;
+    font-family: Menlo, "Lucida Console", monospace;
   }
   .${OVERLAY}-errors > div,
   .${OVERLAY}-warnings > div {
-    font-size: 15px;
     padding: 16px 16px 0;
     overflow-wrap: break-word;
   }
   .${OVERLAY}-errors > div > em,
   .${OVERLAY}-warnings > div > em {
+    line-height: 1;
     color: #641e16;
-    padding: 2px 8px;
+    padding: 4px 8px;
     font-style: normal;
     border-radius: 4px;
     font-weight: normal;
@@ -119,7 +121,6 @@ const CSS = `
   }
   .${OVERLAY}-errors > div > div,
   .${OVERLAY}-warnings > div > div {
-    font-size: 13px;
     padding: 8px 0 16px 16px;
     overflow-wrap: break-word;
   }
