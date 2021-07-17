@@ -36,6 +36,7 @@ const CSS = `
     stroke: #badfac;
     stroke-width: 8;
     fill: rgba(0, 0, 0, 0);
+    stroke-dasharray: 0 ${PERIMETER};
     transition: stroke-dasharray .25s linear;
     transform: matrix(0, -1, 1, 0, 0, 80) translateZ(0);
   }
@@ -83,7 +84,7 @@ export default class Progress {
     const dashWidth = PERIMETER * percent;
     const dashSpace = PERIMETER * (1 - percent);
 
-    this.track.setAttribute('stroke-dasharray', `${dashWidth} ${dashSpace}`);
+    this.track.style.strokeDasharray = `${dashWidth} ${dashSpace}`;
   }
 
   show() {

@@ -43,7 +43,7 @@ const compiler = webpack({
   name: 'react',
   mode: 'development',
   context: path.resolve('src'),
-  entry: [`${require.resolve('../client')}?host=127.0.0.1:8000`, path.resolve('src/App.jsx')],
+  entry: [require.resolve('../client'), path.resolve('src/App.jsx')],
   output: {
     publicPath: '/public/',
     filename: `js/[name].js`,
@@ -85,10 +85,6 @@ const fs = createMemfs();
 const server = dev(compiler, { index: false, outputFileSystem: fs });
 const logger = compiler.getInfrastructureLogger('webpack-dev-middleware');
 
-server.waitUntilValid(() => {
-  logger.info(`server run at: \u001B[36mhttp://127.0.0.1:8000\u001B[0m`);
-});
-
 app.use(server);
 
 app.use(async ctx => {
@@ -100,4 +96,8 @@ app.on('error', error => {
   !httpError(error) && console.error(error);
 });
 
-app.listen(8000);
+app.listen(8000, () => {
+  server.waitUntilValid(() => {
+    logger.info(`server run at: \u001B[36mhttp://127.0.0.1:8000\u001B[0m`);
+  });
+});

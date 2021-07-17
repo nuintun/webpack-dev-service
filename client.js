@@ -1,12 +1,12 @@
-import 'core-js/modules/es.array.concat.js';
-import 'core-js/modules/es.regexp.exec.js';
-import 'core-js/modules/es.string.replace.js';
 import 'core-js/modules/es.array.iterator.js';
 import 'core-js/modules/es.object.to-string.js';
 import 'core-js/modules/es.string.iterator.js';
 import 'core-js/modules/web.dom-collections.iterator.js';
 import 'core-js/modules/web.url.js';
+import 'core-js/modules/es.array.concat.js';
 import 'core-js/modules/es.function.name.js';
+import 'core-js/modules/es.regexp.exec.js';
+import 'core-js/modules/es.string.replace.js';
 import 'core-js/modules/es.object.keys.js';
 import 'core-js/modules/es.string.repeat.js';
 import ansiRegex from 'ansi-regex';
@@ -717,7 +717,7 @@ function onEffectsEnd(node, callback) {
 
 var PROGRESS = 'wds-progress';
 var PERIMETER = 2 * Math.PI * 36;
-var CSS = "\n  .".concat(PROGRESS, " {\n    width: 48px;\n    right: 16px;\n    height: 48px;\n    bottom: 16px;\n    display: block;\n    font-size: 16px;\n    position: fixed;\n    cursor: default;\n    user-select: none;\n    font-style: normal;\n    font-weight: normal;\n    z-index: 2147483645;\n    transform: scale(0) translateZ(0);\n    transition: transform .25s ease-out;\n  }\n  .").concat(PROGRESS, "-show {\n    transform: scale(1) translateZ(0);\n  }\n  .").concat(PROGRESS, "-bg {\n    fill: #282d35;\n  }\n  .").concat(PROGRESS, "-track {\n    stroke: #badfac;\n    stroke-width: 8;\n    fill: rgba(0, 0, 0, 0);\n    transition: stroke-dasharray .25s linear;\n    transform: matrix(0, -1, 1, 0, 0, 80) translateZ(0);\n  }\n  .").concat(PROGRESS, "-value {\n    fill: #ffffff;\n    font-size: 18px;\n    text-anchor: middle;\n    font-family: monospace;\n    dominant-baseline: middle;\n  }\n");
+var CSS = "\n  .".concat(PROGRESS, " {\n    width: 48px;\n    right: 16px;\n    height: 48px;\n    bottom: 16px;\n    display: block;\n    font-size: 16px;\n    position: fixed;\n    cursor: default;\n    user-select: none;\n    font-style: normal;\n    font-weight: normal;\n    z-index: 2147483645;\n    transform: scale(0) translateZ(0);\n    transition: transform .25s ease-out;\n  }\n  .").concat(PROGRESS, "-show {\n    transform: scale(1) translateZ(0);\n  }\n  .").concat(PROGRESS, "-bg {\n    fill: #282d35;\n  }\n  .").concat(PROGRESS, "-track {\n    stroke: #badfac;\n    stroke-width: 8;\n    fill: rgba(0, 0, 0, 0);\n    stroke-dasharray: 0 ").concat(PERIMETER, ";\n    transition: stroke-dasharray .25s linear;\n    transform: matrix(0, -1, 1, 0, 0, 80) translateZ(0);\n  }\n  .").concat(PROGRESS, "-value {\n    fill: #ffffff;\n    font-size: 18px;\n    text-anchor: middle;\n    font-family: monospace;\n    dominant-baseline: middle;\n  }\n");
 var HTML = "\n  <svg class=\"".concat(PROGRESS, "\" x=\"0\" y=\"0\" viewBox=\"0 0 80 80\">\n    <circle class=\"").concat(PROGRESS, "-bg\" cx=\"50%\" cy=\"50%\" r=\"36\" />\n    <circle class=\"").concat(PROGRESS, "-track\" cx=\"50%\" cy=\"50%\" r=\"36\" />\n    <text class=\"").concat(PROGRESS, "-value\" x=\"50%\" y=\"52%\">0%</text>\n  </svg>\n");
 
 function calcPercent(value) {
@@ -750,7 +750,7 @@ var Progress = /*#__PURE__*/function () {
       var percent = calcPercent(value);
       var dashWidth = PERIMETER * percent;
       var dashSpace = PERIMETER * (1 - percent);
-      this.track.setAttribute('stroke-dasharray', "".concat(dashWidth, " ").concat(dashSpace));
+      this.track.style.strokeDasharray = "".concat(dashWidth, " ").concat(dashSpace);
     }
   }, {
     key: "show",
@@ -796,6 +796,55 @@ function parseMessage(message) {
   }
 }
 
+function getCurrentScript() {
+  var _document = document,
+      currentScript = _document.currentScript;
+  if (currentScript) return currentScript;
+  var scripts = document.scripts;
+
+  for (var i = scripts.length - 1; i >= 0; i--) {
+    var script = scripts[i];
+
+    if (script.readyState === 'interactive') {
+      return script;
+    }
+  }
+}
+
+function resolveHost(host) {
+  if (host) return host;
+
+  var _getCurrentScript = getCurrentScript(),
+      src = _getCurrentScript.src;
+
+  if (src) return new URL(src).host;
+  return window.location.host;
+}
+
+function resolveSocketURL() {
+  var query = __resourceQuery || '';
+  var params = new URLSearchParams(query);
+  var host = resolveHost(params.get('host'));
+  var tls = params.has('tls') || location.protocol === 'https:';
+  return "".concat(tls ? 'wss' : 'ws', "://").concat(host).concat(__WDS_HOT_SOCKET_PATH__);
+}
+
+function progressActions(_ref, options) {
+  var value = _ref.value;
+
+  if (options.progress) {
+    if (value === 0) {
+      progress.show();
+    }
+
+    progress.update(value);
+
+    if (value === 100) {
+      progress.hide();
+    }
+  }
+}
+
 function printProblems(type, problems) {
   var nameMaps = {
     errors: ['Error', 'error'],
@@ -823,35 +872,7 @@ function printProblems(type, problems) {
   }
 }
 
-function parseHost(host) {
-  return host ? host.replace(/\/+$/, '') : location.host;
-}
-
-function parseSocketURL() {
-  var query = __resourceQuery || '';
-  var params = new URLSearchParams(query);
-  var host = parseHost(params.get('host'));
-  var tls = params.has('tls') || location.protocol === 'https:';
-  return "".concat(tls ? 'wss' : 'ws', "://").concat(host).concat(__WDS_HOT_SOCKET_PATH__);
-}
-
-function progressResolver(_ref, options) {
-  var value = _ref.value;
-
-  if (options.progress) {
-    if (value === 0) {
-      progress.show();
-    }
-
-    progress.update(value);
-
-    if (value === 100) {
-      progress.hide();
-    }
-  }
-}
-
-function problemsResolver(_ref2, options) {
+function problemsActions(_ref2, options) {
   var errors = _ref2.errors,
       warnings = _ref2.warnings;
   var problems = {
@@ -877,9 +898,9 @@ function problemsResolver(_ref2, options) {
   overlay.show(problems);
 }
 
-function createWebSocket(url, protocols) {
+function createWebSocket(url) {
   var options = {};
-  var ws = new WebSocket(url, protocols);
+  var ws = new WebSocket(url);
 
   ws.onopen = function () {
     retryTimes = 0;
@@ -904,16 +925,16 @@ function createWebSocket(url, protocols) {
         break;
 
       case 'progress':
-        progressResolver(payload, options);
+        progressActions(payload, options);
         break;
 
       case 'problems':
         if (payload.errors.length > 0) {
           forceReload = true;
-          problemsResolver(payload, options);
+          problemsActions(payload, options);
         } else {
           update(payload.hash, options.hmr, forceReload, function () {
-            problemsResolver(payload, options);
+            problemsActions(payload, options);
           });
         }
 
@@ -936,10 +957,10 @@ function createWebSocket(url, protocols) {
 
     if (retryTimes++ < MAX_RETRY_TIMES) {
       setTimeout(function () {
-        createWebSocket(url, protocols);
+        createWebSocket(url);
       }, RETRY_INTERVAL);
     }
   };
 }
 
-createWebSocket(parseSocketURL());
+createWebSocket(resolveSocketURL());

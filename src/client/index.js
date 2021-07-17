@@ -24,33 +24,43 @@ function parseMessage(message) {
   }
 }
 
-function printProblems(type, problems) {
-  const nameMaps = {
-    errors: ['Error', 'error'],
-    warnings: ['Warning', 'warn']
-  };
-  const [name, method] = nameMaps[type];
+function getCurrentScript() {
+  const { currentScript } = document;
 
-  for (const { moduleName, message } of problems) {
-    console[method](`${name} in ${moduleName}\r\n${strip(message)}`);
+  if (currentScript) return currentScript;
+
+  const scripts = document.scripts;
+
+  for (let i = scripts.length - 1; i >= 0; i--) {
+    const script = scripts[i];
+
+    if (script.readyState === 'interactive') {
+      return script;
+    }
   }
 }
 
-function parseHost(host) {
-  return host ? host.replace(/\/+$/, '') : location.host;
+function resolveHost(host) {
+  if (host) return host;
+
+  const { src } = getCurrentScript();
+
+  if (src) return new URL(src).host;
+
+  return window.location.host;
 }
 
-function parseSocketURL() {
+function resolveSocketURL() {
   const query = __resourceQuery || '';
   const params = new URLSearchParams(query);
 
-  const host = parseHost(params.get('host'));
+  const host = resolveHost(params.get('host'));
   const tls = params.has('tls') || location.protocol === 'https:';
 
   return `${tls ? 'wss' : 'ws'}://${host}${__WDS_HOT_SOCKET_PATH__}`;
 }
 
-function progressResolver({ value }, options) {
+function progressActions({ value }, options) {
   if (options.progress) {
     if (value === 0) {
       progress.show();
@@ -64,7 +74,19 @@ function progressResolver({ value }, options) {
   }
 }
 
-function problemsResolver({ errors, warnings }, options) {
+function printProblems(type, problems) {
+  const nameMaps = {
+    errors: ['Error', 'error'],
+    warnings: ['Warning', 'warn']
+  };
+  const [name, method] = nameMaps[type];
+
+  for (const { moduleName, message } of problems) {
+    console[method](`${name} in ${moduleName}\r\n${strip(message)}`);
+  }
+}
+
+function problemsActions({ errors, warnings }, options) {
   const problems = { errors: [], warnings: [] };
   const { errors: errorsOverlay, warnings: warningsOverlay } = options.overlay;
 
@@ -83,10 +105,10 @@ function problemsResolver({ errors, warnings }, options) {
   overlay.show(problems);
 }
 
-function createWebSocket(url, protocols) {
+function createWebSocket(url) {
   let options = {};
 
-  const ws = new WebSocket(url, protocols);
+  const ws = new WebSocket(url);
 
   ws.onopen = () => {
     retryTimes = 0;
@@ -107,16 +129,16 @@ function createWebSocket(url, protocols) {
         }
         break;
       case 'progress':
-        progressResolver(payload, options);
+        progressActions(payload, options);
         break;
       case 'problems':
         if (payload.errors.length > 0) {
           forceReload = true;
 
-          problemsResolver(payload, options);
+          problemsActions(payload, options);
         } else {
           update(payload.hash, options.hmr, forceReload, () => {
-            problemsResolver(payload, options);
+            problemsActions(payload, options);
           });
         }
         break;
@@ -135,10 +157,10 @@ function createWebSocket(url, protocols) {
 
     if (retryTimes++ < MAX_RETRY_TIMES) {
       setTimeout(() => {
-        createWebSocket(url, protocols);
+        createWebSocket(url);
       }, RETRY_INTERVAL);
     }
   };
 }
 
-createWebSocket(parseSocketURL());
+createWebSocket(resolveSocketURL());

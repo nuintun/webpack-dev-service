@@ -70,7 +70,7 @@ const DEFAULT_OPTIONS = {
 
 const WEBSOCKET_RE = /^websocket$/i;
 
-const parseStats = memoize(stats => {
+const resolveStats = memoize(stats => {
   return stats.toJson(DEFAULT_STATS);
 });
 
@@ -191,13 +191,16 @@ class HotServer {
   }
 
   upgrade(context) {
-    if (isUpgradable(context, WEBSOCKET_RE)) {
+    const { server } = this;
+    const { req: request } = context;
+
+    if (isUpgradable(context, WEBSOCKET_RE) && server.shouldHandle(request)) {
       context.respond = false;
 
-      const { server } = this;
-      const { req: request, socket } = context;
+      const { socket } = context;
+      const head = Buffer.alloc(0);
 
-      server.handleUpgrade(request, socket, Buffer.alloc(0), client => {
+      server.handleUpgrade(request, socket, head, client => {
         server.emit('connection', client, request);
       });
 
@@ -218,7 +221,7 @@ class HotServer {
   broadcastStats(clients, stats) {
     if (clients.size || clients.length) {
       process.nextTick(() => {
-        const { hash, builtAt, errors, warnings } = parseStats(stats);
+        const { hash, builtAt, errors, warnings } = resolveStats(stats);
 
         if (stats.hasErrors() || stats.hasWarnings()) {
           this.broadcast(clients, 'problems', { hash, builtAt, errors, warnings });
