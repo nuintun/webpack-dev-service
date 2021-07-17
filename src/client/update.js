@@ -18,7 +18,7 @@ function hotUpdate(hash, onUpdated) {
   module.hot
     .check(true)
     .then(updated => {
-      if (updated?.length === 0) {
+      if (!updated || updated.length === 0) {
         deferReload();
       } else if (isUpToDate(hash)) {
         onUpdated();
@@ -35,7 +35,9 @@ export default function update(hash, hmr, forceReload, onUpdated = () => {}) {
   } else if (isUpToDate(hash)) {
     onUpdated();
   } else if (hmr && module.hot) {
-    hotUpdate(hash, onUpdated);
+    if (module.hot.status() === 'idle') {
+      hotUpdate(hash, onUpdated);
+    }
   } else {
     deferReload();
   }
