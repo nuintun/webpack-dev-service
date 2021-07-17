@@ -242,8 +242,15 @@ function update(hash, hmr, forceReload) {
   } else if (isUpToDate(hash)) {
     onUpdated();
   } else if (hmr && module.hot) {
-    if (module.hot.status() === 'idle') {
-      hotUpdate(hash, onUpdated);
+    switch (module.hot.status()) {
+      case 'idle':
+        hotUpdate(hash, onUpdated);
+        break;
+
+      case 'abort':
+      case 'fail':
+        deferReload();
+        break;
     }
   } else {
     deferReload();
