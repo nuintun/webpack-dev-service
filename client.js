@@ -495,8 +495,10 @@ var Overlay = /*#__PURE__*/function () {
       this.name.innerHTML = name || DEFAULT_NAME;
     }
   }, {
-    key: "problems",
-    value: function problems(type, _problems) {
+    key: "setProblems",
+    value: function setProblems(type, problems) {
+      var count = problems.length;
+      var hidden = "".concat(OVERLAY, "-hidden");
       var problemMaps = {
         errors: ['Error', this.errorsTitle, this.errorsList],
         warnings: ['Warning', this.warningsTitle, this.warningsList]
@@ -507,15 +509,11 @@ var Overlay = /*#__PURE__*/function () {
           problemTitle = _problemMaps$type[1],
           problemList = _problemMaps$type[2];
 
-      var count = _problems.length;
-      var hasProblems = count > 0;
-      var hidden = "".concat(OVERLAY, "-hidden");
-
-      if (hasProblems) {
+      if (count > 0) {
         var html = '';
         problemTitle.innerText = "".concat(count, " ").concat(name, "(s)");
 
-        var _iterator = _createForOfIteratorHelper(_problems),
+        var _iterator = _createForOfIteratorHelper(problems),
             _step;
 
         try {
@@ -540,32 +538,21 @@ var Overlay = /*#__PURE__*/function () {
         problemList.classList.add(hidden);
         problemTitle.classList.add(hidden);
       }
-
-      return hasProblems;
     }
   }, {
     key: "show",
-    value: function show(_ref) {
-      var errors = _ref.errors,
-          warnings = _ref.warnings;
-      var hasErrors = this.problems('errors', errors);
-      var hasWarnings = this.problems('warnings', warnings);
-
-      if (this.hidden && (hasErrors || hasWarnings)) {
+    value: function show() {
+      if (this.hidden) {
         this.hidden = false;
-        var classList = this.aside.classList;
-        classList.add("".concat(OVERLAY, "-show"));
+        this.aside.classList.add("".concat(OVERLAY, "-show"));
       }
     }
   }, {
     key: "hide",
     value: function hide() {
-      var aside = this.aside;
-      var classList = aside.classList;
-
       if (!this.hidden) {
         this.hidden = true;
-        classList.remove("".concat(OVERLAY, "-show"));
+        this.aside.classList.remove("".concat(OVERLAY, "-show"));
       }
     }
   }]);
@@ -766,8 +753,7 @@ var Progress = /*#__PURE__*/function () {
     value: function show() {
       if (this.hidden) {
         this.hidden = false;
-        var classList = this.svg.classList;
-        classList.add("".concat(PROGRESS, "-show"));
+        this.svg.classList.add("".concat(PROGRESS, "-show"));
       }
     }
   }, {
@@ -775,15 +761,12 @@ var Progress = /*#__PURE__*/function () {
     value: function hide() {
       var _this = this;
 
-      onEffectsEnd(this.track, function () {
-        var svg = _this.svg;
-        var classList = svg.classList;
-
-        if (!_this.hidden) {
-          _this.hidden = true;
-          classList.remove("".concat(PROGRESS, "-show"));
-        }
-      });
+      if (!this.hidden) {
+        this.hidden = true;
+        onEffectsEnd(this.track, function () {
+          _this.svg.classList.remove("".concat(PROGRESS, "-show"));
+        });
+      }
     }
   }]);
 
@@ -884,27 +867,23 @@ function printProblems(type, problems) {
 function problemsActions(_ref2, options) {
   var errors = _ref2.errors,
       warnings = _ref2.warnings;
-  var problems = {
-    errors: [],
-    warnings: []
-  };
-  var _options$overlay = options.overlay,
-      errorsOverlay = _options$overlay.errors,
-      warningsOverlay = _options$overlay.warnings;
+  var configure = options.overlay;
 
-  if (errorsOverlay) {
-    problems.errors = errors;
+  if (configure.errors) {
+    overlay.setProblems('errors', errors);
   } else {
     printProblems('errors', errors);
   }
 
-  if (warningsOverlay) {
-    problems.warnings = warnings;
+  if (configure.warnings) {
+    overlay.setProblems('warnings', warnings);
   } else {
     printProblems('warnings', warnings);
   }
 
-  overlay.show(problems);
+  if (errors.length > 0 || warnings.length > 0) {
+    overlay.show();
+  }
 }
 
 function createWebSocket(url) {

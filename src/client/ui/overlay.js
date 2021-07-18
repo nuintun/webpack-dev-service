@@ -187,18 +187,17 @@ export default class Overlay {
     this.name.innerHTML = name || DEFAULT_NAME;
   }
 
-  problems(type, problems) {
+  setProblems(type, problems) {
+    const count = problems.length;
+    const hidden = `${OVERLAY}-hidden`;
+
     const problemMaps = {
       errors: ['Error', this.errorsTitle, this.errorsList],
       warnings: ['Warning', this.warningsTitle, this.warningsList]
     };
     const [name, problemTitle, problemList] = problemMaps[type];
 
-    const count = problems.length;
-    const hasProblems = count > 0;
-    const hidden = `${OVERLAY}-hidden`;
-
-    if (hasProblems) {
+    if (count > 0) {
       let html = '';
 
       problemTitle.innerText = `${count} ${name}(s)`;
@@ -218,31 +217,21 @@ export default class Overlay {
       problemList.classList.add(hidden);
       problemTitle.classList.add(hidden);
     }
-
-    return hasProblems;
   }
 
-  show({ errors, warnings }) {
-    const hasErrors = this.problems('errors', errors);
-    const hasWarnings = this.problems('warnings', warnings);
-
-    if (this.hidden && (hasErrors || hasWarnings)) {
+  show() {
+    if (this.hidden) {
       this.hidden = false;
 
-      const { classList } = this.aside;
-
-      classList.add(`${OVERLAY}-show`);
+      this.aside.classList.add(`${OVERLAY}-show`);
     }
   }
 
   hide() {
-    const { aside } = this;
-    const { classList } = aside;
-
     if (!this.hidden) {
       this.hidden = true;
 
-      classList.remove(`${OVERLAY}-show`);
+      this.aside.classList.remove(`${OVERLAY}-show`);
     }
   }
 }

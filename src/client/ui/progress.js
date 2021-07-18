@@ -91,22 +91,17 @@ export default class Progress {
     if (this.hidden) {
       this.hidden = false;
 
-      const { classList } = this.svg;
-
-      classList.add(`${PROGRESS}-show`);
+      this.svg.classList.add(`${PROGRESS}-show`);
     }
   }
 
   hide() {
-    onEffectsEnd(this.track, () => {
-      const { svg } = this;
-      const { classList } = svg;
+    if (!this.hidden) {
+      this.hidden = true;
 
-      if (!this.hidden) {
-        this.hidden = true;
-
-        classList.remove(`${PROGRESS}-show`);
-      }
-    });
+      onEffectsEnd(this.track, () => {
+        this.svg.classList.remove(`${PROGRESS}-show`);
+      });
+    }
   }
 }

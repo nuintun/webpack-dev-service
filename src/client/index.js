@@ -87,22 +87,23 @@ function printProblems(type, problems) {
 }
 
 function problemsActions({ errors, warnings }, options) {
-  const problems = { errors: [], warnings: [] };
-  const { errors: errorsOverlay, warnings: warningsOverlay } = options.overlay;
+  const { overlay: configure } = options;
 
-  if (errorsOverlay) {
-    problems.errors = errors;
+  if (configure.errors) {
+    overlay.setProblems('errors', errors);
   } else {
     printProblems('errors', errors);
   }
 
-  if (warningsOverlay) {
-    problems.warnings = warnings;
+  if (configure.warnings) {
+    overlay.setProblems('warnings', warnings);
   } else {
     printProblems('warnings', warnings);
   }
 
-  overlay.show(problems);
+  if (errors.length > 0 || warnings.length > 0) {
+    overlay.show();
+  }
 }
 
 function createWebSocket(url) {
