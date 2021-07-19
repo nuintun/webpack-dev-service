@@ -25,6 +25,7 @@ const CSS = `
     z-index: 2147483644;
     flex-direction: column;
     box-sizing: border-box;
+    transform-origin: center;
     background: rgba(0, 0, 0, .85);
     transform: scale(0) translateZ(0);
     transition: transform .25s ease-out;
@@ -37,20 +38,33 @@ const CSS = `
     top: 16px;
     right: 16px;
     width: 16px;
-    color: #fff;
     height: 16px;
     cursor: pointer;
-    line-height: 16px;
     position: absolute;
-    font-style: normal;
-    text-align: center;
     border-radius: 16px;
-    font-weight: normal;
     background: #ff5f58;
     display: inline-block;
-    font-family: monospace;
+    transform-origin: center;
+    box-shadow: #ff5f58 0 0 6px;
     transform: rotate(0) translateZ(0);
     transition: transform .25s ease-in-out;
+  }
+  .${OVERLAY}-close:before,
+  .${OVERLAY}-close:after {
+    top: 7px;
+    left: 3px;
+    content: "";
+    width: 10px;
+    height: 2px;
+    position: absolute;
+    background-color: white;
+    transform-origin: center;
+  }
+  .${OVERLAY}-close:before {
+    transform: rotate(45deg);
+  }
+  .${OVERLAY}-close:after {
+    transform: rotate(-45deg);
   }
   .${OVERLAY}-close:hover {
     transform: rotate(180deg) translateZ(0);
@@ -133,7 +147,7 @@ const DEFAULT_NAME = 'webpack';
 
 const HTML = `
   <aside class="${OVERLAY}">
-    <i class="${OVERLAY}-close">×</i>
+    <i class="${OVERLAY}-close"></i>
     <div class="${OVERLAY}-title">
       <em class="${OVERLAY}-name">${DEFAULT_NAME}</em>
       <em class="${OVERLAY}-errors-title"></em>

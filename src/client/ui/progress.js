@@ -24,6 +24,7 @@ const CSS = `
     font-style: normal;
     font-weight: normal;
     z-index: 2147483645;
+    transform-origin: center;
     transform: scale(0) translateZ(0);
     transition: transform .25s ease-out;
   }
@@ -43,10 +44,10 @@ const CSS = `
   }
   .${PROGRESS}-value {
     fill: #ffffff;
-    font-size: 18px;
+    font-size: 20px;
     text-anchor: middle;
-    font-family: monospace;
     dominant-baseline: middle;
+    font-family: Consolas, monospace;
   }
 `;
 
