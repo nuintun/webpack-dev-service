@@ -729,12 +729,15 @@ var Progress = /*#__PURE__*/function () {
 var timer;
 var status = 'idle';
 var aborted = false;
-var UPDATE_INTERVAL = 300;
+var RELOAD_INTERVAL = 300;
 
 function reload() {
-  if (!aborted) {
-    window.location.reload();
-  }
+  clearTimeout(timer);
+  timer = setTimeout(function () {
+    if (!aborted) {
+      window.location.reload();
+    }
+  }, RELOAD_INTERVAL);
 }
 
 function isUpToDate(hash) {
@@ -768,21 +771,20 @@ function update(hash, hmr, forceReload) {
   var onUpdated = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : function () {};
   aborted = false;
   clearTimeout(timer);
-  timer = setTimeout(function () {
-    if (forceReload) {
-      reload();
-    } else if (isUpToDate(hash)) {
-      onUpdated();
-    } else if (hmr && module.hot) {
-      if (status === 'idle') {
-        replace(hash, onUpdated);
-      } else if (status === 'fail') {
-        reload();
-      }
-    } else {
+
+  if (forceReload) {
+    reload();
+  } else if (isUpToDate(hash)) {
+    onUpdated();
+  } else if (hmr && module.hot) {
+    if (status === 'idle') {
+      replace(hash, onUpdated);
+    } else if (status === 'fail') {
       reload();
     }
-  }, UPDATE_INTERVAL);
+  } else {
+    reload();
+  }
 }
 
 var retryTimes = 0;

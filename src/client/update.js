@@ -6,12 +6,16 @@ let timer;
 let status = 'idle';
 let aborted = false;
 
-const UPDATE_INTERVAL = 300;
+const RELOAD_INTERVAL = 300;
 
 function reload() {
-  if (!aborted) {
-    window.location.reload();
-  }
+  clearTimeout(timer);
+
+  timer = setTimeout(() => {
+    if (!aborted) {
+      window.location.reload();
+    }
+  }, RELOAD_INTERVAL);
 }
 
 function isUpToDate(hash) {
@@ -52,19 +56,17 @@ export function update(hash, hmr, forceReload, onUpdated = () => {}) {
 
   clearTimeout(timer);
 
-  timer = setTimeout(() => {
-    if (forceReload) {
-      reload();
-    } else if (isUpToDate(hash)) {
-      onUpdated();
-    } else if (hmr && module.hot) {
-      if (status === 'idle') {
-        replace(hash, onUpdated);
-      } else if (status === 'fail') {
-        reload();
-      }
-    } else {
+  if (forceReload) {
+    reload();
+  } else if (isUpToDate(hash)) {
+    onUpdated();
+  } else if (hmr && module.hot) {
+    if (status === 'idle') {
+      replace(hash, onUpdated);
+    } else if (status === 'fail') {
       reload();
     }
-  }, UPDATE_INTERVAL);
+  } else {
+    reload();
+  }
 }
