@@ -727,61 +727,63 @@ var Progress = /*#__PURE__*/function () {
  * @module update
  */
 var timer;
+var status = 'idle';
+var invalid = false;
 var RELOAD_DELAY = 300;
 
-function deferReload() {
-  abortReload();
-  timer = setTimeout(function () {
-    window.location.reload();
-  }, RELOAD_DELAY);
+function reload() {
+  clearTimeout(timer);
+
+  if (!invalid) {
+    timer = setTimeout(function () {
+      window.location.reload();
+    }, RELOAD_DELAY);
+  }
 }
 
 function isUpToDate(hash) {
   return hash === __webpack_hash__;
 }
 
-function hotUpdate(hash, onUpdated) {
-  module.hot.check(true).then(function (updated) {
-    if (!updated || updated.length === 0) {
-      deferReload();
-    } else if (isUpToDate(hash)) {
-      onUpdated();
-    } else {
-      hotUpdate(hash, onUpdated);
-    }
+function replace(hash, onUpdated) {
+  module.hot.check().then(function () {
+    return module.hot.apply().then(function (updated) {
+      status = module.hot.status();
+
+      if (!updated || updated.length === 0) {
+        reload();
+      } else if (isUpToDate(hash)) {
+        onUpdated();
+      } else {
+        replace(hash, onUpdated);
+      }
+    });
   }).catch(function () {
-    switch (module.hot.status()) {
-      case 'abort':
-      case 'fail':
-        deferReload();
-        break;
-    }
+    status = 'fail';
+    reload();
   });
 }
 
-function abortReload() {
+function abort() {
+  invalid = true;
   clearTimeout(timer);
 }
 function update(hash, hmr, forceReload) {
   var onUpdated = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : function () {};
+  invalid = false;
 
   if (forceReload) {
-    deferReload();
+    reload();
   } else if (isUpToDate(hash)) {
     onUpdated();
   } else if (hmr && module.hot) {
-    switch (module.hot.status()) {
-      case 'idle':
-        hotUpdate(hash, onUpdated);
-        break;
-
-      case 'abort':
-      case 'fail':
-        deferReload();
-        break;
+    if (status === 'idle') {
+      replace(hash, onUpdated);
+    } else if (status === 'fail') {
+      reload();
     }
   } else {
-    deferReload();
+    reload();
   }
 }
 
@@ -918,7 +920,7 @@ function createWebSocket(url) {
         break;
 
       case 'invalid':
-        abortReload();
+        abort();
 
         if (options.progress) {
           progress.update(0);

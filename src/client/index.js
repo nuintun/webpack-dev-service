@@ -5,7 +5,7 @@
 import Overlay from './ui/overlay';
 import Progress from './ui/progress';
 import { strip } from './ui/utils/ansi';
-import update, { abortReload } from './update';
+import { update, abort } from './update';
 
 let retryTimes = 0;
 let forceReload = false;
@@ -125,7 +125,7 @@ function createWebSocket(url) {
         overlay.setName(payload.name);
         break;
       case 'invalid':
-        abortReload();
+        abort();
 
         if (options.progress) {
           progress.update(0);
