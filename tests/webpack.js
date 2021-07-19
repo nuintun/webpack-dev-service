@@ -42,6 +42,7 @@ function httpError(error) {
 const compiler = webpack({
   name: 'react',
   mode: 'development',
+  target: ['web', 'es5'],
   context: path.resolve('src'),
   entry: [require.resolve('../client'), path.resolve('src/App.jsx')],
   output: {
