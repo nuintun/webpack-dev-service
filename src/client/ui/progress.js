@@ -1,6 +1,7 @@
 /**
  * @module progress
  * @see https://github.com/shellscape/webpack-plugin-serve
+ * @see https://www.zhangxinxu.com/wordpress/2015/07/svg-circle-loading
  */
 
 import onEffectsEnd from './utils/effects';
