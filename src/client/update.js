@@ -4,17 +4,13 @@
 
 let timer;
 let status = 'idle';
-let invalid = false;
+let aborted = false;
 
-const RELOAD_DELAY = 300;
+const UPDATE_INTERVAL = 300;
 
 function reload() {
-  clearTimeout(timer);
-
-  if (!invalid) {
-    timer = setTimeout(() => {
-      window.location.reload();
-    }, RELOAD_DELAY);
+  if (!aborted) {
+    window.location.reload();
   }
 }
 
@@ -46,25 +42,29 @@ function replace(hash, onUpdated) {
 }
 
 export function abort() {
-  invalid = true;
+  aborted = true;
 
   clearTimeout(timer);
 }
 
 export function update(hash, hmr, forceReload, onUpdated = () => {}) {
-  invalid = false;
+  aborted = false;
 
-  if (forceReload) {
-    reload();
-  } else if (isUpToDate(hash)) {
-    onUpdated();
-  } else if (hmr && module.hot) {
-    if (status === 'idle') {
-      replace(hash, onUpdated);
-    } else if (status === 'fail') {
+  clearTimeout(timer);
+
+  timer = setTimeout(() => {
+    if (forceReload) {
+      reload();
+    } else if (isUpToDate(hash)) {
+      onUpdated();
+    } else if (hmr && module.hot) {
+      if (status === 'idle') {
+        replace(hash, onUpdated);
+      } else if (status === 'fail') {
+        reload();
+      }
+    } else {
       reload();
     }
-  } else {
-    reload();
-  }
+  }, UPDATE_INTERVAL);
 }

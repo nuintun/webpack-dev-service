@@ -728,16 +728,12 @@ var Progress = /*#__PURE__*/function () {
  */
 var timer;
 var status = 'idle';
-var invalid = false;
-var RELOAD_DELAY = 300;
+var aborted = false;
+var UPDATE_INTERVAL = 300;
 
 function reload() {
-  clearTimeout(timer);
-
-  if (!invalid) {
-    timer = setTimeout(function () {
-      window.location.reload();
-    }, RELOAD_DELAY);
+  if (!aborted) {
+    window.location.reload();
   }
 }
 
@@ -765,26 +761,28 @@ function replace(hash, onUpdated) {
 }
 
 function abort() {
-  invalid = true;
+  aborted = true;
   clearTimeout(timer);
 }
 function update(hash, hmr, forceReload) {
   var onUpdated = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : function () {};
-  invalid = false;
-
-  if (forceReload) {
-    reload();
-  } else if (isUpToDate(hash)) {
-    onUpdated();
-  } else if (hmr && module.hot) {
-    if (status === 'idle') {
-      replace(hash, onUpdated);
-    } else if (status === 'fail') {
+  aborted = false;
+  clearTimeout(timer);
+  timer = setTimeout(function () {
+    if (forceReload) {
+      reload();
+    } else if (isUpToDate(hash)) {
+      onUpdated();
+    } else if (hmr && module.hot) {
+      if (status === 'idle') {
+        replace(hash, onUpdated);
+      } else if (status === 'fail') {
+        reload();
+      }
+    } else {
       reload();
     }
-  } else {
-    reload();
-  }
+  }, UPDATE_INTERVAL);
 }
 
 var retryTimes = 0;
