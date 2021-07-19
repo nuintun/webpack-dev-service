@@ -30,7 +30,14 @@ function hotUpdate(hash, onUpdated) {
         hotUpdate(hash, onUpdated);
       }
     })
-    .catch(deferReload);
+    .catch(() => {
+      switch (module.hot.status()) {
+        case 'abort':
+        case 'fail':
+          deferReload();
+          break;
+      }
+    });
 }
 
 export function abortReload() {

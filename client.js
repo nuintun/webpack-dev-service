@@ -749,7 +749,14 @@ function hotUpdate(hash, onUpdated) {
     } else {
       hotUpdate(hash, onUpdated);
     }
-  }).catch(deferReload);
+  }).catch(function () {
+    switch (module.hot.status()) {
+      case 'abort':
+      case 'fail':
+        deferReload();
+        break;
+    }
+  });
 }
 
 function abortReload() {
