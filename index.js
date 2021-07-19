@@ -142,7 +142,7 @@ class HotServer {
     });
 
     hooks.invalid.tap(this.name, (file, builtAt) => {
-      this.broadcast(this.server.clients, 'rebuild', { file, builtAt });
+      this.broadcast(this.server.clients, 'invalid', { file, builtAt });
     });
   }
 

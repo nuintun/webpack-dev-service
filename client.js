@@ -207,56 +207,6 @@ function _createForOfIteratorHelper(o, allowArrayLike) {
   };
 }
 
-/**
- * @module update
- */
-var RELOAD_DELAY = 300;
-
-function deferReload() {
-  setTimeout(function () {
-    window.location.reload();
-  }, RELOAD_DELAY);
-}
-
-function isUpToDate(hash) {
-  return hash === __webpack_hash__;
-}
-
-function hotUpdate(hash, onUpdated) {
-  module.hot.check(true).then(function (updated) {
-    if (!updated || updated.length === 0) {
-      deferReload();
-    } else if (isUpToDate(hash)) {
-      onUpdated();
-    } else {
-      hotUpdate(hash, onUpdated);
-    }
-  }).catch(deferReload);
-}
-
-function update(hash, hmr, forceReload) {
-  var onUpdated = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : function () {};
-
-  if (forceReload) {
-    deferReload();
-  } else if (isUpToDate(hash)) {
-    onUpdated();
-  } else if (hmr && module.hot) {
-    switch (module.hot.status()) {
-      case 'idle':
-        hotUpdate(hash, onUpdated);
-        break;
-
-      case 'abort':
-      case 'fail':
-        deferReload();
-        break;
-    }
-  } else {
-    deferReload();
-  }
-}
-
 var ANSI_RE = ansiRegex();
 var DEFAULT_COLORS = {
   black: '#000',
@@ -773,6 +723,61 @@ var Progress = /*#__PURE__*/function () {
   return Progress;
 }();
 
+/**
+ * @module update
+ */
+var timer;
+var RELOAD_DELAY = 300;
+
+function deferReload() {
+  abortReload();
+  timer = setTimeout(function () {
+    window.location.reload();
+  }, RELOAD_DELAY);
+}
+
+function isUpToDate(hash) {
+  return hash === __webpack_hash__;
+}
+
+function hotUpdate(hash, onUpdated) {
+  module.hot.check(true).then(function (updated) {
+    if (!updated || updated.length === 0) {
+      deferReload();
+    } else if (isUpToDate(hash)) {
+      onUpdated();
+    } else {
+      hotUpdate(hash, onUpdated);
+    }
+  }).catch(deferReload);
+}
+
+function abortReload() {
+  clearTimeout(timer);
+}
+function update(hash, hmr, forceReload) {
+  var onUpdated = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : function () {};
+
+  if (forceReload) {
+    deferReload();
+  } else if (isUpToDate(hash)) {
+    onUpdated();
+  } else if (hmr && module.hot) {
+    switch (module.hot.status()) {
+      case 'idle':
+        hotUpdate(hash, onUpdated);
+        break;
+
+      case 'abort':
+      case 'fail':
+        deferReload();
+        break;
+    }
+  } else {
+    deferReload();
+  }
+}
+
 var retryTimes = 0;
 var forceReload = false;
 var overlay = new Overlay();
@@ -905,7 +910,9 @@ function createWebSocket(url) {
         overlay.setName(payload.name);
         break;
 
-      case 'rebuild':
+      case 'invalid':
+        abortReload();
+
         if (options.progress) {
           progress.update(0);
         }

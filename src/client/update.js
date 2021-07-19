@@ -2,10 +2,14 @@
  * @module update
  */
 
+let timer;
+
 const RELOAD_DELAY = 300;
 
 function deferReload() {
-  setTimeout(() => {
+  abortReload(timer);
+
+  timer = setTimeout(() => {
     window.location.reload();
   }, RELOAD_DELAY);
 }
@@ -27,6 +31,10 @@ function hotUpdate(hash, onUpdated) {
       }
     })
     .catch(deferReload);
+}
+
+export function abortReload() {
+  clearTimeout(timer);
 }
 
 export default function update(hash, hmr, forceReload, onUpdated = () => {}) {
