@@ -6,7 +6,7 @@ let timer;
 let status = 'idle';
 let aborted = false;
 
-const RELOAD_INTERVAL = 300;
+const RELOAD_INTERVAL = 250;
 
 function reload() {
   clearTimeout(timer);

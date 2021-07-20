@@ -16,6 +16,10 @@ const progress = new Progress();
 const MAX_RETRY_TIMES = 10;
 const RETRY_INTERVAL = 3000;
 
+function isTLS(protocol) {
+  return protocol === 'https:';
+}
+
 function parseMessage(message) {
   try {
     return JSON.parse(message.data);
@@ -40,24 +44,38 @@ function getCurrentScript() {
   }
 }
 
-function resolveHost(host) {
-  if (host) return host;
+function resolveHost(params) {
+  let host = params.get('host');
+  let tls = params.has('tls') || isTLS(window.location.protocol);
 
-  const { src } = getCurrentScript();
+  if (!host) {
+    const { src } = getCurrentScript();
 
-  if (src) return new URL(src).host;
+    if (src) {
+      const url = new URL(src);
 
-  return window.location.host;
+      host = url.host;
+      tls = isTLS(url.protocol) || tls;
+    } else {
+      host = window.location.host;
+    }
+  }
+
+  return `${tls ? 'wss' : 'ws'}://${host}`;
+}
+
+function resolvePath() {
+  try {
+    return __WDS_HOT_SOCKET_PATH__;
+  } catch {
+    throw new Error('imported the hot client but the hot server is not enabled');
+  }
 }
 
 function resolveSocketURL() {
-  const query = __resourceQuery || '';
-  const params = new URLSearchParams(query);
+  const params = new URLSearchParams(__resourceQuery);
 
-  const host = resolveHost(params.get('host'));
-  const tls = params.has('tls') || location.protocol === 'https:';
-
-  return `${tls ? 'wss' : 'ws'}://${host}${__WDS_HOT_SOCKET_PATH__}`;
+  return `${resolveHost(params)}${resolvePath()}`;
 }
 
 function progressActions({ value }, options) {

@@ -729,7 +729,7 @@ var Progress = /*#__PURE__*/function () {
 var timer;
 var status = 'idle';
 var aborted = false;
-var RELOAD_INTERVAL = 300;
+var RELOAD_INTERVAL = 250;
 
 function reload() {
   clearTimeout(timer);
@@ -794,6 +794,10 @@ var progress = new Progress();
 var MAX_RETRY_TIMES = 10;
 var RETRY_INTERVAL = 3000;
 
+function isTLS(protocol) {
+  return protocol === 'https:';
+}
+
 function parseMessage(message) {
   try {
     return JSON.parse(message.data);
@@ -817,22 +821,37 @@ function getCurrentScript() {
   }
 }
 
-function resolveHost(host) {
-  if (host) return host;
+function resolveHost(params) {
+  var host = params.get('host');
+  var tls = params.has('tls') || isTLS(window.location.protocol);
 
-  var _getCurrentScript = getCurrentScript(),
-      src = _getCurrentScript.src;
+  if (!host) {
+    var _getCurrentScript = getCurrentScript(),
+        src = _getCurrentScript.src;
 
-  if (src) return new URL(src).host;
-  return window.location.host;
+    if (src) {
+      var url = new URL(src);
+      host = url.host;
+      tls = isTLS(url.protocol) || tls;
+    } else {
+      host = window.location.host;
+    }
+  }
+
+  return "".concat(tls ? 'wss' : 'ws', "://").concat(host);
+}
+
+function resolvePath() {
+  try {
+    return __WDS_HOT_SOCKET_PATH__;
+  } catch (_unused2) {
+    throw new Error('imported the hot client but the hot server is not enabled');
+  }
 }
 
 function resolveSocketURL() {
-  var query = __resourceQuery || '';
-  var params = new URLSearchParams(query);
-  var host = resolveHost(params.get('host'));
-  var tls = params.has('tls') || location.protocol === 'https:';
-  return "".concat(tls ? 'wss' : 'ws', "://").concat(host).concat(__WDS_HOT_SOCKET_PATH__);
+  var params = new URLSearchParams(__resourceQuery);
+  return "".concat(resolveHost(params)).concat(resolvePath());
 }
 
 function progressActions(_ref, options) {
