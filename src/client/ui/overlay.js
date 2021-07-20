@@ -76,6 +76,7 @@ const CSS = `
     text-align: center;
     background: #282d35;
     overflow-wrap: break-word;
+    border-radius: 0 0 4px 4px;
     padding: 16px 48px 16px 16px;
   }
   .${OVERLAY}-name {
@@ -135,6 +136,7 @@ const CSS = `
   }
   .${OVERLAY}-errors > div > div,
   .${OVERLAY}-warnings > div > div {
+    font-size: 14px;
     padding: 8px 0 16px 16px;
     overflow-wrap: break-word;
   }
