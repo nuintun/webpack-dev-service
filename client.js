@@ -663,8 +663,8 @@ function onEffectsEnd(node, callback) {
 
 var PROGRESS = 'wds-progress';
 var PERIMETER = 2 * Math.PI * 44;
-var CSS = "\n  .".concat(PROGRESS, " {\n    width: 48px;\n    right: 16px;\n    height: 48px;\n    bottom: 16px;\n    display: block;\n    font-size: 16px;\n    position: fixed;\n    cursor: default;\n    user-select: none;\n    font-style: normal;\n    font-weight: normal;\n    z-index: 2147483645;\n    transform-origin: center;\n    transform: scale(0) translateZ(0);\n    transition: transform .25s ease-out;\n  }\n  .").concat(PROGRESS, "-show {\n    transform: scale(1) translateZ(0);\n  }\n  .").concat(PROGRESS, "-bg {\n    fill: #282d35;\n  }\n  .").concat(PROGRESS, "-track {\n    stroke: #badfac;\n    stroke-width: 8;\n    fill: rgba(0, 0, 0, 0);\n    stroke-dasharray: 0 ").concat(PERIMETER, ";\n    transition: stroke-dasharray .25s linear;\n    transform: matrix(0, -1, 1, 0, 0, 96) translateZ(0);\n  }\n  .").concat(PROGRESS, "-value {\n    fill: #ffffff;\n    font-size: 20px;\n    text-anchor: middle;\n    dominant-baseline: middle;\n    font-family: Consolas, monospace;\n  }\n");
-var HTML = "\n  <svg class=\"".concat(PROGRESS, "\" x=\"0\" y=\"0\" viewBox=\"0 0 96 96\">\n    <circle class=\"").concat(PROGRESS, "-bg\" cx=\"50%\" cy=\"50%\" r=\"44\" />\n    <circle class=\"").concat(PROGRESS, "-track\" cx=\"50%\" cy=\"50%\" r=\"44\" />\n    <text class=\"").concat(PROGRESS, "-value\" x=\"50%\" y=\"52%\">0%</text>\n  </svg>\n");
+var CSS = "\n  .".concat(PROGRESS, " {\n    width: 48px;\n    right: 16px;\n    height: 48px;\n    bottom: 16px;\n    display: block;\n    font-size: 16px;\n    position: fixed;\n    cursor: default;\n    user-select: none;\n    font-style: normal;\n    font-weight: normal;\n    z-index: 2147483645;\n    transform-origin: center;\n    transform: scale(0) translateZ(0);\n    transition: transform .25s ease-out;\n  }\n  .").concat(PROGRESS, "-show {\n    transform: scale(1) translateZ(0);\n  }\n  .").concat(PROGRESS, "-track {\n    stroke: #badfac;\n    stroke-width: 8;\n    fill: rgba(0, 0, 0, 0);\n    stroke-dasharray: 0 ").concat(PERIMETER, ";\n    transition: stroke-dasharray .25s linear;\n    transform: matrix(0, -1, 1, 0, 0, 96) translateZ(0);\n  }\n");
+var HTML = "\n  <svg class=\"".concat(PROGRESS, "\" x=\"0\" y=\"0\" viewBox=\"0 0 96 96\">\n    <circle fill=\"#282d35\" cx=\"50%\" cy=\"50%\" r=\"44\" />\n    <circle class=\"").concat(PROGRESS, "-track\" cx=\"50%\" cy=\"50%\" r=\"44\" />\n    <path fill=\"#fff\" d=\"m48,83.213561l-31.122918,-17.60678l0,-35.21356l31.122918,-17.60678l31.122918,17.60678l0,35.21356l-31.122918,17.60678z\"/>\n    <path fill=\"#8ed6fb\" d=\"m22.434956,31.608089l24.537982,-13.880011l0,10.810563l-15.288554,8.410172l-9.249428,-5.340723zm-1.678513,1.520052l0,29.027711l8.979458,-5.182262l0,-18.657318l-8.979458,-5.188131zm52.908373,-1.520052l-24.537982,-13.880011l0,10.810563l15.288554,8.410172l9.249428,-5.340723zm1.678513,1.520052l0,29.027711l-8.979458,-5.182262l0,-18.657318l8.979458,-5.188131zm-1.050538,30.905767l-25.165957,14.238016l0,-10.452558l16.121941,-8.867948l0.123247,-0.070427l8.920768,5.152918zm-52.485811,0l25.165957,14.238016l0,-10.452558l-16.121941,-8.867948l-0.123247,-0.070427l-8.920768,5.152918z\"/>\n    <path fill=\"#1c78c0\" d=\"m49.126834,30.997721l15.083141,8.292793l0,16.432994l-15.083141,-8.709487l0,-16.016301zm-2.153896,0l-15.083141,8.292793l0,16.432994l15.083141,-8.709487l0,-16.016301zm16.215844,26.62732l-15.141831,8.328007l-15.141831,-8.328007l15.141831,-8.744701l15.141831,8.744701z\"/>\n  </svg>\n");
 
 function calcPercent(value) {
   if (value <= 0) return 0;
@@ -686,13 +686,11 @@ var Progress = /*#__PURE__*/function () {
 
     this.svg = _appendHTML2[0];
     this.track = this.svg.querySelector(".".concat(PROGRESS, "-track"));
-    this.value = this.svg.querySelector(".".concat(PROGRESS, "-value"));
   }
 
   _createClass(Progress, [{
     key: "update",
     value: function update(value) {
-      this.value.innerHTML = "".concat(value, "%");
       var percent = calcPercent(value);
       var dashWidth = PERIMETER * percent;
       var dashSpace = PERIMETER * (1 - percent);
