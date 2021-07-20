@@ -8,7 +8,7 @@ import onEffectsEnd from './utils/effects';
 import { appendHTML, injectCSS } from './utils';
 
 const PROGRESS = 'wds-progress';
-const PERIMETER = 2 * Math.PI * 36;
+const PERIMETER = 2 * Math.PI * 44;
 
 const CSS = `
   .${PROGRESS} {
@@ -40,7 +40,7 @@ const CSS = `
     fill: rgba(0, 0, 0, 0);
     stroke-dasharray: 0 ${PERIMETER};
     transition: stroke-dasharray .25s linear;
-    transform: matrix(0, -1, 1, 0, 0, 80) translateZ(0);
+    transform: matrix(0, -1, 1, 0, 0, 96) translateZ(0);
   }
   .${PROGRESS}-value {
     fill: #ffffff;
@@ -52,9 +52,9 @@ const CSS = `
 `;
 
 const HTML = `
-  <svg class="${PROGRESS}" x="0" y="0" viewBox="0 0 80 80">
-    <circle class="${PROGRESS}-bg" cx="50%" cy="50%" r="36" />
-    <circle class="${PROGRESS}-track" cx="50%" cy="50%" r="36" />
+  <svg class="${PROGRESS}" x="0" y="0" viewBox="0 0 96 96">
+    <circle class="${PROGRESS}-bg" cx="50%" cy="50%" r="44" />
+    <circle class="${PROGRESS}-track" cx="50%" cy="50%" r="44" />
     <text class="${PROGRESS}-value" x="50%" y="52%">0%</text>
   </svg>
 `;
