@@ -87,6 +87,9 @@ _config.yml
 # Yarn lock file
 yarn.lock
 
+# Yarn configure file
+.yarnrc
+
 # Npm lock file
 package-lock.json
 

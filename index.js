@@ -163,16 +163,13 @@ class HotServer {
       let value = 0;
 
       plugins.push(
-        new webpack.ProgressPlugin({
-          percentBy: 'entries',
-          handler: percentage => {
-            const nextValue = Math.floor(percentage * 100);
+        new webpack.ProgressPlugin(percentage => {
+          const nextValue = Math.floor(percentage * 100);
 
-            if (nextValue > value || nextValue === 0) {
-              value = nextValue;
+          if (nextValue > value || nextValue === 0) {
+            value = nextValue;
 
-              this.broadcast(this.server.clients, 'progress', { value });
-            }
+            this.broadcast(this.server.clients, 'progress', { value });
           }
         })
       );

@@ -34,6 +34,8 @@ const CSS = `
   .${PROGRESS}-track {
     stroke: #badfac;
     stroke-width: 8;
+    stroke-dashoffset: 0;
+    stroke-linecap: round;
     fill: rgba(0, 0, 0, 0);
     stroke-dasharray: 0 ${PERIMETER};
     transition: stroke-dasharray .25s linear;
