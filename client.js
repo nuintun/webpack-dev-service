@@ -11,10 +11,6 @@ import 'core-js/modules/es.object.keys.js';
 import 'core-js/modules/es.string.repeat.js';
 import ansiRegex from 'ansi-regex';
 import 'core-js/modules/es.string.trim.js';
-import 'core-js/modules/es.number.constructor.js';
-import 'core-js/modules/es.array.slice.js';
-import 'core-js/modules/es.array.map.js';
-import 'core-js/modules/es.string.split.js';
 
 function ownKeys(object, enumerableOnly) {
   var keys = Object.keys(object);
@@ -510,157 +506,6 @@ var Overlay = /*#__PURE__*/function () {
   return Overlay;
 }();
 
-/**
- * @module effects
- */
-// 默认样式
-var styles = document.documentElement.style; // Animation 映射表
-
-var ANIMATION_MAPS = [['animation', 'animationend'], ['WebkitAnimation', 'webkitAnimationEnd'], ['MozAnimation', 'mozAnimationEnd'], ['OAnimation', 'oAnimationEnd'], ['msAnimation', 'MSAnimationEnd'], ['KhtmlAnimation', 'khtmlAnimationEnd']]; // Transition 映射表
-
-var TRANSITION_MAPS = [['transition', 'transitionend'], ['WebkitTransition', 'webkitTransitionEnd'], ['MozTransition', 'mozTransitionEnd'], ['OTransition', 'oTransitionEnd'], ['msTransition', 'MSTransitionEnd'], ['KhtmlTransition', 'khtmlTransitionEnd']];
-/**
- * @function detect
- * @param {object} maps
- */
-
-function detect(maps) {
-  var _iterator = _createForOfIteratorHelper(maps),
-      _step;
-
-  try {
-    for (_iterator.s(); !(_step = _iterator.n()).done;) {
-      var _step$value = _slicedToArray(_step.value, 2),
-          prop = _step$value[0],
-          event = _step$value[1];
-
-      if (prop in styles) {
-        return [prop, event];
-      }
-    }
-  } catch (err) {
-    _iterator.e(err);
-  } finally {
-    _iterator.f();
-  }
-} // Animation
-
-
-var _detect = detect(ANIMATION_MAPS),
-    _detect2 = _slicedToArray(_detect, 2),
-    ANIMATION = _detect2[0],
-    ANIMATION_END = _detect2[1]; // Transition
-
-
-var _detect3 = detect(TRANSITION_MAPS),
-    _detect4 = _slicedToArray(_detect3, 2),
-    TRANSITION = _detect4[0],
-    TRANSITION_END = _detect4[1];
-/**
- * @function toMs
- * @param {string} value
- */
-
-
-function toMs(value) {
-  return Number(value.slice(0, -1).replace(',', '.')) * 1000;
-}
-/**
- * @function calcTimeout
- * @param {Array} delays
- * @param {Array} durations
- */
-
-
-function calcTimeout(delays, durations) {
-  while (delays.length < durations.length) {
-    delays = delays.concat(delays);
-  }
-
-  var times = durations.map(function (duration, index) {
-    return toMs(duration) + toMs(delays[index]);
-  }); // 获取最大时长
-
-  return Math.max.apply(null, times);
-}
-/**
- * @function toArray
- * @param {any} value
- */
-
-
-function toArray(value) {
-  return value ? value.split(', ') : [];
-}
-/**
- * @function calcEffects
- * @param {HTMLElement} node
- */
-
-
-function calcEffects(node) {
-  var styles = window.getComputedStyle(node);
-  var transitioneDelays = toArray(styles.getPropertyValue(TRANSITION + '-delay'));
-  var transitionDurations = toArray(styles.getPropertyValue(TRANSITION + '-duration'));
-  var transitionTimeout = calcTimeout(transitioneDelays, transitionDurations);
-  var animationDelays = toArray(styles.getPropertyValue(ANIMATION + '-delay'));
-  var animationDurations = toArray(styles.getPropertyValue(ANIMATION + '-duration'));
-  var animationTimeout = calcTimeout(animationDelays, animationDurations);
-  var timeout = Math.max(transitionTimeout, animationTimeout);
-  var effect = timeout > 0 ? transitionTimeout > animationTimeout ? TRANSITION : ANIMATION : null;
-  var count = effect ? effect === TRANSITION ? transitionDurations.length : animationDurations.length : 0;
-  return {
-    effect: effect,
-    count: count,
-    timeout: timeout
-  };
-}
-/**
- * @function onEffectsEnd
- * @param {HTMLElement} node
- * @param {Function} callback
- * @see https://github.com/vuejs/vue/blob/dev/src/platforms/web/runtime/transition-util.js
- */
-
-
-function onEffectsEnd(node, callback) {
-  // 不支持动画
-  if (!ANIMATION && !TRANSITION) return callback();
-
-  var _calcEffects = calcEffects(node),
-      count = _calcEffects.count,
-      effect = _calcEffects.effect,
-      timeout = _calcEffects.timeout; // 没有动画
-
-
-  if (!effect) return callback();
-  var ended = 0; // 防止有些动画没有触发结束事件
-
-  var timer = setTimeout(function () {
-    if (ended < count) {
-      end();
-    }
-  }, timeout + 1);
-  var event = effect === TRANSITION ? TRANSITION_END : ANIMATION_END;
-
-  var end = function end() {
-    clearTimeout(timer);
-    node.removeEventListener(event, onEnd);
-    callback();
-  };
-
-  var onEnd = function onEnd(e) {
-    if (e.target === node) {
-      if (++ended >= count) {
-        end();
-      }
-    }
-  }; // 监听动画完成事件
-
-
-  node.addEventListener(event, onEnd);
-}
-
 var PROGRESS = 'wds-progress';
 var PERIMETER = 2 * Math.PI * 44;
 var CSS = "\n.".concat(PROGRESS, " {\n  width: 48px;\n  right: 16px;\n  height: 48px;\n  bottom: 16px;\n  display: block;\n  font-size: 16px;\n  position: fixed;\n  cursor: default;\n  user-select: none;\n  font-style: normal;\n  font-weight: normal;\n  z-index: 2147483645;\n  transform-origin: center;\n  transform: scale(0) translateZ(0);\n  transition: transform .25s ease-out;\n}\n.").concat(PROGRESS, "-show {\n  transform: scale(1) translateZ(0);\n}\n.").concat(PROGRESS, "-track {\n  stroke: #badfac;\n  stroke-width: 8;\n  stroke-linecap: round;\n  fill: rgba(0, 0, 0, 0);\n  stroke-dasharray: ").concat(PERIMETER, ";\n  stroke-dashoffset: ").concat(PERIMETER, ";\n  transition: stroke-dashoffset .25s linear;\n  transform: matrix(0, -1, 1, 0, 0, 96) translateZ(0);\n}\n");
@@ -693,6 +538,7 @@ var Progress = /*#__PURE__*/function () {
     value: function show() {
       if (this.hidden) {
         this.hidden = false;
+        clearTimeout(this.timer);
         this.svg.classList.add("".concat(PROGRESS, "-show"));
       }
     }
@@ -703,11 +549,9 @@ var Progress = /*#__PURE__*/function () {
 
       if (!this.hidden) {
         this.hidden = true;
-        onEffectsEnd(this.track, function () {
-          if (_this.hidden) {
-            _this.svg.classList.remove("".concat(PROGRESS, "-show"));
-          }
-        });
+        this.timer = setTimeout(function () {
+          _this.svg.classList.remove("".concat(PROGRESS, "-show"));
+        }, 300);
       }
     }
   }]);

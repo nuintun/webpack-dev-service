@@ -4,7 +4,6 @@
  * @see https://www.zhangxinxu.com/wordpress/2015/07/svg-circle-loading
  */
 
-import onEffectsEnd from './utils/effects';
 import { appendHTML, injectCSS } from './utils';
 
 const PROGRESS = 'wds-progress';
@@ -74,6 +73,8 @@ export default class Progress {
     if (this.hidden) {
       this.hidden = false;
 
+      clearTimeout(this.timer);
+
       this.svg.classList.add(`${PROGRESS}-show`);
     }
   }
@@ -82,11 +83,9 @@ export default class Progress {
     if (!this.hidden) {
       this.hidden = true;
 
-      onEffectsEnd(this.track, () => {
-        if (this.hidden) {
-          this.svg.classList.remove(`${PROGRESS}-show`);
-        }
-      });
+      this.timer = setTimeout(() => {
+        this.svg.classList.remove(`${PROGRESS}-show`);
+      }, 300);
     }
   }
 }
