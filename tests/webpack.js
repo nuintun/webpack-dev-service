@@ -81,6 +81,7 @@ const compiler = webpack({
   plugins: [new webpack.ProgressPlugin(progress), new HtmlWebpackPlugin(html)]
 });
 
+const port = 8000;
 const app = new Koa();
 const fs = createMemfs();
 const server = dev(compiler, { index: false, outputFileSystem: fs });
@@ -97,8 +98,8 @@ app.on('error', error => {
   !httpError(error) && console.error(error);
 });
 
-app.listen(8000, () => {
+app.listen(port, () => {
   server.waitUntilValid(() => {
-    logger.info(`server run at: \u001B[36mhttp://127.0.0.1:8000\u001B[0m`);
+    logger.info(`server run at: \u001B[36mhttp://127.0.0.1:${port}\u001B[0m`);
   });
 });

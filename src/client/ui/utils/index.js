@@ -5,10 +5,10 @@
 export function injectCSS(css) {
   const style = document.createElement('style');
 
-  if (css.styleSheet) {
-    style.styleSheet.cssText = css;
+  if (style.styleSheet) {
+    style.styleSheet.cssText = css.trim();
   } else {
-    style.appendChild(document.createTextNode(css));
+    style.appendChild(document.createTextNode(css.trim()));
   }
 
   document.head.appendChild(style);
