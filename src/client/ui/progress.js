@@ -65,6 +65,8 @@ export default class Progress {
   }
 
   update(value) {
+    value = Math.max(0, Math.min(100, value));
+
     this.track.style.strokeDashoffset = ((100 - value) / 100) * PERIMETER;
   }
 
@@ -81,7 +83,9 @@ export default class Progress {
       this.hidden = true;
 
       onEffectsEnd(this.track, () => {
-        this.svg.classList.remove(`${PROGRESS}-show`);
+        if (this.hidden) {
+          this.svg.classList.remove(`${PROGRESS}-show`);
+        }
       });
     }
   }

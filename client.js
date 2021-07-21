@@ -685,6 +685,7 @@ var Progress = /*#__PURE__*/function () {
   _createClass(Progress, [{
     key: "update",
     value: function update(value) {
+      value = Math.max(0, Math.min(100, value));
       this.track.style.strokeDashoffset = (100 - value) / 100 * PERIMETER;
     }
   }, {
@@ -703,7 +704,9 @@ var Progress = /*#__PURE__*/function () {
       if (!this.hidden) {
         this.hidden = true;
         onEffectsEnd(this.track, function () {
-          _this.svg.classList.remove("".concat(PROGRESS, "-show"));
+          if (_this.hidden) {
+            _this.svg.classList.remove("".concat(PROGRESS, "-show"));
+          }
         });
       }
     }
