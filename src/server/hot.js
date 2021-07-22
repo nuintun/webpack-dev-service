@@ -77,13 +77,6 @@ class HotServer {
     });
 
     server.on('connection', client => {
-      const { hmr, progress, overlay } = this.options;
-
-      this.broadcast([client], 'init', {
-        name: this.compiler.name,
-        options: { hmr, progress, overlay }
-      });
-
       if (this.stats) {
         this.broadcastStats([client], this.stats);
       }
@@ -105,11 +98,11 @@ class HotServer {
   }
 
   setupPlugins() {
-    const { options } = this;
+    const { options, compiler } = this;
 
     const plugins = [
       new webpack.DefinePlugin({
-        __WDS_HOT_SOCKET_PATH__: JSON.stringify(options.path)
+        __WDS_HOT_OPTIONS__: JSON.stringify({ ...options, name: compiler.name })
       })
     ];
 
@@ -132,12 +125,6 @@ class HotServer {
         })
       );
     }
-
-    this.applyPlugins(plugins);
-  }
-
-  applyPlugins(plugins) {
-    const { compiler } = this;
 
     for (const plugin of plugins) {
       plugin.apply(compiler);

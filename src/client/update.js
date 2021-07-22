@@ -26,12 +26,10 @@ function replace(hash, onUpdated) {
   module.hot
     .check()
     .then(() => {
-      return module.hot.apply().then(updated => {
+      return module.hot.apply().then(() => {
         status = module.hot.status();
 
-        if (!updated || updated.length === 0) {
-          reload();
-        } else if (isUpToDate(hash)) {
+        if (isUpToDate(hash)) {
           onUpdated();
         } else {
           replace(hash, onUpdated);

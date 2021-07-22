@@ -182,7 +182,7 @@ function ansiHTML(text) {
 export default class Overlay {
   hidden = true;
 
-  constructor() {
+  constructor(name) {
     injectCSS(CSS);
 
     [this.aside] = appendHTML(HTML);
@@ -194,13 +194,11 @@ export default class Overlay {
     this.errorsTitle = this.aside.querySelector(`.${OVERLAY}-errors-title`);
     this.warningsTitle = this.aside.querySelector(`.${OVERLAY}-warnings-title`);
 
+    this.name.innerHTML = name || DEFAULT_NAME;
+
     this.close.addEventListener('click', () => {
       this.hide();
     });
-  }
-
-  setName(name) {
-    this.name.innerHTML = name || DEFAULT_NAME;
   }
 
   setProblems(type, problems) {

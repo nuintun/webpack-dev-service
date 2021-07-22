@@ -1,10 +1,10 @@
+import 'core-js/modules/es.function.name.js';
 import 'core-js/modules/es.array.iterator.js';
 import 'core-js/modules/es.object.to-string.js';
 import 'core-js/modules/es.string.iterator.js';
 import 'core-js/modules/web.dom-collections.iterator.js';
 import 'core-js/modules/web.url.js';
 import 'core-js/modules/es.array.concat.js';
-import 'core-js/modules/es.function.name.js';
 import 'core-js/modules/es.regexp.exec.js';
 import 'core-js/modules/es.string.replace.js';
 import 'core-js/modules/es.object.keys.js';
@@ -410,7 +410,7 @@ function ansiHTML(text) {
 }
 
 var Overlay = /*#__PURE__*/function () {
-  function Overlay() {
+  function Overlay(name) {
     var _this = this;
 
     _classCallCheck(this, Overlay);
@@ -430,17 +430,13 @@ var Overlay = /*#__PURE__*/function () {
     this.warningsList = this.aside.querySelector(".".concat(OVERLAY, "-warnings"));
     this.errorsTitle = this.aside.querySelector(".".concat(OVERLAY, "-errors-title"));
     this.warningsTitle = this.aside.querySelector(".".concat(OVERLAY, "-warnings-title"));
+    this.name.innerHTML = name || DEFAULT_NAME;
     this.close.addEventListener('click', function () {
       _this.hide();
     });
   }
 
   _createClass(Overlay, [{
-    key: "setName",
-    value: function setName(name) {
-      this.name.innerHTML = name || DEFAULT_NAME;
-    }
-  }, {
     key: "setProblems",
     value: function setProblems(type, problems) {
       var count = problems.length;
@@ -582,12 +578,10 @@ function isUpToDate(hash) {
 
 function replace(hash, onUpdated) {
   module.hot.check().then(function () {
-    return module.hot.apply().then(function (updated) {
+    return module.hot.apply().then(function () {
       status = module.hot.status();
 
-      if (!updated || updated.length === 0) {
-        reload();
-      } else if (isUpToDate(hash)) {
+      if (isUpToDate(hash)) {
         onUpdated();
       } else {
         replace(hash, onUpdated);
@@ -625,10 +619,11 @@ function update(hash, hmr, forceReload) {
 
 var retryTimes = 0;
 var forceReload = false;
-var overlay = new Overlay();
-var progress = new Progress();
 var MAX_RETRY_TIMES = 10;
 var RETRY_INTERVAL = 3000;
+var options = resolveOptions();
+var progress = new Progress();
+var overlay = new Overlay(options.name);
 
 function isTLS(protocol) {
   return protocol === 'https:';
@@ -677,9 +672,9 @@ function resolveHost(params) {
   return "".concat(tls ? 'wss' : 'ws', "://").concat(host);
 }
 
-function resolvePath() {
+function resolveOptions() {
   try {
-    return __WDS_HOT_SOCKET_PATH__;
+    return __WDS_HOT_OPTIONS__;
   } catch (_unused2) {
     throw new Error('imported the hot client but the hot server is not enabled');
   }
@@ -687,10 +682,10 @@ function resolvePath() {
 
 function resolveSocketURL() {
   var params = new URLSearchParams(__resourceQuery);
-  return "".concat(resolveHost(params)).concat(resolvePath());
+  return "".concat(resolveHost(params)).concat(options.path);
 }
 
-function progressActions(_ref, options) {
+function progressActions(_ref) {
   var value = _ref.value;
 
   if (options.progress) {
@@ -733,7 +728,7 @@ function printProblems(type, problems) {
   }
 }
 
-function problemsActions(_ref2, options) {
+function problemsActions(_ref2) {
   var errors = _ref2.errors,
       warnings = _ref2.warnings;
   var configure = options.overlay;
@@ -756,7 +751,6 @@ function problemsActions(_ref2, options) {
 }
 
 function createWebSocket(url) {
-  var options = {};
   var ws = new WebSocket(url);
 
   ws.onopen = function () {
@@ -768,47 +762,44 @@ function createWebSocket(url) {
         action = _parseMessage.action,
         payload = _parseMessage.payload;
 
-    switch (action) {
-      case 'init':
-        options = payload.options;
-        overlay.setName(payload.name);
-        break;
+    if (action) {
+      switch (action) {
+        case 'invalid':
+          abort();
 
-      case 'invalid':
-        abort();
+          if (options.progress) {
+            progress.update(0);
+          }
 
-        if (options.progress) {
-          progress.update(0);
-        }
+          break;
 
-        break;
+        case 'progress':
+          progressActions(payload);
+          break;
 
-      case 'progress':
-        progressActions(payload, options);
-        break;
+        case 'problems':
+          if (payload.errors.length > 0) {
+            forceReload = true;
+            problemsActions(payload);
+          } else {
+            update(payload.hash, options.hmr, forceReload, function () {
+              problemsActions(payload);
+            });
+          }
 
-      case 'problems':
-        if (payload.errors.length > 0) {
-          forceReload = true;
-          problemsActions(payload, options);
-        } else {
-          update(payload.hash, options.hmr, forceReload, function () {
-            problemsActions(payload, options);
-          });
-        }
+          break;
 
-        break;
+        case 'ok':
+          overlay.hide();
+          update(payload.hash, options.hmr, forceReload);
+          break;
+      }
 
-      case 'ok':
-        overlay.hide();
-        update(payload.hash, options.hmr, forceReload);
-        break;
+      window.postMessage({
+        action: "webpack-hot-".concat(action),
+        payload: payload
+      }, '*');
     }
-
-    window.postMessage({
-      action: "webpack-hot-".concat(action),
-      payload: payload
-    }, '*');
   };
 
   ws.onclose = function () {

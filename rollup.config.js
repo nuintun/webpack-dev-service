@@ -1,8 +1,8 @@
 import babel from '@rollup/plugin-babel';
 import resolve from '@rollup/plugin-node-resolve';
 
-const targets = { browsers: ['defaults'] };
 const corejs = { version: '^3.0.0', proposals: true };
+const targets = { browsers: ['defaults', 'ie >= 10'] };
 
 export default [
   {

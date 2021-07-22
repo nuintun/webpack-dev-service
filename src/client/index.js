@@ -10,11 +10,12 @@ import { update, abort } from './update';
 let retryTimes = 0;
 let forceReload = false;
 
-const overlay = new Overlay();
-const progress = new Progress();
-
 const MAX_RETRY_TIMES = 10;
 const RETRY_INTERVAL = 3000;
+
+const options = resolveOptions();
+const progress = new Progress();
+const overlay = new Overlay(options.name);
 
 function isTLS(protocol) {
   return protocol === 'https:';
@@ -64,9 +65,9 @@ function resolveHost(params) {
   return `${tls ? 'wss' : 'ws'}://${host}`;
 }
 
-function resolvePath() {
+function resolveOptions() {
   try {
-    return __WDS_HOT_SOCKET_PATH__;
+    return __WDS_HOT_OPTIONS__;
   } catch {
     throw new Error('imported the hot client but the hot server is not enabled');
   }
@@ -75,10 +76,10 @@ function resolvePath() {
 function resolveSocketURL() {
   const params = new URLSearchParams(__resourceQuery);
 
-  return `${resolveHost(params)}${resolvePath()}`;
+  return `${resolveHost(params)}${options.path}`;
 }
 
-function progressActions({ value }, options) {
+function progressActions({ value }) {
   if (options.progress) {
     if (value === 0) {
       progress.show();
@@ -104,7 +105,7 @@ function printProblems(type, problems) {
   }
 }
 
-function problemsActions({ errors, warnings }, options) {
+function problemsActions({ errors, warnings }) {
   const { overlay: configure } = options;
 
   if (configure.errors) {
@@ -125,8 +126,6 @@ function problemsActions({ errors, warnings }, options) {
 }
 
 function createWebSocket(url) {
-  let options = {};
-
   const ws = new WebSocket(url);
 
   ws.onopen = () => {
@@ -136,41 +135,38 @@ function createWebSocket(url) {
   ws.onmessage = message => {
     const { action, payload } = parseMessage(message);
 
-    switch (action) {
-      case 'init':
-        options = payload.options;
+    if (action) {
+      switch (action) {
+        case 'invalid':
+          abort();
 
-        overlay.setName(payload.name);
-        break;
-      case 'invalid':
-        abort();
+          if (options.progress) {
+            progress.update(0);
+          }
+          break;
+        case 'progress':
+          progressActions(payload);
+          break;
+        case 'problems':
+          if (payload.errors.length > 0) {
+            forceReload = true;
 
-        if (options.progress) {
-          progress.update(0);
-        }
-        break;
-      case 'progress':
-        progressActions(payload, options);
-        break;
-      case 'problems':
-        if (payload.errors.length > 0) {
-          forceReload = true;
+            problemsActions(payload);
+          } else {
+            update(payload.hash, options.hmr, forceReload, () => {
+              problemsActions(payload);
+            });
+          }
+          break;
+        case 'ok':
+          overlay.hide();
 
-          problemsActions(payload, options);
-        } else {
-          update(payload.hash, options.hmr, forceReload, () => {
-            problemsActions(payload, options);
-          });
-        }
-        break;
-      case 'ok':
-        overlay.hide();
+          update(payload.hash, options.hmr, forceReload);
+          break;
+      }
 
-        update(payload.hash, options.hmr, forceReload);
-        break;
+      window.postMessage({ action: `webpack-hot-${action}`, payload }, '*');
     }
-
-    window.postMessage({ action: `webpack-hot-${action}`, payload }, '*');
   };
 
   ws.onclose = () => {
