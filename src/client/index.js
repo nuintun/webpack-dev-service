@@ -14,8 +14,8 @@ const MAX_RETRY_TIMES = 10;
 const RETRY_INTERVAL = 3000;
 
 const options = resolveOptions();
-const progress = new Progress();
 const overlay = new Overlay(options.name);
+const progress = new Progress();
 
 function isTLS(protocol) {
   return protocol === 'https:';

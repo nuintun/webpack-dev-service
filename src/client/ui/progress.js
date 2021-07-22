@@ -22,7 +22,7 @@ const CSS = `
   user-select: none;
   font-style: normal;
   font-weight: normal;
-  z-index: 2147483645;
+  z-index: 2147483647;
   transform-origin: center;
   transform: scale(0) translateZ(0);
   transition: transform .25s ease-out;

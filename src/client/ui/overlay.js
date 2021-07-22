@@ -22,7 +22,7 @@ const CSS = `
   overflow: hidden;
   font-style: normal;
   font-weight: normal;
-  z-index: 2147483644;
+  z-index: 2147483646;
   flex-direction: column;
   box-sizing: border-box;
   transform-origin: center;
