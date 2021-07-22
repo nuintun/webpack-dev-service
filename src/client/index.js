@@ -106,21 +106,21 @@ function printProblems(type, problems) {
 }
 
 function problemsActions({ errors, warnings }) {
-  const { overlay: configure } = options;
+  const { errors: popupError, warnings: popupWarnings } = options.overlay;
 
-  if (configure.errors) {
+  if (popupError) {
     overlay.setProblems('errors', errors);
   } else {
     printProblems('errors', errors);
   }
 
-  if (configure.warnings) {
+  if (popupWarnings) {
     overlay.setProblems('warnings', warnings);
   } else {
     printProblems('warnings', warnings);
   }
 
-  if (errors.length > 0 || warnings.length > 0) {
+  if (popupError || popupWarnings) {
     overlay.show();
   }
 }

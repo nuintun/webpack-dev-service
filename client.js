@@ -731,21 +731,23 @@ function printProblems(type, problems) {
 function problemsActions(_ref2) {
   var errors = _ref2.errors,
       warnings = _ref2.warnings;
-  var configure = options.overlay;
+  var _options$overlay = options.overlay,
+      popupError = _options$overlay.errors,
+      popupWarnings = _options$overlay.warnings;
 
-  if (configure.errors) {
+  if (popupError) {
     overlay.setProblems('errors', errors);
   } else {
     printProblems('errors', errors);
   }
 
-  if (configure.warnings) {
+  if (popupWarnings) {
     overlay.setProblems('warnings', warnings);
   } else {
     printProblems('warnings', warnings);
   }
 
-  if (errors.length > 0 || warnings.length > 0) {
+  if (popupError || popupWarnings) {
     overlay.show();
   }
 }
