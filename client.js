@@ -561,7 +561,7 @@ var Progress = /*#__PURE__*/function () {
 var timer;
 var status = 'idle';
 var aborted = false;
-var RELOAD_INTERVAL = 250;
+var RELOAD_INTERVAL = 300;
 
 function reload() {
   clearTimeout(timer);
