@@ -89,11 +89,11 @@ class HotServer {
     hooks.done.tap(this.name, stats => {
       this.stats = stats;
 
-      this.broadcastStats(this.server.clients, stats);
+      this.broadcastStats(this.clients(), stats);
     });
 
     hooks.invalid.tap(this.name, (file, builtAt) => {
-      this.broadcast(this.server.clients, 'invalid', { file, builtAt });
+      this.broadcast(this.clients(), 'invalid', { file, builtAt });
     });
   }
 
@@ -120,7 +120,7 @@ class HotServer {
           if (nextValue > value || nextValue === 0) {
             value = nextValue;
 
-            this.broadcast(this.server.clients, 'progress', { value });
+            this.broadcast(this.clients(), 'progress', { value });
           }
         })
       );
@@ -129,6 +129,10 @@ class HotServer {
     for (const plugin of plugins) {
       plugin.apply(compiler);
     }
+  }
+
+  clients() {
+    return this.server.clients;
   }
 
   upgrade(context) {
@@ -183,8 +187,12 @@ export default function hot(compiler, options = {}) {
     }
   };
 
-  hotMiddleware.broadcast = (action, payload) => {
-    server.broadcast(server.clients, action, payload);
+  hotMiddleware.clients = () => {
+    return server.clients();
+  };
+
+  hotMiddleware.broadcast = (clients, action, payload) => {
+    server.broadcast(clients, action, payload);
   };
 
   return hotMiddleware;
