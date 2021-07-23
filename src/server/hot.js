@@ -4,7 +4,6 @@
 
 import WebSocket from 'ws';
 import webpack from 'webpack';
-import memoize from 'memoize-one';
 
 const DEFAULT_STATS = {
   all: false,
@@ -27,10 +26,6 @@ const DEFAULT_OPTIONS = {
 };
 
 const WEBSOCKET_RE = /^websocket$/i;
-
-const resolveStats = memoize(stats => {
-  return stats.toJson(DEFAULT_STATS);
-});
 
 function isUpgradable(context, detector) {
   const { upgrade } = context.headers;
@@ -87,9 +82,9 @@ class HotServer {
     const { hooks } = this.compiler;
 
     hooks.done.tap(this.name, stats => {
-      this.stats = stats;
+      this.stats = stats.toJson(DEFAULT_STATS);
 
-      this.broadcastStats(this.clients(), stats);
+      this.broadcastStats(this.clients(), this.stats);
     });
 
     hooks.invalid.tap(this.name, (file, builtAt) => {
@@ -166,7 +161,7 @@ class HotServer {
   broadcastStats(clients, stats) {
     if (clients.size || clients.length) {
       process.nextTick(() => {
-        const { hash, builtAt, errors, warnings } = resolveStats(stats);
+        const { hash, builtAt, errors, warnings } = this.stats;
 
         if (stats.hasErrors() || stats.hasWarnings()) {
           this.broadcast(clients, 'problems', { hash, builtAt, errors, warnings });

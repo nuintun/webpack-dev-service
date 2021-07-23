@@ -3,7 +3,6 @@
 const webpackDevMiddleware = require('webpack-dev-middleware');
 const WebSocket = require('ws');
 const webpack = require('webpack');
-const memoize = require('memoize-one');
 const compose = require('koa-compose');
 
 /**
@@ -70,10 +69,6 @@ const DEFAULT_OPTIONS = {
 
 const WEBSOCKET_RE = /^websocket$/i;
 
-const resolveStats = memoize(stats => {
-  return stats.toJson(DEFAULT_STATS);
-});
-
 function isUpgradable(context, detector) {
   const { upgrade } = context.headers;
 
@@ -129,9 +124,9 @@ class HotServer {
     const { hooks } = this.compiler;
 
     hooks.done.tap(this.name, stats => {
-      this.stats = stats;
+      this.stats = stats.toJson(DEFAULT_STATS);
 
-      this.broadcastStats(this.clients(), stats);
+      this.broadcastStats(this.clients(), this.stats);
     });
 
     hooks.invalid.tap(this.name, (file, builtAt) => {
@@ -208,7 +203,7 @@ class HotServer {
   broadcastStats(clients, stats) {
     if (clients.size || clients.length) {
       process.nextTick(() => {
-        const { hash, builtAt, errors, warnings } = resolveStats(stats);
+        const { hash, builtAt, errors, warnings } = this.stats;
 
         if (stats.hasErrors() || stats.hasWarnings()) {
           this.broadcast(clients, 'problems', { hash, builtAt, errors, warnings });

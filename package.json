@@ -1,6 +1,6 @@
 {
   "name": "webpack-dev-server-middleware",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "main": "index.js",
   "description": "A development and hot reload middleware for Koa2.",
   "scripts": {
@@ -32,7 +32,6 @@
     "ansi-regex": "^6.0.0",
     "bufferutil": "^4.0.3",
     "koa-compose": "^4.1.0",
-    "memoize-one": "^5.2.1",
     "utf-8-validate": "^5.0.5",
     "webpack-dev-middleware": "^5.0.0"
   },
