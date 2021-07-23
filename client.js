@@ -345,7 +345,7 @@ var Ansi = /*#__PURE__*/function () {
 
       var length = codes.length;
 
-      if (length) {
+      if (length > 0) {
         html += '</span>'.repeat(length);
       }
 

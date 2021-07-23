@@ -201,11 +201,11 @@ class HotServer {
   }
 
   broadcastStats(clients, stats) {
-    if (clients.size || clients.length) {
+    if (clients.size > 0 || clients.length > 0) {
       process.nextTick(() => {
-        const { hash, builtAt, errors, warnings } = this.stats;
+        const { hash, builtAt, errors, warnings } = stats;
 
-        if (stats.hasErrors() || stats.hasWarnings()) {
+        if (errors.length > 0 || warnings.length > 0) {
           this.broadcast(clients, 'problems', { hash, builtAt, errors, warnings });
         } else {
           this.broadcast(clients, 'ok', { hash, builtAt });

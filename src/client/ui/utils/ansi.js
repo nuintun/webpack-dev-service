@@ -143,7 +143,7 @@ export default class Ansi {
     // Make sure tags are closed.
     const { length } = codes;
 
-    if (length) {
+    if (length > 0) {
       html += '</span>'.repeat(length);
     }
 
