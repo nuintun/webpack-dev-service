@@ -1,6 +1,6 @@
 {
   "name": "webpack-dev-server-middleware",
-  "version": "0.6.1",
+  "version": "0.6.2",
   "main": "index.js",
   "description": "A development and hot reload middleware for Koa2.",
   "scripts": {
@@ -28,7 +28,7 @@
   "homepage": "https://github.com/nuintun/webpack-dev-server-middleware#readme",
   "dependencies": {
     "ws": "^8.0.0",
-    "core-js": "^3.15.2",
+    "core-js": "^3.16.0",
     "ansi-regex": "^6.0.0",
     "bufferutil": "^4.0.3",
     "koa-compose": "^4.1.0",

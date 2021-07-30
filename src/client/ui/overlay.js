@@ -108,6 +108,7 @@ const CSS = `
   color: #ddd;
   margin: 16px 0;
   display: block;
+  line-height: 1.2;
   border-radius: 4px;
   background: #282d35;
   white-space: pre-wrap;
