@@ -27,6 +27,10 @@ insert_final_newline = false
 [package.json]
 insert_final_newline = false
 
+# Typescript configure files
+[tsconfig.json]
+insert_final_newline = false
+
 # VSCode setting files
 [.vscode/**/*.json]
 insert_final_newline = false
