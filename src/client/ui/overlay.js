@@ -106,6 +106,7 @@ const CSS = `
 .${OVERLAY}-errors,
 .${OVERLAY}-warnings {
   color: #ddd;
+  padding: 16px;
   margin: 16px 0;
   display: block;
   line-height: 1.2;
@@ -116,8 +117,11 @@ const CSS = `
 }
 .${OVERLAY}-errors > div,
 .${OVERLAY}-warnings > div {
-  padding: 16px 16px 0;
   overflow-wrap: break-word;
+}
+.${OVERLAY}-errors > div + div,
+.${OVERLAY}-warnings > div + div {
+  margin: 16px 0 0;
 }
 .${OVERLAY}-errors > div > em,
 .${OVERLAY}-warnings > div > em {
@@ -138,7 +142,7 @@ const CSS = `
 .${OVERLAY}-errors > div > div,
 .${OVERLAY}-warnings > div > div {
   font-size: 14px;
-  padding: 8px 0 16px 16px;
+  padding: 8px 0 0 16px;
   overflow-wrap: break-word;
 }
 .${OVERLAY}-hidden {
