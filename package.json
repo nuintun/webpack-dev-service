@@ -1,6 +1,6 @@
 {
   "name": "webpack-dev-server-middleware",
-  "version": "0.6.4",
+  "version": "0.6.5",
   "main": "index.js",
   "description": "A development and hot reload middleware for Koa2.",
   "scripts": {
@@ -13,7 +13,9 @@
     "url": "git+https://github.com/nuintun/webpack-dev-server-middleware.git"
   },
   "keywords": [
+    "dev",
     "koa",
+    "server",
     "webpack",
     "middleware"
   ],
