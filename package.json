@@ -30,7 +30,7 @@
   "homepage": "https://github.com/nuintun/webpack-dev-server-middleware#readme",
   "dependencies": {
     "ws": "^8.2.0",
-    "core-js": "^3.16.2",
+    "core-js": "^3.16.3",
     "ansi-regex": "^6.0.0",
     "bufferutil": "^4.0.3",
     "koa-compose": "^4.1.0",
