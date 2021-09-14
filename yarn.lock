@@ -1287,9 +1287,9 @@ camel-case@^4.1.1:
     tslib "^2.0.3"
 
 caniuse-lite@^1.0.30001254:
-  version "1.0.30001256"
-  resolved "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30001256.tgz#182410b5f024e0ab99c72ec648f234a9986bd548"
-  integrity sha512-QirrvMLmB4txNnxiaG/xbm6FSzv9LqOZ3Jp9VtCYb3oPIfCHpr/oGn38pFq0udwlkctvXQgPthaXqJ76DaYGnA==
+  version "1.0.30001257"
+  resolved "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30001257.tgz#150aaf649a48bee531104cfeda57f92ce587f6e5"
+  integrity sha512-JN49KplOgHSXpIsVSF+LUyhD8PUp6xPpAXeRrrcBh4KBeP7W864jHn6RvzJgDlrReyeVjMFJL3PLpPvKIxlIHA==
 
 chalk@^2.0.0:
   version "2.4.2"
@@ -1507,9 +1507,9 @@ ee-first@1.1.1:
   integrity sha1-WQxhFWsK4vTwJVcyoViyZrxWsh0=
 
 electron-to-chromium@^1.3.830:
-  version "1.3.836"
-  resolved "https://registry.npmjs.org/electron-to-chromium/-/electron-to-chromium-1.3.836.tgz#823cb9c98f28c64c673920f1c90ea3826596eaf9"
-  integrity sha512-Ney3pHOJBWkG/AqYjrW0hr2AUCsao+2uvq9HUlRP8OlpSdk/zOHOUJP7eu0icDvePC9DlgffuelP4TnOJmMRUg==
+  version "1.3.838"
+  resolved "https://registry.npmjs.org/electron-to-chromium/-/electron-to-chromium-1.3.838.tgz#d178b34a268c750c0444ba69e4c94d4c4fb3aa0d"
+  integrity sha512-65O6UJiyohFAdX/nc6KJ0xG/4zOn7XCO03kQNNbCeMRGxlWTLzc6Uyi0tFNQuuGWqySZJi8CD2KXPXySVYmzMA==
 
 emojis-list@^3.0.0:
   version "3.0.0"
@@ -1782,9 +1782,9 @@ is-module@^1.0.0:
   integrity sha1-Mlj7afeMFNW4FdZkM2tM/7ZEFZE=
 
 jest-worker@^27.0.6:
-  version "27.1.1"
-  resolved "https://registry.npmjs.org/jest-worker/-/jest-worker-27.1.1.tgz#eb5f05c4657fdcb702c36c48b20d785bd4599378"
-  integrity sha512-XJKCL7tu+362IUYTWvw8+3S75U7qMiYiRU6u5yqscB48bTvzwN6i8L/7wVTXiFLwkRsxARNM7TISnTvcgv9hxA==
+  version "27.2.0"
+  resolved "https://registry.npmjs.org/jest-worker/-/jest-worker-27.2.0.tgz#11eef39f1c88f41384ca235c2f48fe50bc229bc0"
+  integrity sha512-laB0ZVIBz+voh/QQy9dmUuuDsadixeerrKqyVpgPz+CCWiOYjOBabUXHIXZhsdvkWbLqSHbgkAHWl5cg24Q6RA==
   dependencies:
     "@types/node" "*"
     merge-stream "^2.0.0"
@@ -2301,7 +2301,7 @@ setprototypeof@1.2.0:
   resolved "https://registry.npmjs.org/setprototypeof/-/setprototypeof-1.2.0.tgz#66c9a24a73f9fc28cbe66b09fed3d33dcaf1b424"
   integrity sha512-E5LDX7Wrp85Kil5bhZv46j8jOeboKq5JMmYM3gVGdGH8xFpPWXUMsNrlODCrkoxMEeNi/XZIwuRvY4XNwYMJpw==
 
-source-map-support@~0.5.12, source-map-support@~0.5.19:
+source-map-support@~0.5.12, source-map-support@~0.5.20:
   version "0.5.20"
   resolved "https://registry.npmjs.org/source-map-support/-/source-map-support-0.5.20.tgz#12166089f8f5e5e8c56926b377633392dd2cb6c9"
   integrity sha512-n1lZZ8Ve4ksRqizaBQgxXDgKwttHDhyfQjA6YZZn8+AroHbsIz+JjwxQDxbp+7y5OYCI8t1Yk7etjD9CRd2hIw==
@@ -2351,9 +2351,9 @@ supports-color@^8.0.0:
     has-flag "^4.0.0"
 
 tapable@^2.0.0, tapable@^2.1.1, tapable@^2.2.0:
-  version "2.2.0"
-  resolved "https://registry.npmjs.org/tapable/-/tapable-2.2.0.tgz#5c373d281d9c672848213d0e037d1c4165ab426b"
-  integrity sha512-FBk4IesMV1rBxX2tfiK8RAmogtWn53puLOQlvO8XuwlgxcYbP4mVPS9Ph4aeamSyyVjOl24aYWAuc8U5kCVwMw==
+  version "2.2.1"
+  resolved "https://registry.npmjs.org/tapable/-/tapable-2.2.1.tgz#1967a73ef4060a82f12ab96af86d52fdb76eeca0"
+  integrity sha512-GNzQvQTOIP6RyTfE2Qxb8ZVlNmw0n88vp1szwWRimP02mnTsx3Wtn5qRdqY9w2XduFNUgvOwhNnQsjwCp+kqaQ==
 
 terser-webpack-plugin@^5.1.3:
   version "5.2.4"
@@ -2377,13 +2377,13 @@ terser@^4.6.3:
     source-map-support "~0.5.12"
 
 terser@^5.7.2:
-  version "5.7.2"
-  resolved "https://registry.npmjs.org/terser/-/terser-5.7.2.tgz#d4d95ed4f8bf735cb933e802f2a1829abf545e3f"
-  integrity sha512-0Omye+RD4X7X69O0eql3lC4Heh/5iLj3ggxR/B5ketZLOtLiOqukUgjw3q4PDnNQbsrkKr3UMypqStQG3XKRvw==
+  version "5.8.0"
+  resolved "https://registry.npmjs.org/terser/-/terser-5.8.0.tgz#c6d352f91aed85cc6171ccb5e84655b77521d947"
+  integrity sha512-f0JH+6yMpneYcRJN314lZrSwu9eKkUFEHLN/kNy8ceh8gaRiLgFPJqrB9HsXjhEGdv4e/ekjTOFxIlL6xlma8A==
   dependencies:
     commander "^2.20.0"
     source-map "~0.7.2"
-    source-map-support "~0.5.19"
+    source-map-support "~0.5.20"
 
 to-fast-properties@^2.0.0:
   version "2.0.0"
@@ -2480,9 +2480,9 @@ webpack-dev-middleware@^5.1.0:
     schema-utils "^3.1.0"
 
 webpack-sources@^3.2.0:
-  version "3.2.0"
-  resolved "https://registry.npmjs.org/webpack-sources/-/webpack-sources-3.2.0.tgz#b16973bcf844ebcdb3afde32eda1c04d0b90f89d"
-  integrity sha512-fahN08Et7P9trej8xz/Z7eRu8ltyiygEo/hnRi9KqBUs80KeDcnf96ZJo++ewWd84fEf3xSX9bp4ZS9hbw0OBw==
+  version "3.2.1"
+  resolved "https://registry.npmjs.org/webpack-sources/-/webpack-sources-3.2.1.tgz#251a7d9720d75ada1469ca07dbb62f3641a05b6d"
+  integrity sha512-t6BMVLQ0AkjBOoRTZgqrWm7xbXMBzD+XDq2EZ96+vMfn3qKgsvdXZhbPZ4ElUOpdv4u+iiGe+w3+J75iy/bYGA==
 
 webpack@^5.52.1:
   version "5.52.1"
