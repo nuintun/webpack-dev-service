@@ -2,8 +2,8 @@
  * @module hot
  */
 
-import WebSocket from 'ws';
 import webpack from 'webpack';
+import WebSocket, { WebSocketServer } from 'ws';
 
 const DEFAULT_STATS = {
   all: false,
@@ -53,7 +53,7 @@ class HotServer {
     this.compiler = compiler;
     this.options = resolveOptions(options);
     this.logger = compiler.getInfrastructureLogger(this.name);
-    this.server = new WebSocket.Server({ path: this.options.path, noServer: true });
+    this.server = new WebSocketServer({ path: this.options.path, noServer: true });
 
     this.setup();
   }

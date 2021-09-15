@@ -1,8 +1,8 @@
 'use strict';
 
 const webpackDevMiddleware = require('webpack-dev-middleware');
-const WebSocket = require('ws');
 const webpack = require('webpack');
+const WebSocket = require('ws');
 const compose = require('koa-compose');
 
 /**
@@ -95,7 +95,7 @@ class HotServer {
     this.compiler = compiler;
     this.options = resolveOptions(options);
     this.logger = compiler.getInfrastructureLogger(this.name);
-    this.server = new WebSocket.Server({ path: this.options.path, noServer: true });
+    this.server = new WebSocket.WebSocketServer({ path: this.options.path, noServer: true });
 
     this.setup();
   }
