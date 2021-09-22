@@ -30,7 +30,7 @@
   "homepage": "https://github.com/nuintun/webpack-dev-server-middleware#readme",
   "dependencies": {
     "ws": "^8.2.2",
-    "core-js": "^3.17.3",
+    "core-js": "^3.18.0",
     "ansi-regex": "^6.0.1",
     "bufferutil": "^4.0.3",
     "koa-compose": "^4.1.0",
@@ -42,7 +42,7 @@
   },
   "devDependencies": {
     "koa": "^2.13.1",
-    "memfs": "^3.2.4",
+    "memfs": "^3.3.0",
     "react": "^17.0.2",
     "rollup": "^2.56.3",
     "prettier": "^2.4.1",
@@ -54,6 +54,6 @@
     "html-webpack-plugin": "^5.3.2",
     "@babel/preset-react": "^7.14.5",
     "@rollup/plugin-babel": "^5.3.0",
-    "@rollup/plugin-node-resolve": "^13.0.4"
+    "@rollup/plugin-node-resolve": "^13.0.5"
   }
 }
