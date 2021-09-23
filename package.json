@@ -1,6 +1,6 @@
 {
   "name": "webpack-dev-server-middleware",
-  "version": "0.6.10",
+  "version": "0.6.11",
   "main": "index.js",
   "description": "A development and hot reload middleware for Koa2.",
   "scripts": {
@@ -44,7 +44,7 @@
     "koa": "^2.13.1",
     "memfs": "^3.3.0",
     "react": "^17.0.2",
-    "rollup": "^2.56.3",
+    "rollup": "^2.57.0",
     "prettier": "^2.4.1",
     "webpack": "^5.53.0",
     "react-dom": "^17.0.2",

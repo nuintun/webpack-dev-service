@@ -4,6 +4,7 @@ import 'core-js/modules/es.object.to-string.js';
 import 'core-js/modules/es.string.iterator.js';
 import 'core-js/modules/web.dom-collections.iterator.js';
 import 'core-js/modules/web.url.js';
+import 'core-js/modules/web.url-search-params.js';
 import 'core-js/modules/es.array.concat.js';
 import 'core-js/modules/es.regexp.exec.js';
 import 'core-js/modules/es.string.replace.js';
