@@ -34,7 +34,7 @@
     "ansi-regex": "^6.0.1",
     "bufferutil": "^4.0.4",
     "koa-compose": "^4.1.0",
-    "utf-8-validate": "^5.0.5",
+    "utf-8-validate": "^5.0.6",
     "webpack-dev-middleware": "^5.2.1"
   },
   "peerDependencies": {
