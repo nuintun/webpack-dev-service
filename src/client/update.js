@@ -6,6 +6,8 @@ let timer;
 let status = 'idle';
 let aborted = false;
 
+const noop = () => {};
+
 const RELOAD_INTERVAL = 300;
 
 function reload() {
@@ -49,14 +51,12 @@ export function abort() {
   clearTimeout(timer);
 }
 
-export function update(hash, hmr, forceReload, onUpdated = () => {}) {
+export function update(hash, hmr, onUpdated = noop) {
   aborted = false;
 
   clearTimeout(timer);
 
-  if (forceReload) {
-    reload();
-  } else if (isUpToDate(hash)) {
+  if (isUpToDate(hash)) {
     onUpdated();
   } else if (hmr && module.hot) {
     if (status === 'idle') {

@@ -5,10 +5,10 @@
 import Overlay from './ui/overlay';
 import Progress from './ui/progress';
 import { strip } from './ui/utils/ansi';
-import { update, abort } from './update';
+import { abort, update } from './update';
 
 let retryTimes = 0;
-let forceReload = false;
+let hasErrorLast = false;
 
 const MAX_RETRY_TIMES = 10;
 const RETRY_INTERVAL = 3000;
@@ -149,11 +149,11 @@ function createWebSocket(url) {
           break;
         case 'problems':
           if (payload.errors.length > 0) {
-            forceReload = true;
+            hasErrorLast = true;
 
             problemsActions(payload);
           } else {
-            update(payload.hash, options.hmr, forceReload, () => {
+            update(payload.hash, hasErrorLast ? false : options.hmr, () => {
               problemsActions(payload);
             });
           }
@@ -161,7 +161,9 @@ function createWebSocket(url) {
         case 'ok':
           overlay.hide();
 
-          update(payload.hash, options.hmr, forceReload);
+          update(payload.hash, hasErrorLast ? false : options.hmr);
+
+          hasErrorLast = false;
           break;
       }
 

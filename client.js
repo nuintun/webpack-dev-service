@@ -562,6 +562,9 @@ var Progress = /*#__PURE__*/function () {
 var timer;
 var status = 'idle';
 var aborted = false;
+
+var noop = function noop() {};
+
 var RELOAD_INTERVAL = 300;
 
 function reload() {
@@ -598,14 +601,12 @@ function abort() {
   aborted = true;
   clearTimeout(timer);
 }
-function update(hash, hmr, forceReload) {
-  var onUpdated = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : function () {};
+function update(hash, hmr) {
+  var onUpdated = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : noop;
   aborted = false;
   clearTimeout(timer);
 
-  if (forceReload) {
-    reload();
-  } else if (isUpToDate(hash)) {
+  if (isUpToDate(hash)) {
     onUpdated();
   } else if (hmr && module.hot) {
     if (status === 'idle') {
@@ -619,7 +620,7 @@ function update(hash, hmr, forceReload) {
 }
 
 var retryTimes = 0;
-var forceReload = false;
+var hasErrorLast = false;
 var MAX_RETRY_TIMES = 10;
 var RETRY_INTERVAL = 3000;
 var options = resolveOptions();
@@ -782,10 +783,10 @@ function createWebSocket(url) {
 
         case 'problems':
           if (payload.errors.length > 0) {
-            forceReload = true;
+            hasErrorLast = true;
             problemsActions(payload);
           } else {
-            update(payload.hash, options.hmr, forceReload, function () {
+            update(payload.hash, hasErrorLast ? false : options.hmr, function () {
               problemsActions(payload);
             });
           }
@@ -794,7 +795,8 @@ function createWebSocket(url) {
 
         case 'ok':
           overlay.hide();
-          update(payload.hash, options.hmr, forceReload);
+          update(payload.hash, hasErrorLast ? false : options.hmr);
+          hasErrorLast = false;
           break;
       }
 
