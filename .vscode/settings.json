@@ -66,5 +66,5 @@
   },
   "editor.formatOnSave": true,
   "todo-tree.highlights.useColourScheme": true,
-  "typescript.tsdk": "node_modules/typescript/lib"
+  "typescript.tsdk": "./node_modules/typescript/lib"
 }
