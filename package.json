@@ -1,6 +1,6 @@
 {
   "name": "webpack-dev-server-middleware",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "main": "index.js",
   "description": "A development and hot reload middleware for Koa2.",
   "scripts": {
@@ -32,9 +32,9 @@
     "ws": "^8.2.3",
     "core-js": "^3.18.3",
     "ansi-regex": "^6.0.1",
-    "bufferutil": "^4.0.4",
+    "bufferutil": "^4.0.5",
     "koa-compose": "^4.1.0",
-    "utf-8-validate": "^5.0.6",
+    "utf-8-validate": "^5.0.7",
     "webpack-dev-middleware": "^5.2.1"
   },
   "peerDependencies": {
@@ -46,7 +46,7 @@
     "react": "^17.0.2",
     "rollup": "^2.58.0",
     "prettier": "^2.4.1",
-    "webpack": "^5.58.1",
+    "webpack": "^5.58.2",
     "react-dom": "^17.0.2",
     "@babel/core": "^7.15.8",
     "babel-loader": "^8.2.2",
