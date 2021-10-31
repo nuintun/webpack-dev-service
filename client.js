@@ -53,7 +53,7 @@ function _objectSpread2(target) {
 
 function _classCallCheck(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
-    throw new TypeError("Cannot call a class as a function");
+    throw new TypeError('Cannot call a class as a function');
   }
 }
 
@@ -62,7 +62,7 @@ function _defineProperties(target, props) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
     descriptor.configurable = true;
-    if ("value" in descriptor) descriptor.writable = true;
+    if ('value' in descriptor) descriptor.writable = true;
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
@@ -97,7 +97,7 @@ function _arrayWithHoles(arr) {
 }
 
 function _iterableToArrayLimit(arr, i) {
-  var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
+  var _i = arr == null ? null : (typeof Symbol !== 'undefined' && arr[Symbol.iterator]) || arr['@@iterator'];
 
   if (_i == null) return;
   var _arr = [];
@@ -117,7 +117,7 @@ function _iterableToArrayLimit(arr, i) {
     _e = err;
   } finally {
     try {
-      if (!_n && _i["return"] != null) _i["return"]();
+      if (!_n && _i['return'] != null) _i['return']();
     } finally {
       if (_d) throw _e;
     }
@@ -128,11 +128,11 @@ function _iterableToArrayLimit(arr, i) {
 
 function _unsupportedIterableToArray(o, minLen) {
   if (!o) return;
-  if (typeof o === "string") return _arrayLikeToArray(o, minLen);
+  if (typeof o === 'string') return _arrayLikeToArray(o, minLen);
   var n = Object.prototype.toString.call(o).slice(8, -1);
-  if (n === "Object" && o.constructor) n = o.constructor.name;
-  if (n === "Map" || n === "Set") return Array.from(o);
-  if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen);
+  if (n === 'Object' && o.constructor) n = o.constructor.name;
+  if (n === 'Map' || n === 'Set') return Array.from(o);
+  if (n === 'Arguments' || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen);
 }
 
 function _arrayLikeToArray(arr, len) {
@@ -144,14 +144,16 @@ function _arrayLikeToArray(arr, len) {
 }
 
 function _nonIterableRest() {
-  throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+  throw new TypeError(
+    'Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.'
+  );
 }
 
 function _createForOfIteratorHelper(o, allowArrayLike) {
-  var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"];
+  var it = (typeof Symbol !== 'undefined' && o[Symbol.iterator]) || o['@@iterator'];
 
   if (!it) {
-    if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") {
+    if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || (allowArrayLike && o && typeof o.length === 'number')) {
       if (it) o = it;
       var i = 0;
 
@@ -160,9 +162,10 @@ function _createForOfIteratorHelper(o, allowArrayLike) {
       return {
         s: F,
         n: function () {
-          if (i >= o.length) return {
-            done: true
-          };
+          if (i >= o.length)
+            return {
+              done: true
+            };
           return {
             done: false,
             value: o[i++]
@@ -175,12 +178,14 @@ function _createForOfIteratorHelper(o, allowArrayLike) {
       };
     }
 
-    throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+    throw new TypeError(
+      'Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.'
+    );
   }
 
   var normalCompletion = true,
-      didErr = false,
-      err;
+    didErr = false,
+    err;
   return {
     s: function () {
       it = it.call(o);
@@ -258,7 +263,7 @@ for (var _i = 0, _arr = [0, 21, 22, 27, 28, 39, 49]; _i < _arr.length; _i++) {
 
 function encodeHTML(text) {
   return String(text).replace(/[<>]/g, function (match) {
-    return "&#6".concat(match === '<' ? 0 : 2, ";");
+    return '&#6'.concat(match === '<' ? 0 : 2, ';');
   });
 }
 
@@ -270,22 +275,21 @@ function resolveTags(colors) {
   var close = _objectSpread2({}, CLOSE_TAGS);
 
   var _colors$reset = _slicedToArray(colors.reset, 2),
-      foregroud = _colors$reset[0],
-      background = _colors$reset[1]; // Reset all
+    foregroud = _colors$reset[0],
+    background = _colors$reset[1]; // Reset all
 
+  open[0] = 'font-weight: normal; opacity: 1; color: '.concat(foregroud, ' ; background: ').concat(background); // Inverse
 
-  open[0] = "font-weight: normal; opacity: 1; color: ".concat(foregroud, " ; background: ").concat(background); // Inverse
+  open[7] = 'color: '.concat(background, '; background: ').concat(foregroud); // Dark grey
 
-  open[7] = "color: ".concat(background, "; background: ").concat(foregroud); // Dark grey
-
-  open[90] = "color: ".concat(colors.darkgrey);
+  open[90] = 'color: '.concat(colors.darkgrey);
 
   for (var _i2 = 0, _Object$keys = Object.keys(STYLES); _i2 < _Object$keys.length; _i2++) {
     var _code = _Object$keys[_i2];
     var style = STYLES[_code];
     var color = colors[style] || foregroud;
-    open[_code] = "color: ".concat(color, ";");
-    open[~~_code + 10] = "background: ".concat(color, ";");
+    open[_code] = 'color: '.concat(color, ';');
+    open[~~_code + 10] = 'background: '.concat(color, ';');
   }
 
   return {
@@ -294,68 +298,69 @@ function resolveTags(colors) {
   };
 }
 
-var Ansi = /*#__PURE__*/function () {
+var Ansi = /*#__PURE__*/ (function () {
   function Ansi(colors) {
     _classCallCheck(this, Ansi);
 
     var _resolveTags = resolveTags(colors),
-        open = _resolveTags.open,
-        close = _resolveTags.close;
+      open = _resolveTags.open,
+      close = _resolveTags.close;
 
     this.open = open;
     this.close = close;
   }
 
-  _createClass(Ansi, [{
-    key: "convert",
-    value: function convert(text) {
-      text = encodeHTML(text); // Returns the text if the string has no ANSI escape code
+  _createClass(Ansi, [
+    {
+      key: 'convert',
+      value: function convert(text) {
+        text = encodeHTML(text); // Returns the text if the string has no ANSI escape code
 
-      if (!ANSI_RE.test(text)) return text; // Cache opened sequence
+        if (!ANSI_RE.test(text)) return text; // Cache opened sequence
 
-      var codes = [];
-      var open = this.open,
+        var codes = [];
+        var open = this.open,
           close = this.close; // Replace with markup
 
-      var html = text.replace(/\033\[(\d+)*m/g, function (_match, code) {
-        var openTag = open[code];
+        var html = text.replace(/\033\[(\d+)*m/g, function (_match, code) {
+          var openTag = open[code];
 
-        if (openTag) {
-          // If current sequence has been opened, close it.
-          if (!!~codes.indexOf(code)) {
-            // eslint-disable-line no-extra-boolean-cast
+          if (openTag) {
+            // If current sequence has been opened, close it.
+            if (!!~codes.indexOf(code)) {
+              // eslint-disable-line no-extra-boolean-cast
+              codes.pop();
+              return '</span>';
+            } // Open tag.
+
+            codes.push(code);
+            return openTag[0] === '<' ? openTag : '<span style="'.concat(openTag, '">');
+          }
+
+          var closeTag = close[code];
+
+          if (closeTag) {
+            // Pop sequence
             codes.pop();
-            return '</span>';
-          } // Open tag.
+            return closeTag;
+          }
 
+          return '';
+        }); // Make sure tags are closed.
 
-          codes.push(code);
-          return openTag[0] === '<' ? openTag : "<span style=\"".concat(openTag, "\">");
+        var length = codes.length;
+
+        if (length > 0) {
+          html += '</span>'.repeat(length);
         }
 
-        var closeTag = close[code];
-
-        if (closeTag) {
-          // Pop sequence
-          codes.pop();
-          return closeTag;
-        }
-
-        return '';
-      }); // Make sure tags are closed.
-
-      var length = codes.length;
-
-      if (length > 0) {
-        html += '</span>'.repeat(length);
+        return html;
       }
-
-      return html;
     }
-  }]);
+  ]);
 
   return Ansi;
-}();
+})();
 function strip(text) {
   return text ? text.replace(ANSI_RE, '') : '';
 }
@@ -380,7 +385,7 @@ function appendHTML(html, parent) {
   var stage = parent || document.body;
 
   var _parser$parseFromStri = parser.parseFromString(html.trim(), 'text/html'),
-      body = _parser$parseFromStri.body;
+    body = _parser$parseFromStri.body;
 
   while (body.firstChild) {
     nodes.push(stage.appendChild(body.firstChild));
@@ -390,9 +395,67 @@ function appendHTML(html, parent) {
 }
 
 var OVERLAY = 'wds-overlay';
-var CSS$1 = "\n.".concat(OVERLAY, " {\n  top:0;\n  left: 0;\n  right: 0;\n  bottom: 0;\n  width: 100vw;\n  height: 100vh;\n  display: flex;\n  position: fixed;\n  font-size: 16px;\n  overflow: hidden;\n  font-style: normal;\n  font-weight: normal;\n  z-index: 2147483646;\n  flex-direction: column;\n  box-sizing: border-box;\n  transform-origin: center;\n  background: rgba(0, 0, 0, .85);\n  transform: scale(0) translateZ(0);\n  transition: transform .25s ease-out;\n  font-family: Menlo, \"Lucida Console\", monospace;\n}\n.").concat(OVERLAY, "-show {\n  transform: scale(1) translateZ(0);\n}\n.").concat(OVERLAY, "-close {\n  top: 16px;\n  right: 16px;\n  width: 16px;\n  height: 16px;\n  cursor: pointer;\n  position: absolute;\n  border-radius: 16px;\n  background: #ff5f58;\n  display: inline-block;\n  transform-origin: center;\n  box-shadow: #ff5f58 0 0 6px;\n  transform: rotate(0) translateZ(0);\n  transition: transform .25s ease-in-out;\n}\n.").concat(OVERLAY, "-close:before,\n.").concat(OVERLAY, "-close:after {\n  top: 7px;\n  left: 3px;\n  content: \"\";\n  width: 10px;\n  height: 2px;\n  position: absolute;\n  background-color: white;\n  transform-origin: center;\n}\n.").concat(OVERLAY, "-close:before {\n  transform: rotate(45deg);\n}\n.").concat(OVERLAY, "-close:after {\n  transform: rotate(-45deg);\n}\n.").concat(OVERLAY, "-close:hover {\n  transform: rotate(180deg) translateZ(0);\n}\n.").concat(OVERLAY, "-title {\n  margin: 0;\n  color: #fff;\n  line-height: 16px;\n  text-align: center;\n  background: #282d35;\n  overflow-wrap: break-word;\n  border-radius: 0 0 4px 4px;\n  padding: 16px 48px 16px 16px;\n}\n.").concat(OVERLAY, "-name {\n  font-weight: bold;\n  font-style: normal;\n  text-transform: uppercase;\n}\n.").concat(OVERLAY, "-errors-title,\n.").concat(OVERLAY, "-warnings-title {\n  color: #ff5f58;\n  padding-left: 8px;\n  font-style: normal;\n}\n.").concat(OVERLAY, "-warnings-title {\n  color: #ffbd2e;\n}\n.").concat(OVERLAY, "-problems {\n  padding: 0 16px;\n  overflow-y: auto;\n  scrollbar-width: none;\n  -ms-overflow-style: none;\n  -webkit-overflow-scrolling: touch;\n}\n.").concat(OVERLAY, "-problems::-webkit-scrollbar {\n  display: none;\n}\n.").concat(OVERLAY, "-errors,\n.").concat(OVERLAY, "-warnings {\n  color: #ddd;\n  padding: 16px;\n  margin: 16px 0;\n  display: block;\n  line-height: 1.2;\n  border-radius: 4px;\n  background: #282d35;\n  white-space: pre-wrap;\n  font-family: Menlo, \"Lucida Console\", monospace;\n}\n.").concat(OVERLAY, "-errors > div,\n.").concat(OVERLAY, "-warnings > div {\n  overflow-wrap: break-word;\n}\n.").concat(OVERLAY, "-errors > div + div,\n.").concat(OVERLAY, "-warnings > div + div {\n  margin: 16px 0 0;\n}\n.").concat(OVERLAY, "-errors > div > em,\n.").concat(OVERLAY, "-warnings > div > em {\n  line-height: 1;\n  color: #641e16;\n  padding: 4px 8px;\n  font-style: normal;\n  border-radius: 4px;\n  font-weight: normal;\n  background: #ff5f58;\n  display: inline-block;\n  text-transform: uppercase;\n}\n.").concat(OVERLAY, "-warnings > div > em {\n  color: #3e2723;\n  background: #ffbd2e;\n}\n.").concat(OVERLAY, "-errors > div > div,\n.").concat(OVERLAY, "-warnings > div > div {\n  font-size: 14px;\n  padding: 8px 0 0 16px;\n  overflow-wrap: break-word;\n}\n.").concat(OVERLAY, "-hidden {\n  display: none;\n}\n");
+var CSS$1 = '\n.'
+  .concat(
+    OVERLAY,
+    ' {\n  top:0;\n  left: 0;\n  right: 0;\n  bottom: 0;\n  width: 100vw;\n  height: 100vh;\n  display: flex;\n  position: fixed;\n  font-size: 16px;\n  overflow: hidden;\n  font-style: normal;\n  font-weight: normal;\n  z-index: 2147483646;\n  flex-direction: column;\n  box-sizing: border-box;\n  transform-origin: center;\n  background: rgba(0, 0, 0, .85);\n  transform: scale(0) translateZ(0);\n  transition: transform .25s ease-out;\n  font-family: Menlo, "Lucida Console", monospace;\n}\n.'
+  )
+  .concat(OVERLAY, '-show {\n  transform: scale(1) translateZ(0);\n}\n.')
+  .concat(
+    OVERLAY,
+    '-close {\n  top: 16px;\n  right: 16px;\n  width: 16px;\n  height: 16px;\n  cursor: pointer;\n  position: absolute;\n  border-radius: 16px;\n  background: #ff5f58;\n  display: inline-block;\n  transform-origin: center;\n  box-shadow: #ff5f58 0 0 6px;\n  transform: rotate(0) translateZ(0);\n  transition: transform .25s ease-in-out;\n}\n.'
+  )
+  .concat(OVERLAY, '-close:before,\n.')
+  .concat(
+    OVERLAY,
+    '-close:after {\n  top: 7px;\n  left: 3px;\n  content: "";\n  width: 10px;\n  height: 2px;\n  position: absolute;\n  background-color: white;\n  transform-origin: center;\n}\n.'
+  )
+  .concat(OVERLAY, '-close:before {\n  transform: rotate(45deg);\n}\n.')
+  .concat(OVERLAY, '-close:after {\n  transform: rotate(-45deg);\n}\n.')
+  .concat(OVERLAY, '-close:hover {\n  transform: rotate(180deg) translateZ(0);\n}\n.')
+  .concat(
+    OVERLAY,
+    '-title {\n  margin: 0;\n  color: #fff;\n  line-height: 16px;\n  text-align: center;\n  background: #282d35;\n  overflow-wrap: break-word;\n  border-radius: 0 0 4px 4px;\n  padding: 16px 48px 16px 16px;\n}\n.'
+  )
+  .concat(OVERLAY, '-name {\n  font-weight: bold;\n  font-style: normal;\n  text-transform: uppercase;\n}\n.')
+  .concat(OVERLAY, '-errors-title,\n.')
+  .concat(OVERLAY, '-warnings-title {\n  color: #ff5f58;\n  padding-left: 8px;\n  font-style: normal;\n}\n.')
+  .concat(OVERLAY, '-warnings-title {\n  color: #ffbd2e;\n}\n.')
+  .concat(
+    OVERLAY,
+    '-problems {\n  padding: 0 16px;\n  overflow-y: auto;\n  scrollbar-width: none;\n  -ms-overflow-style: none;\n  -webkit-overflow-scrolling: touch;\n}\n.'
+  )
+  .concat(OVERLAY, '-problems::-webkit-scrollbar {\n  display: none;\n}\n.')
+  .concat(OVERLAY, '-errors,\n.')
+  .concat(
+    OVERLAY,
+    '-warnings {\n  color: #ddd;\n  padding: 16px;\n  margin: 16px 0;\n  display: block;\n  line-height: 1.2;\n  border-radius: 4px;\n  background: #282d35;\n  white-space: pre-wrap;\n  font-family: Menlo, "Lucida Console", monospace;\n}\n.'
+  )
+  .concat(OVERLAY, '-errors > div,\n.')
+  .concat(OVERLAY, '-warnings > div {\n  overflow-wrap: break-word;\n}\n.')
+  .concat(OVERLAY, '-errors > div + div,\n.')
+  .concat(OVERLAY, '-warnings > div + div {\n  margin: 16px 0 0;\n}\n.')
+  .concat(OVERLAY, '-errors > div > em,\n.')
+  .concat(
+    OVERLAY,
+    '-warnings > div > em {\n  line-height: 1;\n  color: #641e16;\n  padding: 4px 8px;\n  font-style: normal;\n  border-radius: 4px;\n  font-weight: normal;\n  background: #ff5f58;\n  display: inline-block;\n  text-transform: uppercase;\n}\n.'
+  )
+  .concat(OVERLAY, '-warnings > div > em {\n  color: #3e2723;\n  background: #ffbd2e;\n}\n.')
+  .concat(OVERLAY, '-errors > div > div,\n.')
+  .concat(OVERLAY, '-warnings > div > div {\n  font-size: 14px;\n  padding: 8px 0 0 16px;\n  overflow-wrap: break-word;\n}\n.')
+  .concat(OVERLAY, '-hidden {\n  display: none;\n}\n');
 var DEFAULT_NAME = 'webpack';
-var HTML$1 = "\n<aside class=\"".concat(OVERLAY, "\">\n  <i class=\"").concat(OVERLAY, "-close\"></i>\n  <div class=\"").concat(OVERLAY, "-title\">\n    <em class=\"").concat(OVERLAY, "-name\">").concat(DEFAULT_NAME, "</em>\n    <em class=\"").concat(OVERLAY, "-errors-title\"></em>\n    <em class=\"").concat(OVERLAY, "-warnings-title\"></em>\n  </div>\n  <article class=\"").concat(OVERLAY, "-problems\">\n    <pre class=\"").concat(OVERLAY, "-errors\"></pre>\n    <pre class=\"").concat(OVERLAY, "-warnings\"></pre>\n  </article>\n</aside>\n");
+var HTML$1 = '\n<aside class="'
+  .concat(OVERLAY, '">\n  <i class="')
+  .concat(OVERLAY, '-close"></i>\n  <div class="')
+  .concat(OVERLAY, '-title">\n    <em class="')
+  .concat(OVERLAY, '-name">')
+  .concat(DEFAULT_NAME, '</em>\n    <em class="')
+  .concat(OVERLAY, '-errors-title"></em>\n    <em class="')
+  .concat(OVERLAY, '-warnings-title"></em>\n  </div>\n  <article class="')
+  .concat(OVERLAY, '-problems">\n    <pre class="')
+  .concat(OVERLAY, '-errors"></pre>\n    <pre class="')
+  .concat(OVERLAY, '-warnings"></pre>\n  </article>\n</aside>\n');
 var ANSI = new Ansi({
   black: '#181818',
   red: '#ff3348',
@@ -410,13 +473,13 @@ function ansiHTML(text) {
   return ANSI.convert(text);
 }
 
-var Overlay = /*#__PURE__*/function () {
+var Overlay = /*#__PURE__*/ (function () {
   function Overlay(name) {
     var _this = this;
 
     _classCallCheck(this, Overlay);
 
-    _defineProperty(this, "hidden", true);
+    _defineProperty(this, 'hidden', true);
 
     injectCSS(CSS$1);
 
@@ -425,94 +488,120 @@ var Overlay = /*#__PURE__*/function () {
     var _appendHTML2 = _slicedToArray(_appendHTML, 1);
 
     this.aside = _appendHTML2[0];
-    this.name = this.aside.querySelector(".".concat(OVERLAY, "-name"));
-    this.close = this.aside.querySelector(".".concat(OVERLAY, "-close"));
-    this.errorsList = this.aside.querySelector(".".concat(OVERLAY, "-errors"));
-    this.warningsList = this.aside.querySelector(".".concat(OVERLAY, "-warnings"));
-    this.errorsTitle = this.aside.querySelector(".".concat(OVERLAY, "-errors-title"));
-    this.warningsTitle = this.aside.querySelector(".".concat(OVERLAY, "-warnings-title"));
+    this.name = this.aside.querySelector('.'.concat(OVERLAY, '-name'));
+    this.close = this.aside.querySelector('.'.concat(OVERLAY, '-close'));
+    this.errorsList = this.aside.querySelector('.'.concat(OVERLAY, '-errors'));
+    this.warningsList = this.aside.querySelector('.'.concat(OVERLAY, '-warnings'));
+    this.errorsTitle = this.aside.querySelector('.'.concat(OVERLAY, '-errors-title'));
+    this.warningsTitle = this.aside.querySelector('.'.concat(OVERLAY, '-warnings-title'));
     this.name.innerHTML = name || DEFAULT_NAME;
     this.close.addEventListener('click', function () {
       _this.hide();
     });
   }
 
-  _createClass(Overlay, [{
-    key: "setProblems",
-    value: function setProblems(type, problems) {
-      var count = problems.length;
-      var hidden = "".concat(OVERLAY, "-hidden");
-      var problemMaps = {
-        errors: ['Error', this.errorsTitle, this.errorsList],
-        warnings: ['Warning', this.warningsTitle, this.warningsList]
-      };
+  _createClass(Overlay, [
+    {
+      key: 'setProblems',
+      value: function setProblems(type, problems) {
+        var count = problems.length;
+        var hidden = ''.concat(OVERLAY, '-hidden');
+        var problemMaps = {
+          errors: ['Error', this.errorsTitle, this.errorsList],
+          warnings: ['Warning', this.warningsTitle, this.warningsList]
+        };
 
-      var _problemMaps$type = _slicedToArray(problemMaps[type], 3),
+        var _problemMaps$type = _slicedToArray(problemMaps[type], 3),
           name = _problemMaps$type[0],
           problemTitle = _problemMaps$type[1],
           problemList = _problemMaps$type[2];
 
-      if (count > 0) {
-        var html = '';
-        problemTitle.innerText = "".concat(count, " ").concat(name, "(s)");
+        if (count > 0) {
+          var html = '';
+          problemTitle.innerText = ''.concat(count, ' ').concat(name, '(s)');
 
-        var _iterator = _createForOfIteratorHelper(problems),
+          var _iterator = _createForOfIteratorHelper(problems),
             _step;
 
-        try {
-          for (_iterator.s(); !(_step = _iterator.n()).done;) {
-            var _step$value = _step.value,
+          try {
+            for (_iterator.s(); !(_step = _iterator.n()).done; ) {
+              var _step$value = _step.value,
                 moduleName = _step$value.moduleName,
                 message = _step$value.message;
-            var src = ansiHTML(moduleName);
-            var details = ansiHTML(message);
-            html += "<div><em>".concat(name, "</em> in ").concat(src, "<div>").concat(details, "</div></div>");
+              var src = ansiHTML(moduleName);
+              var details = ansiHTML(message);
+              html += '<div><em>'.concat(name, '</em> in ').concat(src, '<div>').concat(details, '</div></div>');
+            }
+          } catch (err) {
+            _iterator.e(err);
+          } finally {
+            _iterator.f();
           }
-        } catch (err) {
-          _iterator.e(err);
-        } finally {
-          _iterator.f();
-        }
 
-        problemList.innerHTML = html;
-        problemList.classList.remove(hidden);
-        problemTitle.classList.remove(hidden);
-      } else {
-        problemList.classList.add(hidden);
-        problemTitle.classList.add(hidden);
+          problemList.innerHTML = html;
+          problemList.classList.remove(hidden);
+          problemTitle.classList.remove(hidden);
+        } else {
+          problemList.classList.add(hidden);
+          problemTitle.classList.add(hidden);
+        }
+      }
+    },
+    {
+      key: 'show',
+      value: function show() {
+        if (this.hidden) {
+          this.hidden = false;
+          this.aside.classList.add(''.concat(OVERLAY, '-show'));
+        }
+      }
+    },
+    {
+      key: 'hide',
+      value: function hide() {
+        if (!this.hidden) {
+          this.hidden = true;
+          this.aside.classList.remove(''.concat(OVERLAY, '-show'));
+        }
       }
     }
-  }, {
-    key: "show",
-    value: function show() {
-      if (this.hidden) {
-        this.hidden = false;
-        this.aside.classList.add("".concat(OVERLAY, "-show"));
-      }
-    }
-  }, {
-    key: "hide",
-    value: function hide() {
-      if (!this.hidden) {
-        this.hidden = true;
-        this.aside.classList.remove("".concat(OVERLAY, "-show"));
-      }
-    }
-  }]);
+  ]);
 
   return Overlay;
-}();
+})();
 
 var PROGRESS = 'wds-progress';
 var PERIMETER = 2 * Math.PI * 44;
-var CSS = "\n.".concat(PROGRESS, " {\n  width: 48px;\n  right: 16px;\n  height: 48px;\n  bottom: 16px;\n  display: block;\n  font-size: 16px;\n  position: fixed;\n  cursor: default;\n  user-select: none;\n  font-style: normal;\n  font-weight: normal;\n  z-index: 2147483647;\n  transform-origin: center;\n  transform: scale(0) translateZ(0);\n  transition: transform .25s ease-out;\n}\n.").concat(PROGRESS, "-show {\n  transform: scale(1) translateZ(0);\n}\n.").concat(PROGRESS, "-track {\n  stroke: #badfac;\n  stroke-width: 8;\n  stroke-linecap: round;\n  fill: rgba(0, 0, 0, 0);\n  stroke-dasharray: ").concat(PERIMETER, ";\n  stroke-dashoffset: ").concat(PERIMETER, ";\n  transition: stroke-dashoffset .25s linear;\n  transform: matrix(0, -1, 1, 0, 0, 96) translateZ(0);\n}\n");
-var HTML = "\n<svg class=\"".concat(PROGRESS, "\" x=\"0\" y=\"0\" viewBox=\"0 0 96 96\">\n  <circle fill=\"#282d35\" cx=\"50%\" cy=\"50%\" r=\"44\" />\n  <circle class=\"").concat(PROGRESS, "-track\" cx=\"50%\" cy=\"50%\" r=\"44\" />\n  <path fill=\"#fff\" d=\"m48,83.213561l-31.122918,-17.60678l0,-35.21356l31.122918,-17.60678l31.122918,17.60678l0,35.21356l-31.122918,17.60678z\" />\n  <path fill=\"#8ed6fb\" d=\"m22.434956,31.608089l24.537982,-13.880011l0,10.810563l-15.288554,8.410172l-9.249428,-5.340723zm-1.678513,1.520052l0,29.027711l8.979458,-5.182262l0,-18.657318l-8.979458,-5.188131zm52.908373,-1.520052l-24.537982,-13.880011l0,10.810563l15.288554,8.410172l9.249428,-5.340723zm1.678513,1.520052l0,29.027711l-8.979458,-5.182262l0,-18.657318l8.979458,-5.188131zm-1.050538,30.905767l-25.165957,14.238016l0,-10.452558l16.121941,-8.867948l0.123247,-0.070427l8.920768,5.152918zm-52.485811,0l25.165957,14.238016l0,-10.452558l-16.121941,-8.867948l-0.123247,-0.070427l-8.920768,5.152918z\" />\n  <path fill=\"#1c78c0\" d=\"m49.126834,30.997721l15.083141,8.292793l0,16.432994l-15.083141,-8.709487l0,-16.016301zm-2.153896,0l-15.083141,8.292793l0,16.432994l15.083141,-8.709487l0,-16.016301zm16.215844,26.62732l-15.141831,8.328007l-15.141831,-8.328007l15.141831,-8.744701l15.141831,8.744701z\" />\n</svg>\n");
+var CSS = '\n.'
+  .concat(
+    PROGRESS,
+    ' {\n  width: 48px;\n  right: 16px;\n  height: 48px;\n  bottom: 16px;\n  display: block;\n  font-size: 16px;\n  position: fixed;\n  cursor: default;\n  user-select: none;\n  font-style: normal;\n  font-weight: normal;\n  z-index: 2147483647;\n  transform-origin: center;\n  transform: scale(0) translateZ(0);\n  transition: transform .25s ease-out;\n}\n.'
+  )
+  .concat(PROGRESS, '-show {\n  transform: scale(1) translateZ(0);\n}\n.')
+  .concat(
+    PROGRESS,
+    '-track {\n  stroke: #badfac;\n  stroke-width: 8;\n  stroke-linecap: round;\n  fill: rgba(0, 0, 0, 0);\n  stroke-dasharray: '
+  )
+  .concat(PERIMETER, ';\n  stroke-dashoffset: ')
+  .concat(
+    PERIMETER,
+    ';\n  transition: stroke-dashoffset .25s linear;\n  transform: matrix(0, -1, 1, 0, 0, 96) translateZ(0);\n}\n'
+  );
+var HTML = '\n<svg class="'
+  .concat(
+    PROGRESS,
+    '" x="0" y="0" viewBox="0 0 96 96">\n  <circle fill="#282d35" cx="50%" cy="50%" r="44" />\n  <circle class="'
+  )
+  .concat(
+    PROGRESS,
+    '-track" cx="50%" cy="50%" r="44" />\n  <path fill="#fff" d="m48,83.213561l-31.122918,-17.60678l0,-35.21356l31.122918,-17.60678l31.122918,17.60678l0,35.21356l-31.122918,17.60678z" />\n  <path fill="#8ed6fb" d="m22.434956,31.608089l24.537982,-13.880011l0,10.810563l-15.288554,8.410172l-9.249428,-5.340723zm-1.678513,1.520052l0,29.027711l8.979458,-5.182262l0,-18.657318l-8.979458,-5.188131zm52.908373,-1.520052l-24.537982,-13.880011l0,10.810563l15.288554,8.410172l9.249428,-5.340723zm1.678513,1.520052l0,29.027711l-8.979458,-5.182262l0,-18.657318l8.979458,-5.188131zm-1.050538,30.905767l-25.165957,14.238016l0,-10.452558l16.121941,-8.867948l0.123247,-0.070427l8.920768,5.152918zm-52.485811,0l25.165957,14.238016l0,-10.452558l-16.121941,-8.867948l-0.123247,-0.070427l-8.920768,5.152918z" />\n  <path fill="#1c78c0" d="m49.126834,30.997721l15.083141,8.292793l0,16.432994l-15.083141,-8.709487l0,-16.016301zm-2.153896,0l-15.083141,8.292793l0,16.432994l15.083141,-8.709487l0,-16.016301zm16.215844,26.62732l-15.141831,8.328007l-15.141831,-8.328007l15.141831,-8.744701l15.141831,8.744701z" />\n</svg>\n'
+  );
 
-var Progress = /*#__PURE__*/function () {
+var Progress = /*#__PURE__*/ (function () {
   function Progress() {
     _classCallCheck(this, Progress);
 
-    _defineProperty(this, "hidden", true);
+    _defineProperty(this, 'hidden', true);
 
     injectCSS(CSS);
 
@@ -521,40 +610,44 @@ var Progress = /*#__PURE__*/function () {
     var _appendHTML2 = _slicedToArray(_appendHTML, 1);
 
     this.svg = _appendHTML2[0];
-    this.track = this.svg.querySelector(".".concat(PROGRESS, "-track"));
+    this.track = this.svg.querySelector('.'.concat(PROGRESS, '-track'));
   }
 
-  _createClass(Progress, [{
-    key: "update",
-    value: function update(value) {
-      value = Math.max(0, Math.min(100, value));
-      this.track.style.strokeDashoffset = (100 - value) / 100 * PERIMETER;
-    }
-  }, {
-    key: "show",
-    value: function show() {
-      if (this.hidden) {
-        this.hidden = false;
-        clearTimeout(this.timer);
-        this.svg.classList.add("".concat(PROGRESS, "-show"));
+  _createClass(Progress, [
+    {
+      key: 'update',
+      value: function update(value) {
+        value = Math.max(0, Math.min(100, value));
+        this.track.style.strokeDashoffset = ((100 - value) / 100) * PERIMETER;
       }
-    }
-  }, {
-    key: "hide",
-    value: function hide() {
-      var _this = this;
+    },
+    {
+      key: 'show',
+      value: function show() {
+        if (this.hidden) {
+          this.hidden = false;
+          clearTimeout(this.timer);
+          this.svg.classList.add(''.concat(PROGRESS, '-show'));
+        }
+      }
+    },
+    {
+      key: 'hide',
+      value: function hide() {
+        var _this = this;
 
-      if (!this.hidden) {
-        this.hidden = true;
-        this.timer = setTimeout(function () {
-          _this.svg.classList.remove("".concat(PROGRESS, "-show"));
-        }, 300);
+        if (!this.hidden) {
+          this.hidden = true;
+          this.timer = setTimeout(function () {
+            _this.svg.classList.remove(''.concat(PROGRESS, '-show'));
+          }, 300);
+        }
       }
     }
-  }]);
+  ]);
 
   return Progress;
-}();
+})();
 
 /**
  * @module update
@@ -581,20 +674,23 @@ function isUpToDate(hash) {
 }
 
 function replace(hash, onUpdated) {
-  module.hot.check().then(function () {
-    return module.hot.apply().then(function () {
-      status = module.hot.status();
+  module.hot
+    .check()
+    .then(function () {
+      return module.hot.apply().then(function () {
+        status = module.hot.status();
 
-      if (isUpToDate(hash)) {
-        onUpdated();
-      } else {
-        replace(hash, onUpdated);
-      }
+        if (isUpToDate(hash)) {
+          onUpdated();
+        } else {
+          replace(hash, onUpdated);
+        }
+      });
+    })
+    .catch(function () {
+      status = 'fail';
+      reload();
     });
-  }).catch(function () {
-    status = 'fail';
-    reload();
-  });
 }
 
 function abort() {
@@ -641,7 +737,7 @@ function parseMessage(message) {
 
 function getCurrentScript() {
   var _document = document,
-      currentScript = _document.currentScript;
+    currentScript = _document.currentScript;
   if (currentScript) return currentScript;
   var scripts = document.scripts;
 
@@ -660,7 +756,7 @@ function resolveHost(params) {
 
   if (!host) {
     var _getCurrentScript = getCurrentScript(),
-        src = _getCurrentScript.src;
+      src = _getCurrentScript.src;
 
     if (src) {
       var url = new URL(src);
@@ -671,7 +767,7 @@ function resolveHost(params) {
     }
   }
 
-  return "".concat(tls ? 'wss' : 'ws', "://").concat(host);
+  return ''.concat(tls ? 'wss' : 'ws', '://').concat(host);
 }
 
 function resolveOptions() {
@@ -684,7 +780,7 @@ function resolveOptions() {
 
 function resolveSocketURL() {
   var params = new URLSearchParams(__resourceQuery);
-  return "".concat(resolveHost(params)).concat(options.path);
+  return ''.concat(resolveHost(params)).concat(options.path);
 }
 
 function progressActions(_ref) {
@@ -710,18 +806,18 @@ function printProblems(type, problems) {
   };
 
   var _nameMaps$type = _slicedToArray(nameMaps[type], 2),
-      name = _nameMaps$type[0],
-      method = _nameMaps$type[1];
+    name = _nameMaps$type[0],
+    method = _nameMaps$type[1];
 
   var _iterator = _createForOfIteratorHelper(problems),
-      _step;
+    _step;
 
   try {
-    for (_iterator.s(); !(_step = _iterator.n()).done;) {
+    for (_iterator.s(); !(_step = _iterator.n()).done; ) {
       var _step$value = _step.value,
-          moduleName = _step$value.moduleName,
-          message = _step$value.message;
-      console[method]("".concat(name, " in ").concat(moduleName, "\r\n").concat(strip(message)));
+        moduleName = _step$value.moduleName,
+        message = _step$value.message;
+      console[method](''.concat(name, ' in ').concat(moduleName, '\r\n').concat(strip(message)));
     }
   } catch (err) {
     _iterator.e(err);
@@ -732,10 +828,10 @@ function printProblems(type, problems) {
 
 function problemsActions(_ref2) {
   var errors = _ref2.errors,
-      warnings = _ref2.warnings;
+    warnings = _ref2.warnings;
   var _options$overlay = options.overlay,
-      popupError = _options$overlay.errors,
-      popupWarnings = _options$overlay.warnings;
+    popupError = _options$overlay.errors,
+    popupWarnings = _options$overlay.warnings;
 
   if (popupError) {
     overlay.setProblems('errors', errors);
@@ -763,8 +859,8 @@ function createWebSocket(url) {
 
   ws.onmessage = function (message) {
     var _parseMessage = parseMessage(message),
-        action = _parseMessage.action,
-        payload = _parseMessage.payload;
+      action = _parseMessage.action,
+      payload = _parseMessage.payload;
 
     if (action) {
       switch (action) {
@@ -800,10 +896,13 @@ function createWebSocket(url) {
           break;
       }
 
-      window.postMessage({
-        action: "webpack-hot-".concat(action),
-        payload: payload
-      }, '*');
+      window.postMessage(
+        {
+          action: 'webpack-hot-'.concat(action),
+          payload: payload
+        },
+        '*'
+      );
     }
   };
 

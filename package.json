@@ -4,9 +4,10 @@
   "main": "index.js",
   "description": "A development and hot reload middleware for Koa2.",
   "scripts": {
+    "format": "prettier --write .",
     "prepublishOnly": "npm run build",
-    "build": "rollup -c rollup.config.js",
-    "test": "npm run build && cd tests && node webpack"
+    "test": "npm run build && cd tests && node webpack",
+    "build": "rollup -c rollup.config.js & npm run format"
   },
   "repository": {
     "type": "git",
@@ -30,7 +31,7 @@
   "homepage": "https://github.com/nuintun/webpack-dev-server-middleware#readme",
   "dependencies": {
     "ws": "^8.2.3",
-    "core-js": "^3.18.3",
+    "core-js": "^3.19.0",
     "ansi-regex": "^6.0.1",
     "bufferutil": "^4.0.5",
     "koa-compose": "^4.1.0",
@@ -41,19 +42,19 @@
     "webpack": "^5.0.0"
   },
   "devDependencies": {
-    "koa": "^2.13.3",
+    "koa": "^2.13.4",
     "memfs": "^3.3.0",
     "react": "^17.0.2",
-    "rollup": "^2.58.0",
+    "rollup": "^2.58.3",
     "prettier": "^2.4.1",
-    "webpack": "^5.58.2",
+    "webpack": "^5.61.0",
     "react-dom": "^17.0.2",
-    "@babel/core": "^7.15.8",
-    "babel-loader": "^8.2.2",
-    "@babel/preset-env": "^7.15.8",
-    "html-webpack-plugin": "^5.4.0",
-    "@babel/preset-react": "^7.14.5",
+    "@babel/core": "^7.16.0",
+    "babel-loader": "^8.2.3",
+    "@babel/preset-env": "^7.16.0",
+    "html-webpack-plugin": "^5.5.0",
+    "@babel/preset-react": "^7.16.0",
     "@rollup/plugin-babel": "^5.3.0",
-    "@rollup/plugin-node-resolve": "^13.0.5"
+    "@rollup/plugin-node-resolve": "^13.0.6"
   }
 }
