@@ -31,12 +31,12 @@
   "homepage": "https://github.com/nuintun/webpack-dev-server-middleware#readme",
   "dependencies": {
     "ws": "^8.2.3",
-    "core-js": "^3.19.0",
+    "core-js": "^3.19.1",
     "ansi-regex": "^6.0.1",
     "bufferutil": "^4.0.5",
     "koa-compose": "^4.1.0",
     "utf-8-validate": "^5.0.7",
-    "webpack-dev-middleware": "^5.2.1"
+    "webpack-dev-middleware": "^5.2.2"
   },
   "peerDependencies": {
     "webpack": "^5.0.0"
@@ -45,13 +45,13 @@
     "koa": "^2.13.4",
     "memfs": "^3.3.0",
     "react": "^17.0.2",
-    "rollup": "^2.58.3",
+    "rollup": "^2.60.0",
     "prettier": "^2.4.1",
-    "webpack": "^5.61.0",
+    "webpack": "^5.64.2",
     "react-dom": "^17.0.2",
     "@babel/core": "^7.16.0",
     "babel-loader": "^8.2.3",
-    "@babel/preset-env": "^7.16.0",
+    "@babel/preset-env": "^7.16.4",
     "html-webpack-plugin": "^5.5.0",
     "@babel/preset-react": "^7.16.0",
     "@rollup/plugin-babel": "^5.3.0",
