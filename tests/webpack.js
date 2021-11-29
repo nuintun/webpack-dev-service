@@ -28,7 +28,8 @@ const html = {
 };
 
 function createMemfs() {
-  const fs = memfs.createFsFromVolume(new memfs.Volume());
+  const volume = new memfs.Volume();
+  const fs = memfs.createFsFromVolume(volume);
 
   fs.join = path.join.bind(path);
 
