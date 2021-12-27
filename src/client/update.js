@@ -26,7 +26,7 @@ function isUpToDate(hash) {
 
 function replace(hash, onUpdated) {
   module.hot
-    .check()
+    .check(false)
     .then(() => {
       return module.hot.apply().then(() => {
         status = module.hot.status();

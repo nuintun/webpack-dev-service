@@ -1,6 +1,6 @@
 {
   "name": "webpack-dev-server-middleware",
-  "version": "0.7.5",
+  "version": "0.7.6",
   "main": "index.js",
   "description": "A development and hot reload middleware for Koa2.",
   "scripts": {
@@ -30,31 +30,31 @@
   },
   "homepage": "https://github.com/nuintun/webpack-dev-server-middleware#readme",
   "dependencies": {
-    "ws": "^8.4.0",
-    "core-js": "^3.20.1",
     "ansi-regex": "^6.0.1",
     "bufferutil": "^4.0.5",
+    "core-js": "^3.20.1",
     "koa-compose": "^4.1.0",
     "utf-8-validate": "^5.0.7",
-    "webpack-dev-middleware": "^5.3.0"
+    "webpack-dev-middleware": "^5.3.0",
+    "ws": "^8.4.0"
   },
   "peerDependencies": {
     "webpack": "^5.0.0"
   },
   "devDependencies": {
-    "koa": "^2.13.4",
-    "memfs": "^3.4.0",
-    "react": "^17.0.2",
-    "rollup": "^2.62.0",
-    "prettier": "^2.5.1",
-    "webpack": "^5.65.0",
-    "react-dom": "^17.0.2",
     "@babel/core": "^7.16.5",
-    "babel-loader": "^8.2.3",
     "@babel/preset-env": "^7.16.5",
-    "html-webpack-plugin": "^5.5.0",
     "@babel/preset-react": "^7.16.5",
     "@rollup/plugin-babel": "^5.3.0",
-    "@rollup/plugin-node-resolve": "^13.1.1"
+    "@rollup/plugin-node-resolve": "^13.1.1",
+    "babel-loader": "^8.2.3",
+    "html-webpack-plugin": "^5.5.0",
+    "koa": "^2.13.4",
+    "memfs": "^3.4.0",
+    "prettier": "^2.5.1",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "rollup": "^2.62.0",
+    "webpack": "^5.65.0"
   }
 }

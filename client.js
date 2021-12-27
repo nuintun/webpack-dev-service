@@ -380,14 +380,16 @@ function appendHTML(html, parent) {
   var nodes = [];
   var parser = new DOMParser();
   var stage = parent || document.body;
+  var fragment = document.createDocumentFragment();
 
   var _parser$parseFromStri = parser.parseFromString(html.trim(), 'text/html'),
     body = _parser$parseFromStri.body;
 
   while (body.firstChild) {
-    nodes.push(stage.appendChild(body.firstChild));
+    nodes.push(fragment.appendChild(body.firstChild));
   }
 
+  stage.appendChild(fragment);
   return nodes;
 }
 
@@ -672,7 +674,7 @@ function isUpToDate(hash) {
 
 function replace(hash, onUpdated) {
   module.hot
-    .check()
+    .check(false)
     .then(function () {
       return module.hot.apply().then(function () {
         status = module.hot.status();
@@ -728,7 +730,7 @@ function parseMessage(message) {
   try {
     return JSON.parse(message.data);
   } catch (_unused) {
-    return {};
+    return null;
   }
 }
 
@@ -855,11 +857,12 @@ function createWebSocket(url) {
   };
 
   ws.onmessage = function (message) {
-    var _parseMessage = parseMessage(message),
-      action = _parseMessage.action,
-      payload = _parseMessage.payload;
+    var parsed = parseMessage(message);
 
-    if (action) {
+    if (parsed !== null) {
+      var action = parsed.action,
+        payload = parsed.payload;
+
       switch (action) {
         case 'invalid':
           abort();

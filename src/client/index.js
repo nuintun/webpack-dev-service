@@ -25,7 +25,7 @@ function parseMessage(message) {
   try {
     return JSON.parse(message.data);
   } catch {
-    return {};
+    return null;
   }
 }
 
@@ -133,9 +133,11 @@ function createWebSocket(url) {
   };
 
   ws.onmessage = message => {
-    const { action, payload } = parseMessage(message);
+    const parsed = parseMessage(message);
 
-    if (action) {
+    if (parsed !== null) {
+      const { action, payload } = parsed;
+
       switch (action) {
         case 'invalid':
           abort();
