@@ -66,7 +66,7 @@ const compiler = webpack({
       {
         oneOf: [
           {
-            test: /\.jsx?$/i,
+            test: /\.jsx?$/,
             exclude: /[\\/]node_modules[\\/]/,
             use: [
               {
