@@ -117,8 +117,8 @@ class HotServer {
       this.broadcastStats(this.clients(), this.stats);
     });
 
-    hooks.invalid.tap(this.name, (file, builtAt) => {
-      this.broadcast(this.clients(), 'invalid', { file, builtAt });
+    hooks.invalid.tap(this.name, (path, builtAt) => {
+      this.broadcast(this.clients(), 'invalid', { path, builtAt });
     });
   }
 
@@ -126,6 +126,7 @@ class HotServer {
     const { options, compiler } = this;
 
     const plugins = [
+      new webpack.NoEmitOnErrorsPlugin(),
       new webpack.DefinePlugin({
         __WDS_HOT_OPTIONS__: JSON.stringify({ ...options, name: compiler.name })
       })
@@ -139,13 +140,24 @@ class HotServer {
       let value = 0;
 
       plugins.push(
-        new webpack.ProgressPlugin(percentage => {
+        new webpack.ProgressPlugin((percentage, status, message) => {
           const nextValue = Math.floor(percentage * 100);
 
           if (nextValue > value || nextValue === 0) {
             value = nextValue;
 
-            this.broadcast(this.clients(), 'progress', { value });
+            switch (value) {
+              case 0:
+                status = 'start';
+                message = 'end idle';
+                break;
+              case 100:
+                status = 'finish';
+                message = 'begin idle';
+                break;
+            }
+
+            this.broadcast(this.clients(), 'progress', { status, message, value });
           }
         })
       );
@@ -189,17 +201,19 @@ class HotServer {
   }
 
   broadcastStats(clients, stats) {
-    if (clients.size > 0 || clients.length > 0) {
-      process.nextTick(() => {
+    process.nextTick(() => {
+      if (clients.size > 0 || clients.length > 0) {
         const { hash, builtAt, errors, warnings } = stats;
 
+        this.broadcast(clients, 'hash', { hash });
+
         if (errors.length > 0 || warnings.length > 0) {
-          this.broadcast(clients, 'problems', { hash, builtAt, errors, warnings });
+          this.broadcast(clients, 'problems', { builtAt, errors, warnings });
         } else {
-          this.broadcast(clients, 'ok', { hash, builtAt });
+          this.broadcast(clients, 'ok', { builtAt });
         }
-      });
-    }
+      }
+    });
   }
 }
 

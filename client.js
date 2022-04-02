@@ -650,58 +650,59 @@ var Progress = /*#__PURE__*/ (function () {
 /**
  * @module hot
  */
-// Reload location.
+var hash = __webpack_hash__; // Reload location.
+
 function reload() {
-  return window.location.reload();
+  window.location.reload();
+} // Update hash.
+
+function updateHash(value) {
+  hash = value;
 } // Is there a newer version of this code available?
 
-function isUpdateAvailable(hash) {
+function isUpdateAvailable() {
   /* globals __webpack_hash__ */
   // __webpack_hash__ is the hash of the current compilation.
   // It's a global variable injected by webpack.
   return hash !== __webpack_hash__;
-} // Is last update failed.
+} // Attempt to update code on the fly, fall back to a hard reload.
 
-function attemptUpdates(hash, hmr, onHotUpdateSuccess) {
-  // HMR not enabled.
-  if (!hmr || !module.hot) return reload(); // Update available and can apply updates.
+function attemptUpdates(hmr) {
+  var onHotUpdateSuccess = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : function () {};
+  var _module = module,
+    hot = _module.hot; // HMR not enabled.
 
-  if (isUpdateAvailable(hash)) {
-    switch (module.hot.status()) {
+  if (!hmr || !hot) return reload(); // Update available and can apply updates.
+
+  if (isUpdateAvailable()) {
+    switch (hot.status()) {
       case 'idle':
-        return module.hot
-          .check(false)
-          .then(function (updatedModules) {
-            // When updatedModules is unavailable,
+        return hot
+          .check(true)
+          .then(function (updated) {
+            // When updated modules is unavailable,
             // it indicates a critical failure in hot-reloading,
             // e.g. server is not ready to serve new bundle,
             // and hence we need to do a forced reload.
-            if (!updatedModules) return reload(); // Apply updates.
+            if (!updated) return reload(); // While we were updating, there was a new update! Do it again.
 
-            return module.hot
-              .apply({
-                ignoreErrored: true
-              })
-              .then(function () {
-                // While we were updating, there was a new update! Do it again.
-                if (isUpdateAvailable(hash)) {
-                  return attemptUpdates(hash, hmr, onHotUpdateSuccess);
-                } // Hot update success.
+            if (isUpdateAvailable()) {
+              return attemptUpdates(hmr, onHotUpdateSuccess);
+            } // Maybe we want to do something on hot update success.
 
-                if (typeof onHotUpdateSuccess === 'function') {
-                  // Maybe we want to do something.
-                  return onHotUpdateSuccess();
-                }
-              });
+            return onHotUpdateSuccess();
           })
           .catch(function () {
-            attemptUpdates(hash, hmr, onHotUpdateSuccess);
+            return attemptUpdates(hmr, onHotUpdateSuccess);
           });
 
       case 'fail':
       case 'abort':
         return reload();
     }
+  } else {
+    // Maybe we want to do something on hot update success.
+    return onHotUpdateSuccess();
   }
 }
 
@@ -788,6 +789,11 @@ function onProgress(_ref) {
   }
 }
 
+function onHash(_ref2) {
+  var hash = _ref2.hash;
+  updateHash(hash);
+}
+
 function showOverlay() {
   progress.hide();
 
@@ -827,30 +833,23 @@ function setProblems(type, problems) {
   }
 }
 
-function onProblems(_ref2) {
-  var hash = _ref2.hash,
-    errors = _ref2.errors,
-    warnings = _ref2.warnings;
+function onProblems(_ref3) {
+  var errors = _ref3.errors,
+    warnings = _ref3.warnings;
   setProblems('errors', errors);
   setProblems('warnings', warnings);
 
-  if (isUpdateAvailable(hash)) {
-    // if (isLastUpdateFailed()) {
-    overlay.hide();
-    progress.hide(); // }
-
-    attemptUpdates(hash, options.hmr, showOverlay);
-  } else {
+  if (errors.length > 0) {
     showOverlay();
+  } else {
+    attemptUpdates(options.hmr, showOverlay);
   }
 }
 
-function onSuccess(_ref3) {
-  var hash = _ref3.hash;
-  attemptUpdates(hash, options.hmr, function () {
-    overlay.hide();
-    progress.hide();
-  });
+function onSuccess() {
+  overlay.hide();
+  progress.hide();
+  attemptUpdates(options.hmr);
 }
 
 function createWebSocket(url) {
@@ -878,12 +877,16 @@ function createWebSocket(url) {
           onProgress(payload);
           break;
 
+        case 'hash':
+          onHash(payload);
+          break;
+
         case 'problems':
           onProblems(payload);
           break;
 
         case 'ok':
-          onSuccess(payload);
+          onSuccess();
           break;
       }
 
@@ -898,6 +901,7 @@ function createWebSocket(url) {
   };
 
   ws.onclose = function () {
+    overlay.hide();
     progress.hide();
 
     if (retryTimes++ < MAX_RETRY_TIMES) {

@@ -1,4 +1,4 @@
-import ReactDom from 'react-dom';
+import { createRoot } from 'react-dom/client';
 
 function App() {
   const styles = {
@@ -8,7 +8,13 @@ function App() {
 
   return <div style={styles}>Hello React !</div>;
 }
-import.meta;
-module.hot && module.hot.accept();
 
-ReactDom.render(<App />, document.getElementById('app'));
+const root = window.__ROOT__ || createRoot(document.getElementById('app'));
+
+if (!window.__ROOT__) {
+  window.__ROOT__ = root;
+}
+
+root.render(<App />);
+
+module.hot && module.hot.accept();

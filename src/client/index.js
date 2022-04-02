@@ -4,7 +4,7 @@
 
 import Overlay from './ui/overlay';
 import Progress from './ui/progress';
-import { attemptUpdates, isLastUpdateFailed, isUpdateAvailable } from './hot';
+import { attemptUpdates, updateHash } from './hot';
 
 let retryTimes = 0;
 
@@ -91,6 +91,10 @@ function onProgress({ value }) {
   }
 }
 
+function onHash({ hash }) {
+  updateHash(hash);
+}
+
 function showOverlay() {
   progress.hide();
 
@@ -115,27 +119,22 @@ function setProblems(type, problems) {
   }
 }
 
-function onProblems({ hash, errors, warnings }) {
+function onProblems({ errors, warnings }) {
   setProblems('errors', errors);
   setProblems('warnings', warnings);
 
-  if (isUpdateAvailable(hash)) {
-    // if (isLastUpdateFailed()) {
-    //   overlay.hide();
-    //   progress.hide();
-    // }
-
-    attemptUpdates(hash, options.hmr, showOverlay);
-  } else {
+  if (errors.length > 0) {
     showOverlay();
+  } else {
+    attemptUpdates(options.hmr, showOverlay);
   }
 }
 
-function onSuccess({ hash }) {
-  attemptUpdates(hash, options.hmr, () => {
-    overlay.hide();
-    progress.hide();
-  });
+function onSuccess() {
+  overlay.hide();
+  progress.hide();
+
+  attemptUpdates(options.hmr);
 }
 
 function createWebSocket(url) {
@@ -158,6 +157,9 @@ function createWebSocket(url) {
         case 'progress':
           onProgress(payload);
           break;
+        case 'hash':
+          onHash(payload);
+          break;
         case 'problems':
           onProblems(payload);
           break;
@@ -171,6 +173,7 @@ function createWebSocket(url) {
   };
 
   ws.onclose = () => {
+    overlay.hide();
     progress.hide();
 
     if (retryTimes++ < MAX_RETRY_TIMES) {
