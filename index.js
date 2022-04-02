@@ -60,11 +60,8 @@ const DEFAULT_STATS = {
 const DEFAULT_OPTIONS = {
   hmr: true,
   path: '/hot',
-  progress: true,
-  overlay: {
-    errors: true,
-    warnings: true
-  }
+  overlay: true,
+  progress: true
 };
 
 const WEBSOCKET_RE = /^websocket$/i;
@@ -76,16 +73,7 @@ function isUpgradable(context, detector) {
 }
 
 function resolveOptions(options) {
-  const { overlay } = options;
-  const configure = { ...DEFAULT_OPTIONS, ...options };
-
-  if (overlay === false) {
-    configure.overlay = { errors: false, warnings: false };
-  } else {
-    configure.overlay = { ...DEFAULT_OPTIONS.overlay, ...overlay };
-  }
-
-  return configure;
+  return { ...DEFAULT_OPTIONS, ...options };
 }
 
 class HotServer {

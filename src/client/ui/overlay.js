@@ -161,8 +161,8 @@ const HTML = `
     <em class="${OVERLAY}-warnings-title"></em>
   </div>
   <article class="${OVERLAY}-problems">
-    <pre class="${OVERLAY}-errors"></pre>
-    <pre class="${OVERLAY}-warnings"></pre>
+    <pre class="${OVERLAY}-errors ${OVERLAY}-hidden"></pre>
+    <pre class="${OVERLAY}-warnings ${OVERLAY}-hidden"></pre>
   </article>
 </aside>
 `;

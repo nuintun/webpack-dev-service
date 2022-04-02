@@ -4,18 +4,16 @@
 
 import Overlay from './ui/overlay';
 import Progress from './ui/progress';
-import { strip } from './ui/utils/ansi';
-import { abort, update } from './update';
+import { attemptUpdates, isLastUpdateFailed, isUpdateAvailable } from './hot';
 
 let retryTimes = 0;
-let hasErrorLast = false;
 
 const MAX_RETRY_TIMES = 10;
 const RETRY_INTERVAL = 3000;
 
+const progress = new Progress();
 const options = resolveOptions();
 const overlay = new Overlay(options.name);
-const progress = new Progress();
 
 function isTLS(protocol) {
   return protocol === 'https:';
@@ -79,7 +77,7 @@ function resolveSocketURL() {
   return `${resolveHost(params)}${options.path}`;
 }
 
-function progressActions({ value }) {
+function onProgress({ value }) {
   if (options.progress) {
     if (value === 0) {
       progress.show();
@@ -93,36 +91,51 @@ function progressActions({ value }) {
   }
 }
 
-function printProblems(type, problems) {
+function showOverlay() {
+  progress.hide();
+
+  if (options.overlay) {
+    overlay.show();
+  }
+}
+
+function setProblems(type, problems) {
   const nameMaps = {
     errors: ['Error', 'error'],
     warnings: ['Warning', 'warn']
   };
   const [name, method] = nameMaps[type];
 
+  if (options.overlay) {
+    overlay.setProblems(type, problems);
+  }
+
   for (const { moduleName, message } of problems) {
-    console[method](`${name} in ${moduleName}\r\n${strip(message)}`);
+    console[method](`${name} in ${moduleName}\r\n${message}`);
   }
 }
 
-function problemsActions({ errors, warnings }) {
-  const { errors: popupError, warnings: popupWarnings } = options.overlay;
+function onProblems({ hash, errors, warnings }) {
+  setProblems('errors', errors);
+  setProblems('warnings', warnings);
 
-  if (popupError) {
-    overlay.setProblems('errors', errors);
+  if (isUpdateAvailable(hash)) {
+    // if (isLastUpdateFailed()) {
+    //   overlay.hide();
+    //   progress.hide();
+    // }
+
+    attemptUpdates(hash, options.hmr, showOverlay);
   } else {
-    printProblems('errors', errors);
+    showOverlay();
   }
+}
 
-  if (popupWarnings) {
-    overlay.setProblems('warnings', warnings);
-  } else {
-    printProblems('warnings', warnings);
-  }
-
-  if (popupError || popupWarnings) {
-    overlay.show();
-  }
+function onSuccess({ hash }) {
+  attemptUpdates(hash, options.hmr, () => {
+    overlay.hide();
+    progress.hide();
+  });
 }
 
 function createWebSocket(url) {
@@ -135,37 +148,21 @@ function createWebSocket(url) {
   ws.onmessage = message => {
     const parsed = parseMessage(message);
 
-    if (parsed !== null) {
+    if (parsed) {
       const { action, payload } = parsed;
 
       switch (action) {
         case 'invalid':
-          abort();
-
-          if (options.progress) {
-            progress.update(0);
-          }
+          onProgress({ value: 0 });
           break;
         case 'progress':
-          progressActions(payload);
+          onProgress(payload);
           break;
         case 'problems':
-          if (payload.errors.length > 0) {
-            hasErrorLast = true;
-
-            problemsActions(payload);
-          } else {
-            update(payload.hash, hasErrorLast ? false : options.hmr, () => {
-              problemsActions(payload);
-            });
-          }
+          onProblems(payload);
           break;
         case 'ok':
-          overlay.hide();
-
-          update(payload.hash, hasErrorLast ? false : options.hmr);
-
-          hasErrorLast = false;
+          onSuccess(payload);
           break;
       }
 
