@@ -9,10 +9,10 @@ function App() {
   return <div style={styles}>Hello React !</div>;
 }
 
-const root = window.__ROOT__ || createRoot(document.getElementById('app'));
+const root = window.__REACT_ROOT__ || createRoot(document.getElementById('app'));
 
-if (!window.__ROOT__) {
-  window.__ROOT__ = root;
+if (!window.__REACT_ROOT__) {
+  window.__REACT_ROOT__ = root;
 }
 
 root.render(<App />);
