@@ -654,11 +654,17 @@ var Progress = /*#__PURE__*/ (function () {
 var hash = __webpack_hash__; // Reload location.
 
 function reload() {
-  window.location.reload();
+  setTimeout(function () {
+    window.location.reload();
+  }, 128);
 } // Update hash.
 
 function updateHash(value) {
   hash = value;
+} // Webpack disallows updates in other states.
+
+function isUpdateIdle() {
+  return module.hot.status() === 'idle';
 } // Is there a newer version of this code available?
 
 function isUpdateAvailable() {
@@ -668,42 +674,29 @@ function isUpdateAvailable() {
 } // Attempt to update code on the fly, fall back to a hard reload.
 
 function attemptUpdates(hmr) {
-  // HMR api.
-  var _module = module,
-    hot = _module.hot; // HMR enabled.
-
-  if (hmr && hot) {
+  // HMR enabled.
+  if (hmr && module.hot) {
     // Update available and can apply updates.
     if (isUpdateAvailable()) {
-      switch (hot.status()) {
-        case 'idle':
-          hot
-            .check(true)
-            .then(function (updated) {
-              // When updated modules is available,
-              if (updated) {
-                // While we were updating, there was a new update! Do it again.
-                if (isUpdateAvailable()) {
-                  attemptUpdates(hmr);
-                }
-              } else {
-                // When updated modules is unavailable,
-                // it indicates a critical failure in hot-reloading,
-                // e.g. server is not ready to serve new bundle,
-                // and hence we need to do a forced reload.
-                reload();
+      if (isUpdateIdle()) {
+        module.hot
+          .check(true)
+          .then(function (updated) {
+            // When updated modules is available,
+            if (updated) {
+              // While we were updating, there was a new update! Do it again.
+              if (isUpdateAvailable()) {
+                attemptUpdates(hmr);
               }
-            })
-            .catch(function () {
-              // Update error, retry it.
-              attemptUpdates(hmr);
-            });
-          break;
-
-        case 'fail':
-        case 'abort':
-          reload();
-          break;
+            } else {
+              // When updated modules is unavailable,
+              // it indicates a critical failure in hot-reloading,
+              // e.g. server is not ready to serve new bundle,
+              // and hence we need to do a forced reload.
+              reload();
+            }
+          })
+          .catch(reload);
       }
     }
   } else {

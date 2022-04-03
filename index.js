@@ -201,8 +201,8 @@ class HotServer {
   }
 
   broadcastStats(clients, stats) {
-    process.nextTick(() => {
-      if (clients.size > 0 || clients.length > 0) {
+    if (clients.size > 0 || clients.length > 0) {
+      process.nextTick(() => {
         const { hash, builtAt, errors, warnings } = stats;
 
         this.broadcast(clients, 'hash', { hash });
@@ -212,8 +212,8 @@ class HotServer {
         } else {
           this.broadcast(clients, 'ok', { builtAt });
         }
-      }
-    });
+      });
+    }
   }
 }
 
