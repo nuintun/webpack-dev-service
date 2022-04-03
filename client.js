@@ -650,6 +650,7 @@ var Progress = /*#__PURE__*/ (function () {
 /**
  * @module hot
  */
+// Last update hash.
 var hash = __webpack_hash__; // Reload location.
 
 function reload() {
@@ -661,48 +662,53 @@ function updateHash(value) {
 } // Is there a newer version of this code available?
 
 function isUpdateAvailable() {
-  /* globals __webpack_hash__ */
   // __webpack_hash__ is the hash of the current compilation.
   // It's a global variable injected by webpack.
   return hash !== __webpack_hash__;
 } // Attempt to update code on the fly, fall back to a hard reload.
 
 function attemptUpdates(hmr) {
-  var onHotUpdateSuccess = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : function () {};
+  // HMR api.
   var _module = module,
-    hot = _module.hot; // HMR not enabled.
+    hot = _module.hot; // HMR enabled.
 
-  if (!hmr || !hot) return reload(); // Update available and can apply updates.
+  if (hmr && hot) {
+    // Update available and can apply updates.
+    if (isUpdateAvailable()) {
+      switch (hot.status()) {
+        case 'idle':
+          hot
+            .check(true)
+            .then(function (updated) {
+              // When updated modules is available,
+              if (updated) {
+                // While we were updating, there was a new update! Do it again.
+                if (isUpdateAvailable()) {
+                  attemptUpdates(hmr);
+                }
+              } else {
+                // When updated modules is unavailable,
+                // it indicates a critical failure in hot-reloading,
+                // e.g. server is not ready to serve new bundle,
+                // and hence we need to do a forced reload.
+                reload();
+              }
+            })
+            .catch(function () {
+              // Update error, retry it.
+              attemptUpdates(hmr);
+            });
+          break;
 
-  if (isUpdateAvailable()) {
-    switch (hot.status()) {
-      case 'idle':
-        return hot
-          .check(true)
-          .then(function (updated) {
-            // When updated modules is unavailable,
-            // it indicates a critical failure in hot-reloading,
-            // e.g. server is not ready to serve new bundle,
-            // and hence we need to do a forced reload.
-            if (!updated) return reload(); // While we were updating, there was a new update! Do it again.
-
-            if (isUpdateAvailable()) {
-              return attemptUpdates(hmr, onHotUpdateSuccess);
-            } // Maybe we want to do something on hot update success.
-
-            return onHotUpdateSuccess();
-          })
-          .catch(function () {
-            return attemptUpdates(hmr, onHotUpdateSuccess);
-          });
-
-      case 'fail':
-      case 'abort':
-        return reload();
+        case 'fail':
+        case 'abort':
+          reload();
+          break;
+      }
     }
   } else {
-    // Maybe we want to do something on hot update success.
-    return onHotUpdateSuccess();
+    // HMR disabled.
+    reload();
   }
 }
 
@@ -794,14 +800,6 @@ function onHash(_ref2) {
   updateHash(hash);
 }
 
-function showOverlay() {
-  progress.hide();
-
-  if (options.overlay) {
-    overlay.show();
-  }
-}
-
 function setProblems(type, problems) {
   var nameMaps = {
     errors: ['Error', 'error'],
@@ -836,13 +834,16 @@ function setProblems(type, problems) {
 function onProblems(_ref3) {
   var errors = _ref3.errors,
     warnings = _ref3.warnings;
+  progress.hide();
   setProblems('errors', errors);
   setProblems('warnings', warnings);
 
-  if (errors.length > 0) {
-    showOverlay();
-  } else {
-    attemptUpdates(options.hmr, showOverlay);
+  if (options.overlay) {
+    overlay.show();
+  }
+
+  if (errors.length <= 0) {
+    attemptUpdates(options.hmr);
   }
 }
 

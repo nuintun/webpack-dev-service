@@ -95,14 +95,6 @@ function onHash({ hash }) {
   updateHash(hash);
 }
 
-function showOverlay() {
-  progress.hide();
-
-  if (options.overlay) {
-    overlay.show();
-  }
-}
-
 function setProblems(type, problems) {
   const nameMaps = {
     errors: ['Error', 'error'],
@@ -120,13 +112,17 @@ function setProblems(type, problems) {
 }
 
 function onProblems({ errors, warnings }) {
+  progress.hide();
+
   setProblems('errors', errors);
   setProblems('warnings', warnings);
 
-  if (errors.length > 0) {
-    showOverlay();
-  } else {
-    attemptUpdates(options.hmr, showOverlay);
+  if (options.overlay) {
+    overlay.show();
+  }
+
+  if (errors.length <= 0) {
+    attemptUpdates(options.hmr);
   }
 }
 
