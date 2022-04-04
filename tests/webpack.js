@@ -45,13 +45,17 @@ const compiler = webpack({
   mode: 'development',
   target: ['web', 'es5'],
   context: path.resolve('src'),
-  entry: [path.resolve('../client'), path.resolve('src/App.jsx')],
+  entry: [path.resolve('../client'), path.resolve('src/index.jsx')],
   output: {
     publicPath: '/public/',
     filename: `js/[name].js`,
     path: path.resolve('public'),
     chunkFilename: `js/name].js`,
     assetModuleFilename: `[path][name][ext]`
+  },
+  resolve: {
+    fallback: { url: false },
+    extensions: ['.js', '.jsx']
   },
   stats: {
     colors: true,
