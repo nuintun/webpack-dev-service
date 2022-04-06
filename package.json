@@ -6,7 +6,7 @@
   "scripts": {
     "format": "prettier --write .",
     "prepublishOnly": "npm run build",
-    "test": "npm run build && cd tests && node webpack",
+    "test": "cd tests && node webpack.js",
     "build": "rollup -c rollup.config.js & npm run format"
   },
   "repository": {
