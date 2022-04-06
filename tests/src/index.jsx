@@ -6,8 +6,8 @@ const root = createRoot(app);
 
 root.render(<App />);
 
-if (module.hot) {
-  module.hot.accept(['./App.jsx'], () => {
+if (import.meta.webpackHot) {
+  import.meta.webpackHot.accept(['./App.jsx'], () => {
     root.render(<App />);
   });
 }
