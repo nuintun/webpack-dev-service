@@ -66,14 +66,21 @@ function resolveHost() {
 }
 
 function resolveOptions() {
+  const delay = +params.has('delay') || 250;
   const reload = !!params.get('reload') === false;
   const overlay = !!params.get('overlay') === false;
 
   try {
-    return { __WDS_HOT_OPTIONS__, reload, overlay };
+    return { ...__WDS_HOT_OPTIONS__, delay, reload, overlay };
   } catch {
     throw new Error('imported the hot client but the hot server is not enabled');
   }
+}
+
+function fallback() {
+  setTimeout(() => {
+    window.location.reload();
+  }, options.delay);
 }
 
 function onProgress({ value }) {
@@ -121,7 +128,7 @@ function onProblems({ errors, warnings }) {
   }
 
   if (errors.length <= 0) {
-    attemptUpdates(options.hmr, options.reload);
+    attemptUpdates(options.hmr, fallback);
   }
 }
 
@@ -129,7 +136,7 @@ function onSuccess() {
   overlay.hide();
   progress.hide();
 
-  attemptUpdates(options.hmr, options.reload);
+  attemptUpdates(options.hmr, fallback);
 }
 
 function createWebSocket(url) {

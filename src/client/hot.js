@@ -22,46 +22,35 @@ export function isUpdateAvailable() {
   return hash !== __webpack_hash__;
 }
 
-// Attempt update fallback on failed.
-export function fallback(reloadable) {
-  if (reloadable) {
-    setTimeout(() => {
-      window.location.reload();
-    }, 256);
-  }
-}
-
 // Attempt to update code on the fly, fall back to a hard reload.
-export function attemptUpdates(hmr, reloadable) {
-  // HMR enabled.
-  if (hmr && import.meta.webpackHot) {
-    // Update available and can apply updates.
-    if (isUpdateAvailable()) {
+export function attemptUpdates(hmr, fallback) {
+  // Update available.
+  if (isUpdateAvailable()) {
+    // HMR enabled.
+    if (hmr && import.meta.webpackHot) {
       if (isUpdateIdle()) {
         import.meta.webpackHot
           .check(true)
           .then(updated => {
-            // When updated modules is available,
+            // When updated modules is available.
             if (updated) {
-              // While we were updating, there was a new update! Do it again.
-              if (isUpdateAvailable()) {
-                attemptUpdates(hmr, reloadable);
-              }
+              // While update completed, do it again until no update available.
+              attemptUpdates(hmr, fallback);
             } else {
               // When updated modules is unavailable,
               // it indicates a critical failure in hot-reloading,
               // e.g. server is not ready to serve new bundle,
               // and hence we need to do a forced reload.
-              fallback(reloadable);
+              fallback();
             }
           })
           .catch(() => {
-            fallback(reloadable);
+            fallback();
           });
       }
+    } else {
+      // HMR disabled.
+      fallback();
     }
-  } else {
-    // HMR disabled.
-    fallback(reloadable);
   }
 }

@@ -57,6 +57,6 @@ export default [
       preferConst: true
     },
     plugins: [resolve()],
-    external: ['ws', 'webpack', 'koa-compose', 'memoize-one', 'webpack-dev-middleware']
+    external: ['ws', 'webpack', 'koa-compose', 'memoize-one', 'path/posix', 'webpack-dev-middleware']
   }
 ];

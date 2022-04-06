@@ -11,6 +11,7 @@
 
 const webpackDevMiddleware = require('webpack-dev-middleware');
 const webpack = require('webpack');
+const posix = require('path/posix');
 const WebSocket = require('ws');
 const compose = require('koa-compose');
 
@@ -69,8 +70,6 @@ const DEFAULT_STATS = {
 const DEFAULT_OPTIONS = {
   hmr: true,
   path: '/hot',
-  reload: true,
-  overlay: true,
   progress: true
 };
 
@@ -83,7 +82,13 @@ function isUpgradable(context, detector) {
 }
 
 function resolveOptions(options) {
-  return { ...DEFAULT_OPTIONS, ...options };
+  options = { ...DEFAULT_OPTIONS, ...options };
+
+  if (!posix.normalize(options.path).startsWith('/')) {
+    throw new SyntaxError('hot serve path must start with /');
+  }
+
+  return options;
 }
 
 class HotServer {

@@ -7,13 +7,13 @@
  * @see https://github.com/nuintun/webpack-dev-server-middleware#readme
  */
 
-import 'core-js/modules/es.function.name.js';
 import 'core-js/modules/es.array.iterator.js';
 import 'core-js/modules/es.object.to-string.js';
 import 'core-js/modules/es.string.iterator.js';
 import 'core-js/modules/web.dom-collections.iterator.js';
-import 'core-js/modules/web.url.js';
 import 'core-js/modules/web.url-search-params.js';
+import 'core-js/modules/es.function.name.js';
+import 'core-js/modules/web.url.js';
 import 'core-js/modules/es.array.concat.js';
 import 'core-js/modules/es.regexp.exec.js';
 import 'core-js/modules/es.string.replace.js';
@@ -674,55 +674,46 @@ function isUpdateAvailable() {
   // __webpack_hash__ is the hash of the current compilation.
   // It's a global variable injected by webpack.
   return hash !== __webpack_hash__;
-} // Attempt update fallback on failed.
-
-function fallback(reloadable) {
-  if (reloadable) {
-    setTimeout(function () {
-      window.location.reload();
-    }, 256);
-  }
 } // Attempt to update code on the fly, fall back to a hard reload.
 
-function attemptUpdates(hmr, reloadable) {
-  // HMR enabled.
-  if (hmr && import.meta.webpackHot) {
-    // Update available and can apply updates.
-    if (isUpdateAvailable()) {
+function attemptUpdates(hmr, fallback) {
+  // Update available.
+  if (isUpdateAvailable()) {
+    // HMR enabled.
+    if (hmr && import.meta.webpackHot) {
       if (isUpdateIdle()) {
         import.meta.webpackHot
           .check(true)
           .then(function (updated) {
-            // When updated modules is available,
+            // When updated modules is available.
             if (updated) {
-              // While we were updating, there was a new update! Do it again.
-              if (isUpdateAvailable()) {
-                attemptUpdates(hmr, reloadable);
-              }
+              // While update completed, do it again until no update available.
+              attemptUpdates(hmr, fallback);
             } else {
               // When updated modules is unavailable,
               // it indicates a critical failure in hot-reloading,
               // e.g. server is not ready to serve new bundle,
               // and hence we need to do a forced reload.
-              fallback(reloadable);
+              fallback();
             }
           })
           .catch(function () {
-            fallback(reloadable);
+            fallback();
           });
       }
+    } else {
+      // HMR disabled.
+      fallback();
     }
-  } else {
-    // HMR disabled.
-    fallback(reloadable);
   }
 }
 
 var retryTimes = 0;
 var MAX_RETRY_TIMES = 10;
 var RETRY_INTERVAL = 3000;
-var progress = new Progress();
+var params = new URLSearchParams(__resourceQuery);
 var options = resolveOptions();
+var progress = new Progress();
 var overlay = new Overlay(options.name);
 
 function isTLS(protocol) {
@@ -752,7 +743,7 @@ function getCurrentScript() {
   }
 }
 
-function resolveHost(params) {
+function resolveHost() {
   var host = params.get('host');
   var tls = params.has('tls') || isTLS(window.location.protocol);
 
@@ -773,16 +764,29 @@ function resolveHost(params) {
 }
 
 function resolveOptions() {
+  var delay = +params.has('delay') || 250;
+  var reload = !!params.get('reload') === false;
+  var overlay = !!params.get('overlay') === false;
+
   try {
-    return __WDS_HOT_OPTIONS__;
+    return _objectSpread2(
+      _objectSpread2({}, __WDS_HOT_OPTIONS__),
+      {},
+      {
+        delay: delay,
+        reload: reload,
+        overlay: overlay
+      }
+    );
   } catch (_unused2) {
     throw new Error('imported the hot client but the hot server is not enabled');
   }
 }
 
-function resolveSocketURL() {
-  var params = new URLSearchParams(__resourceQuery);
-  return ''.concat(resolveHost(params)).concat(options.path);
+function fallback() {
+  setTimeout(function () {
+    window.location.reload();
+  }, options.delay);
 }
 
 function onProgress(_ref) {
@@ -849,14 +853,14 @@ function onProblems(_ref3) {
   }
 
   if (errors.length <= 0) {
-    attemptUpdates(options.hmr, options.reload);
+    attemptUpdates(options.hmr, fallback);
   }
 }
 
 function onSuccess() {
   overlay.hide();
   progress.hide();
-  attemptUpdates(options.hmr, options.reload);
+  attemptUpdates(options.hmr, fallback);
 }
 
 function createWebSocket(url) {
@@ -919,4 +923,4 @@ function createWebSocket(url) {
   };
 }
 
-createWebSocket(resolveSocketURL());
+createWebSocket(''.concat(resolveHost()).concat(options.path));
