@@ -3,6 +3,7 @@
  */
 
 import webpack from 'webpack';
+import { normalize } from 'path/posix';
 import WebSocket, { WebSocketServer } from 'ws';
 
 const DEFAULT_STATS = {
@@ -18,7 +19,6 @@ const DEFAULT_STATS = {
 const DEFAULT_OPTIONS = {
   hmr: true,
   path: '/hot',
-  overlay: true,
   progress: true
 };
 
@@ -31,7 +31,13 @@ function isUpgradable(context, detector) {
 }
 
 function resolveOptions(options) {
-  return { ...DEFAULT_OPTIONS, ...options };
+  options = { ...DEFAULT_OPTIONS, ...options };
+
+  if (!normalize(options.path).startsWith('/')) {
+    throw new SyntaxError('hot serve path must start with /');
+  }
+
+  return options;
 }
 
 class HotServer {

@@ -11,8 +11,10 @@ let retryTimes = 0;
 const MAX_RETRY_TIMES = 10;
 const RETRY_INTERVAL = 3000;
 
-const progress = new Progress();
+const params = new URLSearchParams(__resourceQuery);
 const options = resolveOptions();
+
+const progress = new Progress();
 const overlay = new Overlay(options.name);
 
 function isTLS(protocol) {
@@ -43,7 +45,7 @@ function getCurrentScript() {
   }
 }
 
-function resolveHost(params) {
+function resolveHost() {
   let host = params.get('host');
   let tls = params.has('tls') || isTLS(window.location.protocol);
 
@@ -64,17 +66,14 @@ function resolveHost(params) {
 }
 
 function resolveOptions() {
+  const reload = !!params.get('reload') === false;
+  const overlay = !!params.get('overlay') === false;
+
   try {
-    return __WDS_HOT_OPTIONS__;
+    return { __WDS_HOT_OPTIONS__, reload, overlay };
   } catch {
     throw new Error('imported the hot client but the hot server is not enabled');
   }
-}
-
-function resolveSocketURL() {
-  const params = new URLSearchParams(__resourceQuery);
-
-  return `${resolveHost(params)}${options.path}`;
 }
 
 function onProgress({ value }) {
@@ -122,7 +121,7 @@ function onProblems({ errors, warnings }) {
   }
 
   if (errors.length <= 0) {
-    attemptUpdates(options.hmr);
+    attemptUpdates(options.hmr, options.reload);
   }
 }
 
@@ -130,7 +129,7 @@ function onSuccess() {
   overlay.hide();
   progress.hide();
 
-  attemptUpdates(options.hmr);
+  attemptUpdates(options.hmr, options.reload);
 }
 
 function createWebSocket(url) {
@@ -180,4 +179,4 @@ function createWebSocket(url) {
   };
 }
 
-createWebSocket(resolveSocketURL());
+createWebSocket(`${resolveHost()}${options.path}`);

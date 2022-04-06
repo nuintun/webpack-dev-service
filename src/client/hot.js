@@ -5,13 +5,6 @@
 // Last update hash.
 let hash = __webpack_hash__;
 
-// Reload location.
-export function reload() {
-  setTimeout(() => {
-    window.location.reload();
-  }, 128);
-}
-
 // Update hash.
 export function updateHash(value) {
   hash = value;
@@ -29,8 +22,17 @@ export function isUpdateAvailable() {
   return hash !== __webpack_hash__;
 }
 
+// Attempt update fallback on failed.
+export function fallback(reloadable) {
+  if (reloadable) {
+    setTimeout(() => {
+      window.location.reload();
+    }, 256);
+  }
+}
+
 // Attempt to update code on the fly, fall back to a hard reload.
-export function attemptUpdates(hmr) {
+export function attemptUpdates(hmr, reloadable) {
   // HMR enabled.
   if (hmr && import.meta.webpackHot) {
     // Update available and can apply updates.
@@ -43,21 +45,23 @@ export function attemptUpdates(hmr) {
             if (updated) {
               // While we were updating, there was a new update! Do it again.
               if (isUpdateAvailable()) {
-                attemptUpdates(hmr);
+                attemptUpdates(hmr, reloadable);
               }
             } else {
               // When updated modules is unavailable,
               // it indicates a critical failure in hot-reloading,
               // e.g. server is not ready to serve new bundle,
               // and hence we need to do a forced reload.
-              reload();
+              fallback(reloadable);
             }
           })
-          .catch(reload);
+          .catch(() => {
+            fallback(reloadable);
+          });
       }
     }
   } else {
     // HMR disabled.
-    reload();
+    fallback(reloadable);
   }
 }

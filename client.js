@@ -1,7 +1,7 @@
 /**
  * @package webpack-dev-server-middleware
  * @license MIT
- * @version 0.8.0
+ * @version 0.9.0
  * @author nuintun <nuintun@qq.com>
  * @description A development and hot reload middleware for Koa2.
  * @see https://github.com/nuintun/webpack-dev-server-middleware#readme
@@ -660,13 +660,7 @@ var Progress = /*#__PURE__*/ (function () {
  * @module hot
  */
 // Last update hash.
-var hash = __webpack_hash__; // Reload location.
-
-function reload() {
-  setTimeout(function () {
-    window.location.reload();
-  }, 128);
-} // Update hash.
+var hash = __webpack_hash__; // Update hash.
 
 function updateHash(value) {
   hash = value;
@@ -680,9 +674,17 @@ function isUpdateAvailable() {
   // __webpack_hash__ is the hash of the current compilation.
   // It's a global variable injected by webpack.
   return hash !== __webpack_hash__;
+} // Attempt update fallback on failed.
+
+function fallback(reloadable) {
+  if (reloadable) {
+    setTimeout(function () {
+      window.location.reload();
+    }, 256);
+  }
 } // Attempt to update code on the fly, fall back to a hard reload.
 
-function attemptUpdates(hmr) {
+function attemptUpdates(hmr, reloadable) {
   // HMR enabled.
   if (hmr && import.meta.webpackHot) {
     // Update available and can apply updates.
@@ -695,22 +697,24 @@ function attemptUpdates(hmr) {
             if (updated) {
               // While we were updating, there was a new update! Do it again.
               if (isUpdateAvailable()) {
-                attemptUpdates(hmr);
+                attemptUpdates(hmr, reloadable);
               }
             } else {
               // When updated modules is unavailable,
               // it indicates a critical failure in hot-reloading,
               // e.g. server is not ready to serve new bundle,
               // and hence we need to do a forced reload.
-              reload();
+              fallback(reloadable);
             }
           })
-          .catch(reload);
+          .catch(function () {
+            fallback(reloadable);
+          });
       }
     }
   } else {
     // HMR disabled.
-    reload();
+    fallback(reloadable);
   }
 }
 
@@ -845,14 +849,14 @@ function onProblems(_ref3) {
   }
 
   if (errors.length <= 0) {
-    attemptUpdates(options.hmr);
+    attemptUpdates(options.hmr, options.reload);
   }
 }
 
 function onSuccess() {
   overlay.hide();
   progress.hide();
-  attemptUpdates(options.hmr);
+  attemptUpdates(options.hmr, options.reload);
 }
 
 function createWebSocket(url) {

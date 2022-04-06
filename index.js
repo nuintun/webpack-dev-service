@@ -1,7 +1,7 @@
 /**
  * @package webpack-dev-server-middleware
  * @license MIT
- * @version 0.8.0
+ * @version 0.9.0
  * @author nuintun <nuintun@qq.com>
  * @description A development and hot reload middleware for Koa2.
  * @see https://github.com/nuintun/webpack-dev-server-middleware#readme
@@ -69,6 +69,7 @@ const DEFAULT_STATS = {
 const DEFAULT_OPTIONS = {
   hmr: true,
   path: '/hot',
+  reload: true,
   overlay: true,
   progress: true
 };
