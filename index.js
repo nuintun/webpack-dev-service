@@ -126,7 +126,9 @@ class HotServer {
   setupHooks() {
     const { hooks } = this.compiler;
 
-    hooks.done.tap(this.name, stats => {
+    hooks.done.tapAsync(this.name, (stats, next) => {
+      next();
+
       this.stats = stats.toJson(DEFAULT_STATS);
 
       this.broadcastStats(this.clients(), this.stats);
@@ -217,17 +219,15 @@ class HotServer {
 
   broadcastStats(clients, stats) {
     if (clients.size > 0 || clients.length > 0) {
-      process.nextTick(() => {
-        const { hash, builtAt, errors, warnings } = stats;
+      const { hash, builtAt, errors, warnings } = stats;
 
-        this.broadcast(clients, 'hash', { hash });
+      this.broadcast(clients, 'hash', { hash });
 
-        if (errors.length > 0 || warnings.length > 0) {
-          this.broadcast(clients, 'problems', { builtAt, errors, warnings });
-        } else {
-          this.broadcast(clients, 'ok', { builtAt });
-        }
-      });
+      if (errors.length > 0 || warnings.length > 0) {
+        this.broadcast(clients, 'problems', { builtAt, errors, warnings });
+      } else {
+        this.broadcast(clients, 'ok', { builtAt });
+      }
     }
   }
 }
