@@ -20,11 +20,11 @@ const progress = {
 const entryHTML = path.resolve('public/index.html');
 
 const html = {
-  lang: 'en',
   xhtml: true,
   minify: false,
   title: 'React',
   filename: entryHTML,
+  templateParameters: { lang: 'en' },
   template: path.resolve('index.ejs'),
   meta: { 'theme-color': '#4285f4', viewport: 'width=device-width,initial-scale=1.0' }
 };
