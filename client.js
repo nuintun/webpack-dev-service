@@ -673,7 +673,7 @@ function updateHash(value) {
 } // Webpack disallows updates in other states.
 
 function isUpdateIdle() {
-  return module.hot.status() === 'idle';
+  return import.meta.webpackHot.status() === 'idle';
 } // Is there a newer version of this code available?
 
 function isUpdateAvailable() {
@@ -684,11 +684,11 @@ function isUpdateAvailable() {
 
 function attemptUpdates(hmr) {
   // HMR enabled.
-  if (hmr && module.hot) {
+  if (hmr && import.meta.webpackHot) {
     // Update available and can apply updates.
     if (isUpdateAvailable()) {
       if (isUpdateIdle()) {
-        module.hot
+        import.meta.webpackHot
           .check(true)
           .then(function (updated) {
             // When updated modules is available,
