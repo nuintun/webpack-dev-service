@@ -454,8 +454,7 @@ var HTML$1 = '\n<aside class="'
   .concat(OVERLAY, '">\n  <i class="')
   .concat(OVERLAY, '-close"></i>\n  <div class="')
   .concat(OVERLAY, '-title">\n    <em class="')
-  .concat(OVERLAY, '-name">')
-  .concat(DEFAULT_NAME, '</em>\n    <em class="')
+  .concat(OVERLAY, '-name"></em>\n    <em class="')
   .concat(OVERLAY, '-errors-title"></em>\n    <em class="')
   .concat(OVERLAY, '-warnings-title"></em>\n  </div>\n  <article class="')
   .concat(OVERLAY, '-problems">\n    <pre class="')
@@ -501,7 +500,7 @@ var Overlay = /*#__PURE__*/ (function () {
     this.warningsList = this.aside.querySelector('.'.concat(OVERLAY, '-warnings'));
     this.errorsTitle = this.aside.querySelector('.'.concat(OVERLAY, '-errors-title'));
     this.warningsTitle = this.aside.querySelector('.'.concat(OVERLAY, '-warnings-title'));
-    this.name.innerHTML = name || DEFAULT_NAME;
+    this.name.innerHTML = '\u2B55 '.concat(name || DEFAULT_NAME);
     this.close.addEventListener('click', function () {
       _this.hide();
     });

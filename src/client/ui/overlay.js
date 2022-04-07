@@ -156,7 +156,7 @@ const HTML = `
 <aside class="${OVERLAY}">
   <i class="${OVERLAY}-close"></i>
   <div class="${OVERLAY}-title">
-    <em class="${OVERLAY}-name">${DEFAULT_NAME}</em>
+    <em class="${OVERLAY}-name"></em>
     <em class="${OVERLAY}-errors-title"></em>
     <em class="${OVERLAY}-warnings-title"></em>
   </div>
@@ -199,7 +199,7 @@ export default class Overlay {
     this.errorsTitle = this.aside.querySelector(`.${OVERLAY}-errors-title`);
     this.warningsTitle = this.aside.querySelector(`.${OVERLAY}-warnings-title`);
 
-    this.name.innerHTML = name || DEFAULT_NAME;
+    this.name.innerHTML = `⭕ ${name || DEFAULT_NAME}`;
 
     this.close.addEventListener('click', () => {
       this.hide();
