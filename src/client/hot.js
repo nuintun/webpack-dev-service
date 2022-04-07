@@ -32,21 +32,14 @@ export function attemptUpdates(hmr, fallback) {
         import.meta.webpackHot
           .check(true)
           .then(updated => {
-            // When updated modules is available.
+            // When updated modules is available,
+            // it indicates server is ready to serve new bundle.
             if (updated) {
               // While update completed, do it again until no update available.
               attemptUpdates(hmr, fallback);
-            } else {
-              // When updated modules is unavailable,
-              // it indicates a critical failure in hot-reloading,
-              // e.g. server is not ready to serve new bundle,
-              // and hence we need to do a forced reload.
-              fallback();
             }
           })
-          .catch(() => {
-            fallback();
-          });
+          .catch(fallback);
       }
     } else {
       // HMR disabled.

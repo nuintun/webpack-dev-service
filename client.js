@@ -685,21 +685,14 @@ function attemptUpdates(hmr, fallback) {
         import.meta.webpackHot
           .check(true)
           .then(function (updated) {
-            // When updated modules is available.
+            // When updated modules is available,
+            // it indicates server is ready to serve new bundle.
             if (updated) {
               // While update completed, do it again until no update available.
               attemptUpdates(hmr, fallback);
-            } else {
-              // When updated modules is unavailable,
-              // it indicates a critical failure in hot-reloading,
-              // e.g. server is not ready to serve new bundle,
-              // and hence we need to do a forced reload.
-              fallback();
             }
           })
-          .catch(function () {
-            fallback();
-          });
+          .catch(fallback);
       }
     } else {
       // HMR disabled.
@@ -767,8 +760,8 @@ function resolveHost(params) {
 function resolveOptions() {
   var params = new URLSearchParams(__resourceQuery);
   var host = resolveHost(params);
-  var reload = !!params.get('reload') === false;
-  var overlay = !!params.get('overlay') === false;
+  var live = params.get('live') !== 'false';
+  var overlay = params.get('overlay') !== 'false';
 
   try {
     return _objectSpread2(
@@ -776,19 +769,24 @@ function resolveOptions() {
       {},
       {
         host: host,
-        reload: reload,
+        live: live,
         overlay: overlay
       }
     );
   } catch (_unused2) {
-    throw new Error('imported the hot client but the hot server is not enabled');
+    throw new Error('Imported the hot client but the hot server is not enabled.');
   }
 }
 
-function fallback() {
-  reloadTimer = setTimeout(function () {
-    window.location.reload();
-  }, RELOAD_DELAY);
+function fallback(error) {
+  if (options.live) {
+    reloadTimer = setTimeout(function () {
+      window.location.reload();
+    }, RELOAD_DELAY);
+  } else if (error) {
+    console.error(error);
+    console.warn('Use fallback update but you turn off live reload, please reload by yourself.');
+  }
 }
 
 function onInvalid() {

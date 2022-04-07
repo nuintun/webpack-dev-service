@@ -70,20 +70,25 @@ function resolveOptions() {
   const params = new URLSearchParams(__resourceQuery);
 
   const host = resolveHost(params);
-  const reload = !!params.get('reload') === false;
-  const overlay = !!params.get('overlay') === false;
+  const live = params.get('live') !== 'false';
+  const overlay = params.get('overlay') !== 'false';
 
   try {
-    return { ...__WDS_HOT_OPTIONS__, host, reload, overlay };
+    return { ...__WDS_HOT_OPTIONS__, host, live, overlay };
   } catch {
-    throw new Error('imported the hot client but the hot server is not enabled');
+    throw new Error('Imported the hot client but the hot server is not enabled.');
   }
 }
 
-function fallback() {
-  reloadTimer = setTimeout(() => {
-    window.location.reload();
-  }, RELOAD_DELAY);
+function fallback(error) {
+  if (options.live) {
+    reloadTimer = setTimeout(() => {
+      window.location.reload();
+    }, RELOAD_DELAY);
+  } else if (error) {
+    console.error(error);
+    console.warn('Use fallback update but you turn off live reload, please reload by yourself.');
+  }
 }
 
 function onInvalid() {
