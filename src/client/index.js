@@ -6,12 +6,13 @@ import Overlay from './ui/overlay';
 import Progress from './ui/progress';
 import { attemptUpdates, updateHash } from './hot';
 
+let reloadTimer;
 let retryTimes = 0;
 
+const RELOAD_DELAY = 250;
 const MAX_RETRY_TIMES = 10;
 const RETRY_INTERVAL = 3000;
 
-const params = new URLSearchParams(__resourceQuery);
 const options = resolveOptions();
 
 const progress = new Progress();
@@ -45,9 +46,9 @@ function getCurrentScript() {
   }
 }
 
-function resolveHost() {
+function resolveHost(params) {
   let host = params.get('host');
-  let tls = params.has('tls') || isTLS(window.location.protocol);
+  let tls = params.get(tls) || isTLS(window.location.protocol);
 
   if (!host) {
     const { src } = getCurrentScript();
@@ -66,34 +67,37 @@ function resolveHost() {
 }
 
 function resolveOptions() {
-  const delay = +params.has('delay') || 250;
+  const params = new URLSearchParams(__resourceQuery);
+
+  const host = resolveHost(params);
   const reload = !!params.get('reload') === false;
   const overlay = !!params.get('overlay') === false;
 
   try {
-    return { ...__WDS_HOT_OPTIONS__, delay, reload, overlay };
+    return { ...__WDS_HOT_OPTIONS__, host, reload, overlay };
   } catch {
     throw new Error('imported the hot client but the hot server is not enabled');
   }
 }
 
 function fallback() {
-  setTimeout(() => {
+  reloadTimer = setTimeout(() => {
     window.location.reload();
-  }, options.delay);
+  }, RELOAD_DELAY);
+}
+
+function onInvalid() {
+  clearTimeout(reloadTimer);
+
+  if (options.progress) {
+    progress.update(0);
+    progress.show();
+  }
 }
 
 function onProgress({ value }) {
   if (options.progress) {
-    if (value === 0) {
-      progress.show();
-    }
-
     progress.update(value);
-
-    if (value === 100) {
-      progress.hide();
-    }
   }
 }
 
@@ -154,7 +158,7 @@ function createWebSocket(url) {
 
       switch (action) {
         case 'invalid':
-          onProgress({ value: 0 });
+          onInvalid();
           break;
         case 'progress':
           onProgress(payload);
@@ -186,4 +190,4 @@ function createWebSocket(url) {
   };
 }
 
-createWebSocket(`${resolveHost()}${options.path}`);
+createWebSocket(options.host + options.path);

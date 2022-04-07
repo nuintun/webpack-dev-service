@@ -7,13 +7,13 @@
  * @see https://github.com/nuintun/webpack-dev-server-middleware#readme
  */
 
+import 'core-js/modules/es.function.name.js';
 import 'core-js/modules/es.array.iterator.js';
 import 'core-js/modules/es.object.to-string.js';
 import 'core-js/modules/es.string.iterator.js';
 import 'core-js/modules/web.dom-collections.iterator.js';
-import 'core-js/modules/web.url-search-params.js';
-import 'core-js/modules/es.function.name.js';
 import 'core-js/modules/web.url.js';
+import 'core-js/modules/web.url-search-params.js';
 import 'core-js/modules/es.array.concat.js';
 import 'core-js/modules/es.regexp.exec.js';
 import 'core-js/modules/es.string.replace.js';
@@ -708,10 +708,11 @@ function attemptUpdates(hmr, fallback) {
   }
 }
 
+var reloadTimer;
 var retryTimes = 0;
+var RELOAD_DELAY = 250;
 var MAX_RETRY_TIMES = 10;
 var RETRY_INTERVAL = 3000;
-var params = new URLSearchParams(__resourceQuery);
 var options = resolveOptions();
 var progress = new Progress();
 var overlay = new Overlay(options.name);
@@ -743,9 +744,9 @@ function getCurrentScript() {
   }
 }
 
-function resolveHost() {
+function resolveHost(params) {
   var host = params.get('host');
-  var tls = params.has('tls') || isTLS(window.location.protocol);
+  var tls = params.get(tls) || isTLS(window.location.protocol);
 
   if (!host) {
     var _getCurrentScript = getCurrentScript(),
@@ -764,7 +765,8 @@ function resolveHost() {
 }
 
 function resolveOptions() {
-  var delay = +params.has('delay') || 250;
+  var params = new URLSearchParams(__resourceQuery);
+  var host = resolveHost(params);
   var reload = !!params.get('reload') === false;
   var overlay = !!params.get('overlay') === false;
 
@@ -773,7 +775,7 @@ function resolveOptions() {
       _objectSpread2({}, __WDS_HOT_OPTIONS__),
       {},
       {
-        delay: delay,
+        host: host,
         reload: reload,
         overlay: overlay
       }
@@ -784,24 +786,25 @@ function resolveOptions() {
 }
 
 function fallback() {
-  setTimeout(function () {
+  reloadTimer = setTimeout(function () {
     window.location.reload();
-  }, options.delay);
+  }, RELOAD_DELAY);
+}
+
+function onInvalid() {
+  clearTimeout(reloadTimer);
+
+  if (options.progress) {
+    progress.update(0);
+    progress.show();
+  }
 }
 
 function onProgress(_ref) {
   var value = _ref.value;
 
   if (options.progress) {
-    if (value === 0) {
-      progress.show();
-    }
-
     progress.update(value);
-
-    if (value === 100) {
-      progress.hide();
-    }
   }
 }
 
@@ -879,9 +882,7 @@ function createWebSocket(url) {
 
       switch (action) {
         case 'invalid':
-          onProgress({
-            value: 0
-          });
+          onInvalid();
           break;
 
         case 'progress':
@@ -923,4 +924,4 @@ function createWebSocket(url) {
   };
 }
 
-createWebSocket(''.concat(resolveHost()).concat(options.path));
+createWebSocket(options.host + options.path);
