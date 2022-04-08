@@ -9,8 +9,8 @@
     "format": "prettier --write .",
     "prepublishOnly": "npm run build",
     "test": "cd tests && node webpack.js",
-    "build:types": "tsc --project types.json",
-    "build": "rollup -c rollup.config.js & npm run build:types & npm run format"
+    "build:types": "tsc --project tools/server.tsconfig.json",
+    "build": "rollup -c tools/rollup.config.js & npm run build:types & npm run format"
   },
   "repository": {
     "type": "git",
