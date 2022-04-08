@@ -6,6 +6,7 @@ import Overlay from './ui/overlay';
 import Progress from './ui/progress';
 import { StatsError } from 'webpack';
 import { attemptUpdates, updateHash } from './hot';
+import { HashMessage, InvalidMessage, OkMessage, ProblemsMessage, ProgressMessage } from './message';
 
 let retryTimes = 0;
 let reloadTimer: number;
@@ -23,7 +24,9 @@ function isTLS(protocol: string): boolean {
   return protocol === 'https:';
 }
 
-function parseMessage(message: { data: string }): any {
+function parseMessage(
+  message: MessageEvent<string>
+): InvalidMessage | ProgressMessage | HashMessage | ProblemsMessage | OkMessage | null {
   try {
     return JSON.parse(message.data);
   } catch {
@@ -71,7 +74,15 @@ function resolveHost(params: URLSearchParams): string {
   return `${tls ? 'wss' : 'ws'}://${host}`;
 }
 
-function resolveOptions() {
+function resolveOptions(): {
+  hmr: boolean;
+  name: string;
+  host: string;
+  path: string;
+  live: boolean;
+  overlay: boolean;
+  progress: boolean;
+} {
   const params = new URLSearchParams(__resourceQuery);
 
   const host = resolveHost(params);
@@ -105,13 +116,13 @@ function onInvalid() {
   }
 }
 
-function onProgress({ value }: { value: number }) {
+function onProgress({ value }: ProgressMessage['payload']) {
   if (options.progress) {
     progress.update(value);
   }
 }
 
-function onHash({ hash }: { hash: string }) {
+function onHash({ hash }: HashMessage['payload']) {
   updateHash(hash);
 }
 
@@ -131,7 +142,7 @@ function setProblems(type: 'errors' | 'warnings', problems: StatsError[]) {
   }
 }
 
-function onProblems({ errors, warnings }: { errors: StatsError[]; warnings: StatsError[] }) {
+function onProblems({ errors, warnings }: ProblemsMessage['payload']) {
   progress.hide();
 
   setProblems('errors', errors);
@@ -160,7 +171,7 @@ function createWebSocket(url: string): void {
     retryTimes = 0;
   };
 
-  ws.onmessage = message => {
+  ws.onmessage = (message: MessageEvent<string>) => {
     const parsed = parseMessage(message);
 
     if (parsed) {

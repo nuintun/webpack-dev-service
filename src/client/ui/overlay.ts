@@ -186,7 +186,7 @@ function ansiHTML(text: string): string {
 }
 
 export default class Overlay {
-  private hidden = true;
+  private hidden: boolean = true;
 
   private readonly name: HTMLElement;
   private readonly close: HTMLElement;
@@ -215,7 +215,7 @@ export default class Overlay {
     });
   }
 
-  setProblems(type: 'errors' | 'warnings', problems: StatsError[]) {
+  setProblems(type: 'errors' | 'warnings', problems: StatsError[]): void {
     const count = problems.length;
     const hidden = `${OVERLAY}-hidden`;
 

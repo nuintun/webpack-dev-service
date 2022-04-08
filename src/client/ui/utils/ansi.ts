@@ -66,7 +66,10 @@ function encodeHTML(text: string): string {
   });
 }
 
-function resolveTags(colors: Colors) {
+function resolveTags(colors: Colors): {
+  open: Record<number | string, string>;
+  close: Record<number | string, string>;
+} {
   const colours = { ...DEFAULT_COLORS, ...colors };
 
   const open = { ...OPEN_TAGS };

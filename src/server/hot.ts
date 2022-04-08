@@ -44,15 +44,16 @@ function resolveOptions(options: Options): Required<Options> {
 function isUpgradable(context: Context, detector: RegExp): boolean {
   const { upgrade } = context.headers;
 
-  return upgrade !== undefined && detector.test(upgrade.trim());
+  return !!upgrade && detector.test(upgrade.trim());
 }
 
 function hasProblems<T>(problems: ArrayLike<T> | undefined): boolean {
-  return problems !== undefined && problems.length > 0;
+  return !!problems && problems.length > 0;
 }
 
 class HotServer {
   private stats!: StatsCompilation;
+
   private readonly compiler: Compiler;
   private readonly server: WebSocketServer;
   private readonly options: Required<Options>;
@@ -189,7 +190,7 @@ class HotServer {
       this.broadcast(clients, 'hash', { hash });
 
       if (hasProblems(errors) || hasProblems(warnings)) {
-        this.broadcast(clients, 'problems', { builtAt, errors, warnings });
+        this.broadcast(clients, 'problems', { errors, warnings, builtAt });
       } else {
         this.broadcast(clients, 'ok', { builtAt });
       }

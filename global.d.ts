@@ -6,7 +6,7 @@ declare const __WDS_HOT_OPTIONS__: {
   name: string;
   hmr: boolean;
   path: string;
-  progress?: boolean;
+  progress: boolean;
 };
 
 declare const __resourceQuery: string;

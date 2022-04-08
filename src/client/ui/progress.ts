@@ -53,9 +53,8 @@ const HTML = `
  `;
 
 export default class Progress {
-  private hidden = true;
-
   private timer?: number;
+  private hidden: boolean = true;
 
   private readonly svg: SVGElement;
   private readonly track: SVGElement;

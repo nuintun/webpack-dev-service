@@ -82,11 +82,11 @@ function resolveOptions(options) {
 
 function isUpgradable(context, detector) {
   const { upgrade } = context.headers;
-  return upgrade !== undefined && detector.test(upgrade.trim());
+  return !!upgrade && detector.test(upgrade.trim());
 }
 
 function hasProblems(problems) {
-  return problems !== undefined && problems.length > 0;
+  return !!problems && problems.length > 0;
 }
 
 class HotServer {
@@ -228,9 +228,9 @@ class HotServer {
 
       if (hasProblems(errors) || hasProblems(warnings)) {
         this.broadcast(clients, 'problems', {
-          builtAt,
           errors,
-          warnings
+          warnings,
+          builtAt
         });
       } else {
         this.broadcast(clients, 'ok', {
