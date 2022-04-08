@@ -7,7 +7,8 @@
     "format": "prettier --write .",
     "prepublishOnly": "npm run build",
     "test": "cd tests && node webpack.js",
-    "build": "rollup -c rollup.config.js & npm run format"
+    "build": "rollup -c rollup.config.js & npm run format",
+    "types": "tsc --declaration --emitDeclarationOnly --declarationDir typings"
   },
   "repository": {
     "type": "git",
