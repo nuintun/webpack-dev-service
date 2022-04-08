@@ -2,7 +2,7 @@
   "extends": "../tsconfig.json",
   "compilerOptions": {
     "declaration": true,
-    "outFile": "index.js",
+    "outFile": "../index.js",
     "emitDeclarationOnly": true
   },
   "include": [
