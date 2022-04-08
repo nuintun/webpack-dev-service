@@ -23,15 +23,18 @@ const banner = `/**
 
 export default [
   {
-    input: 'src/client/index.js',
+    input: 'src/client/index.ts',
     output: {
       banner,
       format: 'esm',
       file: 'client.js'
     },
     plugins: [
-      resolve(),
+      resolve({
+        extensions
+      }),
       babel({
+        extensions,
         babelHelpers,
         presets: [
           [
@@ -41,6 +44,12 @@ export default [
               targets,
               bugfixes: true,
               useBuiltIns: 'usage'
+            }
+          ],
+          [
+            '@babel/preset-typescript',
+            {
+              optimizeConstEnums: true
             }
           ]
         ]

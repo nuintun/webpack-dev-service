@@ -21,6 +21,7 @@ import 'core-js/modules/es.object.keys.js';
 import 'core-js/modules/es.string.repeat.js';
 import ansiRegex from 'ansi-regex';
 import 'core-js/modules/es.string.trim.js';
+import 'core-js/modules/es.regexp.to-string.js';
 
 function ownKeys(object, enumerableOnly) {
   var keys = Object.keys(object);
@@ -274,21 +275,21 @@ function encodeHTML(text) {
 }
 
 function resolveTags(colors) {
-  colors = _objectSpread2(_objectSpread2({}, DEFAULT_COLORS), colors);
+  var colours = _objectSpread2(_objectSpread2({}, DEFAULT_COLORS), colors);
 
   var open = _objectSpread2({}, OPEN_TAGS);
 
   var close = _objectSpread2({}, CLOSE_TAGS);
 
-  var _colors$reset = _slicedToArray(colors.reset, 2),
-    foregroud = _colors$reset[0],
-    background = _colors$reset[1]; // Reset all
+  var _colours$reset = _slicedToArray(colours.reset, 2),
+    foregroud = _colours$reset[0],
+    background = _colours$reset[1]; // Reset all
 
   open[0] = 'font-weight: normal; opacity: 1; color: '.concat(foregroud, ' ; background: ').concat(background); // Inverse
 
   open[7] = 'color: '.concat(background, '; background: ').concat(foregroud); // Dark grey
 
-  open[90] = 'color: '.concat(colors.darkgrey);
+  open[90] = 'color: '.concat(colours.darkgrey);
 
   for (var _i2 = 0, _Object$keys = Object.keys(STYLES); _i2 < _Object$keys.length; _i2++) {
     var _code = _Object$keys[_i2];
@@ -371,16 +372,12 @@ var Ansi = /*#__PURE__*/ (function () {
 /**
  * @module utils
  */
+var defaultStyleElement = document.createElement('style');
 function injectCSS(css) {
-  var style = document.createElement('style');
-
-  if (style.styleSheet) {
-    style.styleSheet.cssText = css.trim();
-  } else {
-    style.appendChild(document.createTextNode(css.trim()));
-  }
-
-  document.head.appendChild(style);
+  var styleElement = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : defaultStyleElement;
+  styleElement.appendChild(document.createTextNode(css.trim()));
+  document.head.appendChild(styleElement);
+  return styleElement;
 }
 function appendHTML(html, parent) {
   var nodes = [];
@@ -400,68 +397,71 @@ function appendHTML(html, parent) {
 }
 
 var OVERLAY = 'wds-overlay';
-var CSS$1 = '\n.'
+var CSS$1 = '\n .'
   .concat(
     OVERLAY,
-    ' {\n  top:0;\n  left: 0;\n  right: 0;\n  bottom: 0;\n  width: 100vw;\n  height: 100vh;\n  display: flex;\n  position: fixed;\n  font-size: 16px;\n  overflow: hidden;\n  font-style: normal;\n  font-weight: normal;\n  z-index: 2147483646;\n  flex-direction: column;\n  box-sizing: border-box;\n  transform-origin: center;\n  background: rgba(0, 0, 0, .85);\n  transform: scale(0) translateZ(0);\n  transition: transform .25s ease-out;\n  font-family: Menlo, "Lucida Console", monospace;\n}\n.'
+    ' {\n   top:0;\n   left: 0;\n   right: 0;\n   bottom: 0;\n   width: 100vw;\n   height: 100vh;\n   display: flex;\n   position: fixed;\n   font-size: 16px;\n   overflow: hidden;\n   font-style: normal;\n   font-weight: normal;\n   z-index: 2147483646;\n   flex-direction: column;\n   box-sizing: border-box;\n   transform-origin: center;\n   background: rgba(0, 0, 0, .85);\n   transform: scale(0) translateZ(0);\n   transition: transform .25s ease-out;\n   font-family: Menlo, "Lucida Console", monospace;\n }\n .'
   )
-  .concat(OVERLAY, '-show {\n  transform: scale(1) translateZ(0);\n}\n.')
+  .concat(OVERLAY, '-show {\n   transform: scale(1) translateZ(0);\n }\n .')
   .concat(
     OVERLAY,
-    '-close {\n  top: 16px;\n  right: 16px;\n  width: 16px;\n  height: 16px;\n  cursor: pointer;\n  position: absolute;\n  border-radius: 16px;\n  background: #ff5f58;\n  display: inline-block;\n  transform-origin: center;\n  box-shadow: #ff5f58 0 0 6px;\n  transform: rotate(0) translateZ(0);\n  transition: transform .25s ease-in-out;\n}\n.'
+    '-close {\n   top: 16px;\n   right: 16px;\n   width: 16px;\n   height: 16px;\n   cursor: pointer;\n   position: absolute;\n   border-radius: 16px;\n   background: #ff5f58;\n   display: inline-block;\n   transform-origin: center;\n   box-shadow: #ff5f58 0 0 6px;\n   transform: rotate(0) translateZ(0);\n   transition: transform .25s ease-in-out;\n }\n .'
   )
-  .concat(OVERLAY, '-close:before,\n.')
+  .concat(OVERLAY, '-close:before,\n .')
   .concat(
     OVERLAY,
-    '-close:after {\n  top: 7px;\n  left: 3px;\n  content: "";\n  width: 10px;\n  height: 2px;\n  position: absolute;\n  background-color: white;\n  transform-origin: center;\n}\n.'
+    '-close:after {\n   top: 7px;\n   left: 3px;\n   content: "";\n   width: 10px;\n   height: 2px;\n   position: absolute;\n   background-color: white;\n   transform-origin: center;\n }\n .'
   )
-  .concat(OVERLAY, '-close:before {\n  transform: rotate(45deg);\n}\n.')
-  .concat(OVERLAY, '-close:after {\n  transform: rotate(-45deg);\n}\n.')
-  .concat(OVERLAY, '-close:hover {\n  transform: rotate(180deg) translateZ(0);\n}\n.')
+  .concat(OVERLAY, '-close:before {\n   transform: rotate(45deg);\n }\n .')
+  .concat(OVERLAY, '-close:after {\n   transform: rotate(-45deg);\n }\n .')
+  .concat(OVERLAY, '-close:hover {\n   transform: rotate(180deg) translateZ(0);\n }\n .')
   .concat(
     OVERLAY,
-    '-title {\n  margin: 0;\n  color: #fff;\n  line-height: 16px;\n  text-align: center;\n  background: #282d35;\n  overflow-wrap: break-word;\n  border-radius: 0 0 4px 4px;\n  padding: 16px 48px 16px 16px;\n}\n.'
+    '-title {\n   margin: 0;\n   color: #fff;\n   line-height: 16px;\n   text-align: center;\n   background: #282d35;\n   overflow-wrap: break-word;\n   border-radius: 0 0 4px 4px;\n   padding: 16px 48px 16px 16px;\n }\n .'
   )
-  .concat(OVERLAY, '-name {\n  font-weight: bold;\n  font-style: normal;\n  text-transform: uppercase;\n}\n.')
-  .concat(OVERLAY, '-errors-title,\n.')
-  .concat(OVERLAY, '-warnings-title {\n  color: #ff5f58;\n  padding-left: 8px;\n  font-style: normal;\n}\n.')
-  .concat(OVERLAY, '-warnings-title {\n  color: #ffbd2e;\n}\n.')
+  .concat(OVERLAY, '-name {\n   font-weight: bold;\n   font-style: normal;\n   text-transform: uppercase;\n }\n .')
+  .concat(OVERLAY, '-errors-title,\n .')
+  .concat(OVERLAY, '-warnings-title {\n   color: #ff5f58;\n   padding-left: 8px;\n   font-style: normal;\n }\n .')
+  .concat(OVERLAY, '-warnings-title {\n   color: #ffbd2e;\n }\n .')
   .concat(
     OVERLAY,
-    '-problems {\n  padding: 0 16px;\n  overflow-y: auto;\n  scrollbar-width: none;\n  -ms-overflow-style: none;\n  -webkit-overflow-scrolling: touch;\n}\n.'
+    '-problems {\n   padding: 0 16px;\n   overflow-y: auto;\n   scrollbar-width: none;\n   -ms-overflow-style: none;\n   -webkit-overflow-scrolling: touch;\n }\n .'
   )
-  .concat(OVERLAY, '-problems::-webkit-scrollbar {\n  display: none;\n}\n.')
-  .concat(OVERLAY, '-errors,\n.')
+  .concat(OVERLAY, '-problems::-webkit-scrollbar {\n   display: none;\n }\n .')
+  .concat(OVERLAY, '-errors,\n .')
   .concat(
     OVERLAY,
-    '-warnings {\n  color: #ddd;\n  padding: 16px;\n  margin: 16px 0;\n  display: block;\n  line-height: 1.2;\n  border-radius: 4px;\n  background: #282d35;\n  white-space: pre-wrap;\n  font-family: Menlo, "Lucida Console", monospace;\n}\n.'
+    '-warnings {\n   color: #ddd;\n   padding: 16px;\n   margin: 16px 0;\n   display: block;\n   line-height: 1.2;\n   border-radius: 4px;\n   background: #282d35;\n   white-space: pre-wrap;\n   font-family: Menlo, "Lucida Console", monospace;\n }\n .'
   )
-  .concat(OVERLAY, '-errors > div,\n.')
-  .concat(OVERLAY, '-warnings > div {\n  overflow-wrap: break-word;\n}\n.')
-  .concat(OVERLAY, '-errors > div + div,\n.')
-  .concat(OVERLAY, '-warnings > div + div {\n  margin: 16px 0 0;\n}\n.')
-  .concat(OVERLAY, '-errors > div > em,\n.')
+  .concat(OVERLAY, '-errors > div,\n .')
+  .concat(OVERLAY, '-warnings > div {\n   overflow-wrap: break-word;\n }\n .')
+  .concat(OVERLAY, '-errors > div + div,\n .')
+  .concat(OVERLAY, '-warnings > div + div {\n   margin: 16px 0 0;\n }\n .')
+  .concat(OVERLAY, '-errors > div > em,\n .')
   .concat(
     OVERLAY,
-    '-warnings > div > em {\n  line-height: 1;\n  color: #641e16;\n  padding: 4px 8px;\n  font-style: normal;\n  border-radius: 4px;\n  font-weight: normal;\n  background: #ff5f58;\n  display: inline-block;\n  text-transform: uppercase;\n}\n.'
+    '-warnings > div > em {\n   line-height: 1;\n   color: #641e16;\n   padding: 4px 8px;\n   font-style: normal;\n   border-radius: 4px;\n   font-weight: normal;\n   background: #ff5f58;\n   display: inline-block;\n   text-transform: uppercase;\n }\n .'
   )
-  .concat(OVERLAY, '-warnings > div > em {\n  color: #3e2723;\n  background: #ffbd2e;\n}\n.')
-  .concat(OVERLAY, '-errors > div > div,\n.')
-  .concat(OVERLAY, '-warnings > div > div {\n  font-size: 14px;\n  padding: 8px 0 0 16px;\n  overflow-wrap: break-word;\n}\n.')
-  .concat(OVERLAY, '-hidden {\n  display: none;\n}\n');
+  .concat(OVERLAY, '-warnings > div > em {\n   color: #3e2723;\n   background: #ffbd2e;\n }\n .')
+  .concat(OVERLAY, '-errors > div > div,\n .')
+  .concat(
+    OVERLAY,
+    '-warnings > div > div {\n   font-size: 14px;\n   padding: 8px 0 0 16px;\n   overflow-wrap: break-word;\n }\n .'
+  )
+  .concat(OVERLAY, '-hidden {\n   display: none;\n }\n ');
 var DEFAULT_NAME = 'webpack';
-var HTML$1 = '\n<aside class="'
-  .concat(OVERLAY, '">\n  <i class="')
-  .concat(OVERLAY, '-close"></i>\n  <div class="')
-  .concat(OVERLAY, '-title">\n    <em class="')
-  .concat(OVERLAY, '-name"></em>\n    <em class="')
-  .concat(OVERLAY, '-errors-title"></em>\n    <em class="')
-  .concat(OVERLAY, '-warnings-title"></em>\n  </div>\n  <article class="')
-  .concat(OVERLAY, '-problems">\n    <pre class="')
+var HTML$1 = '\n <aside class="'
+  .concat(OVERLAY, '">\n   <i class="')
+  .concat(OVERLAY, '-close"></i>\n   <div class="')
+  .concat(OVERLAY, '-title">\n     <em class="')
+  .concat(OVERLAY, '-name"></em>\n     <em class="')
+  .concat(OVERLAY, '-errors-title"></em>\n     <em class="')
+  .concat(OVERLAY, '-warnings-title"></em>\n   </div>\n   <article class="')
+  .concat(OVERLAY, '-problems">\n     <pre class="')
   .concat(OVERLAY, '-errors ')
-  .concat(OVERLAY, '-hidden"></pre>\n    <pre class="')
+  .concat(OVERLAY, '-hidden"></pre>\n     <pre class="')
   .concat(OVERLAY, '-warnings ')
-  .concat(OVERLAY, '-hidden"></pre>\n  </article>\n</aside>\n');
+  .concat(OVERLAY, '-hidden"></pre>\n   </article>\n </aside>\n ');
 var ANSI = new Ansi({
   black: '#181818',
   red: '#ff3348',
@@ -489,11 +489,11 @@ var Overlay = /*#__PURE__*/ (function () {
 
     injectCSS(CSS$1);
 
-    var _appendHTML = appendHTML(HTML$1);
+    var _ref = appendHTML(HTML$1);
 
-    var _appendHTML2 = _slicedToArray(_appendHTML, 1);
+    var _ref2 = _slicedToArray(_ref, 1);
 
-    this.aside = _appendHTML2[0];
+    this.aside = _ref2[0];
     this.name = this.aside.querySelector('.'.concat(OVERLAY, '-name'));
     this.close = this.aside.querySelector('.'.concat(OVERLAY, '-close'));
     this.errorsList = this.aside.querySelector('.'.concat(OVERLAY, '-errors'));
@@ -532,7 +532,8 @@ var Overlay = /*#__PURE__*/ (function () {
           try {
             for (_iterator.s(); !(_step = _iterator.n()).done; ) {
               var _step$value = _step.value,
-                moduleName = _step$value.moduleName,
+                _step$value$moduleNam = _step$value.moduleName,
+                moduleName = _step$value$moduleNam === void 0 ? 'unknown' : _step$value$moduleNam,
                 message = _step$value.message;
               var src = ansiHTML(moduleName);
               var details = ansiHTML(message);
@@ -578,29 +579,29 @@ var Overlay = /*#__PURE__*/ (function () {
 
 var PROGRESS = 'wds-progress';
 var PERIMETER = 2 * Math.PI * 44;
-var CSS = '\n.'
+var CSS = '\n .'
   .concat(
     PROGRESS,
-    ' {\n  width: 48px;\n  right: 16px;\n  height: 48px;\n  bottom: 16px;\n  display: block;\n  font-size: 16px;\n  position: fixed;\n  cursor: default;\n  user-select: none;\n  font-style: normal;\n  font-weight: normal;\n  z-index: 2147483647;\n  transform-origin: center;\n  transform: scale(0) translateZ(0);\n  transition: transform .25s ease-out;\n}\n.'
+    ' {\n   width: 48px;\n   right: 16px;\n   height: 48px;\n   bottom: 16px;\n   display: block;\n   font-size: 16px;\n   position: fixed;\n   cursor: default;\n   user-select: none;\n   font-style: normal;\n   font-weight: normal;\n   z-index: 2147483647;\n   transform-origin: center;\n   transform: scale(0) translateZ(0);\n   transition: transform .25s ease-out;\n }\n .'
   )
-  .concat(PROGRESS, '-show {\n  transform: scale(1) translateZ(0);\n}\n.')
+  .concat(PROGRESS, '-show {\n   transform: scale(1) translateZ(0);\n }\n .')
   .concat(
     PROGRESS,
-    '-track {\n  stroke: #badfac;\n  stroke-width: 8;\n  stroke-linecap: round;\n  fill: rgba(0, 0, 0, 0);\n  stroke-dasharray: '
+    '-track {\n   stroke: #badfac;\n   stroke-width: 8;\n   stroke-linecap: round;\n   fill: rgba(0, 0, 0, 0);\n   stroke-dasharray: '
   )
-  .concat(PERIMETER, ';\n  stroke-dashoffset: ')
+  .concat(PERIMETER, ';\n   stroke-dashoffset: ')
   .concat(
     PERIMETER,
-    ';\n  transition: stroke-dashoffset .25s linear;\n  transform: matrix(0, -1, 1, 0, 0, 96) translateZ(0);\n}\n'
+    ';\n   transition: stroke-dashoffset .25s linear;\n   transform: matrix(0, -1, 1, 0, 0, 96) translateZ(0);\n }\n '
   );
-var HTML = '\n<svg class="'
+var HTML = '\n <svg class="'
   .concat(
     PROGRESS,
-    '" x="0" y="0" viewBox="0 0 96 96">\n  <circle fill="#282d35" cx="50%" cy="50%" r="44" />\n  <circle class="'
+    '" x="0" y="0" viewBox="0 0 96 96">\n   <circle fill="#282d35" cx="50%" cy="50%" r="44" />\n   <circle class="'
   )
   .concat(
     PROGRESS,
-    '-track" cx="50%" cy="50%" r="44" />\n  <path fill="#fff" d="m48,83.213561l-31.122918,-17.60678l0,-35.21356l31.122918,-17.60678l31.122918,17.60678l0,35.21356l-31.122918,17.60678z" />\n  <path fill="#8ed6fb" d="m22.434956,31.608089l24.537982,-13.880011l0,10.810563l-15.288554,8.410172l-9.249428,-5.340723zm-1.678513,1.520052l0,29.027711l8.979458,-5.182262l0,-18.657318l-8.979458,-5.188131zm52.908373,-1.520052l-24.537982,-13.880011l0,10.810563l15.288554,8.410172l9.249428,-5.340723zm1.678513,1.520052l0,29.027711l-8.979458,-5.182262l0,-18.657318l8.979458,-5.188131zm-1.050538,30.905767l-25.165957,14.238016l0,-10.452558l16.121941,-8.867948l0.123247,-0.070427l8.920768,5.152918zm-52.485811,0l25.165957,14.238016l0,-10.452558l-16.121941,-8.867948l-0.123247,-0.070427l-8.920768,5.152918z" />\n  <path fill="#1c78c0" d="m49.126834,30.997721l15.083141,8.292793l0,16.432994l-15.083141,-8.709487l0,-16.016301zm-2.153896,0l-15.083141,8.292793l0,16.432994l15.083141,-8.709487l0,-16.016301zm16.215844,26.62732l-15.141831,8.328007l-15.141831,-8.328007l15.141831,-8.744701l15.141831,8.744701z" />\n</svg>\n'
+    '-track" cx="50%" cy="50%" r="44" />\n   <path fill="#fff" d="m48,83.213561l-31.122918,-17.60678l0,-35.21356l31.122918,-17.60678l31.122918,17.60678l0,35.21356l-31.122918,17.60678z" />\n   <path fill="#8ed6fb" d="m22.434956,31.608089l24.537982,-13.880011l0,10.810563l-15.288554,8.410172l-9.249428,-5.340723zm-1.678513,1.520052l0,29.027711l8.979458,-5.182262l0,-18.657318l-8.979458,-5.188131zm52.908373,-1.520052l-24.537982,-13.880011l0,10.810563l15.288554,8.410172l9.249428,-5.340723zm1.678513,1.520052l0,29.027711l-8.979458,-5.182262l0,-18.657318l8.979458,-5.188131zm-1.050538,30.905767l-25.165957,14.238016l0,-10.452558l16.121941,-8.867948l0.123247,-0.070427l8.920768,5.152918zm-52.485811,0l25.165957,14.238016l0,-10.452558l-16.121941,-8.867948l-0.123247,-0.070427l-8.920768,5.152918z" />\n   <path fill="#1c78c0" d="m49.126834,30.997721l15.083141,8.292793l0,16.432994l-15.083141,-8.709487l0,-16.016301zm-2.153896,0l-15.083141,8.292793l0,16.432994l15.083141,-8.709487l0,-16.016301zm16.215844,26.62732l-15.141831,8.328007l-15.141831,-8.328007l15.141831,-8.744701l15.141831,8.744701z" />\n </svg>\n '
   );
 
 var Progress = /*#__PURE__*/ (function () {
@@ -611,11 +612,11 @@ var Progress = /*#__PURE__*/ (function () {
 
     injectCSS(CSS);
 
-    var _appendHTML = appendHTML(HTML);
+    var _ref = appendHTML(HTML);
 
-    var _appendHTML2 = _slicedToArray(_appendHTML, 1);
+    var _ref2 = _slicedToArray(_ref, 1);
 
-    this.svg = _appendHTML2[0];
+    this.svg = _ref2[0];
     this.track = this.svg.querySelector('.'.concat(PROGRESS, '-track'));
   }
 
@@ -624,7 +625,7 @@ var Progress = /*#__PURE__*/ (function () {
       key: 'update',
       value: function update(value) {
         value = Math.max(0, Math.min(100, value));
-        this.track.style.strokeDashoffset = ((100 - value) / 100) * PERIMETER;
+        this.track.style.strokeDashoffset = (((100 - value) / 100) * PERIMETER).toString();
       }
     },
     {
@@ -644,7 +645,7 @@ var Progress = /*#__PURE__*/ (function () {
 
         if (!this.hidden) {
           this.hidden = true;
-          this.timer = setTimeout(function () {
+          this.timer = self.setTimeout(function () {
             _this.svg.classList.remove(''.concat(PROGRESS, '-show'));
           }, 300);
         }
@@ -700,8 +701,8 @@ function attemptUpdates(hmr, fallback) {
   }
 }
 
-var reloadTimer;
 var retryTimes = 0;
+var reloadTimer;
 var RELOAD_DELAY = 300;
 var MAX_RETRY_TIMES = 10;
 var RETRY_INTERVAL = 3000;
@@ -724,11 +725,15 @@ function parseMessage(message) {
 function getCurrentScript() {
   var _document = document,
     currentScript = _document.currentScript;
-  if (currentScript) return currentScript;
+
+  if (currentScript) {
+    return currentScript;
+  }
+
   var scripts = document.scripts;
 
   for (var i = scripts.length - 1; i >= 0; i--) {
-    var script = scripts[i];
+    var script = scripts[i]; // @ts-ignore
 
     if (script.readyState === 'interactive') {
       return script;
@@ -738,13 +743,13 @@ function getCurrentScript() {
 
 function resolveHost(params) {
   var host = params.get('host');
-  var tls = params.get(tls) || isTLS(window.location.protocol);
+  var tls = params.get('tls') || isTLS(window.location.protocol);
 
   if (!host) {
-    var _getCurrentScript = getCurrentScript(),
-      src = _getCurrentScript.src;
+    var script = getCurrentScript();
 
-    if (src) {
+    if (script) {
+      var src = script.src;
       var url = new URL(src);
       host = url.host;
       tls = isTLS(url.protocol) || tls;
@@ -779,7 +784,7 @@ function resolveOptions() {
 
 function fallback(error) {
   if (options.live) {
-    reloadTimer = setTimeout(function () {
+    reloadTimer = self.setTimeout(function () {
       window.location.reload();
     }, RELOAD_DELAY);
   } else if (error) {
