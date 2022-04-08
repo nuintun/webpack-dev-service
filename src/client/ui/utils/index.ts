@@ -5,9 +5,13 @@
 const defaultStyleElement = document.createElement('style');
 
 export function injectCSS(css: string, styleElement = defaultStyleElement): HTMLStyleElement {
+  const { head } = document;
+
   styleElement.appendChild(document.createTextNode(css.trim()));
 
-  document.head.appendChild(styleElement);
+  if (!head.contains(styleElement)) {
+    head.appendChild(styleElement);
+  }
 
   return styleElement;
 }

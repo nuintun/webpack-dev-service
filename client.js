@@ -375,8 +375,14 @@ var Ansi = /*#__PURE__*/ (function () {
 var defaultStyleElement = document.createElement('style');
 function injectCSS(css) {
   var styleElement = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : defaultStyleElement;
+  var _document = document,
+    head = _document.head;
   styleElement.appendChild(document.createTextNode(css.trim()));
-  document.head.appendChild(styleElement);
+
+  if (!head.contains(styleElement)) {
+    head.appendChild(styleElement);
+  }
+
   return styleElement;
 }
 function appendHTML(html, parent) {
