@@ -6,6 +6,8 @@ import pkg from './package.json';
 import babel from '@rollup/plugin-babel';
 import resolve from '@rollup/plugin-node-resolve';
 
+const babelHelpers = 'bundled';
+const extensions = ['.ts', '.js'];
 const targets = { browsers: ['defaults'] };
 const corejs = { version: '^3.0.0', proposals: true };
 
@@ -30,7 +32,7 @@ export default [
     plugins: [
       resolve(),
       babel({
-        babelHelpers: 'bundled',
+        babelHelpers,
         presets: [
           [
             '@babel/preset-env',
@@ -47,7 +49,7 @@ export default [
     external: [/core-js/, 'ansi-regex']
   },
   {
-    input: 'src/server/index.js',
+    input: 'src/server/index.ts',
     output: {
       banner,
       format: 'cjs',
@@ -56,7 +58,23 @@ export default [
       file: 'index.js',
       preferConst: true
     },
-    plugins: [resolve()],
+    plugins: [
+      resolve({
+        extensions
+      }),
+      babel({
+        extensions,
+        babelHelpers,
+        presets: [
+          [
+            '@babel/preset-typescript',
+            {
+              optimizeConstEnums: true
+            }
+          ]
+        ]
+      })
+    ],
     external: ['ws', 'webpack', 'koa-compose', 'memoize-one', 'path/posix', 'webpack-dev-middleware']
   }
 ];

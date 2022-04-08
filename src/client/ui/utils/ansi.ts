@@ -5,9 +5,9 @@
 
 import ansiRegex from 'ansi-regex';
 
-const ANSI_RE = ansiRegex();
+const ANSI_RE: RegExp = ansiRegex();
 
-const DEFAULT_COLORS = {
+const DEFAULT_COLORS: Required<Colors> = {
   black: '#000',
   red: '#ff0000',
   green: '#209805',
@@ -21,7 +21,7 @@ const DEFAULT_COLORS = {
   reset: ['#fff', '#000']
 };
 
-const STYLES = {
+const STYLES: Record<number | string, keyof Colors> = {
   30: 'black',
   31: 'red',
   32: 'green',
@@ -32,7 +32,7 @@ const STYLES = {
   37: 'lightgrey'
 };
 
-const OPEN_TAGS = {
+const OPEN_TAGS: Record<number | string, string> = {
   // Bold
   1: 'font-weight: bold;',
   // Dim
@@ -47,7 +47,7 @@ const OPEN_TAGS = {
   9: '<del>'
 };
 
-const CLOSE_TAGS = {
+const CLOSE_TAGS: Record<number | string, string> = {
   // Reset italic
   23: '</i>',
   // Reset underscore
@@ -60,25 +60,25 @@ for (const code of [0, 21, 22, 27, 28, 39, 49]) {
   CLOSE_TAGS[code] = '</span>';
 }
 
-function encodeHTML(text) {
+function encodeHTML(text: string): string {
   return String(text).replace(/[<>]/g, match => {
     return `&#6${match === '<' ? 0 : 2};`;
   });
 }
 
-function resolveTags(colors) {
-  colors = { ...DEFAULT_COLORS, ...colors };
+function resolveTags(colors: Colors) {
+  const colours = { ...DEFAULT_COLORS, ...colors };
 
   const open = { ...OPEN_TAGS };
   const close = { ...CLOSE_TAGS };
-  const [foregroud, background] = colors.reset;
+  const [foregroud, background] = colours.reset;
 
   // Reset all
   open[0] = `font-weight: normal; opacity: 1; color: ${foregroud} ; background: ${background}`;
   // Inverse
   open[7] = `color: ${background}; background: ${foregroud}`;
   // Dark grey
-  open[90] = `color: ${colors.darkgrey}`;
+  open[90] = `color: ${colours.darkgrey}`;
 
   for (const code of Object.keys(STYLES)) {
     const style = STYLES[code];
@@ -91,22 +91,38 @@ function resolveTags(colors) {
   return { open, close };
 }
 
+export interface Colors {
+  red?: string;
+  blue?: string;
+  cyan?: string;
+  black?: string;
+  green?: string;
+  yellow?: string;
+  magenta?: string;
+  darkgrey?: string;
+  lightgrey?: string;
+  reset?: [foregroud: string, background: string];
+}
+
 export default class Ansi {
-  constructor(colors) {
+  private readonly open: Record<string | number, string>;
+  private readonly close: Record<string | number, string>;
+
+  constructor(colors: Colors) {
     const { open, close } = resolveTags(colors);
 
     this.open = open;
     this.close = close;
   }
 
-  convert(text) {
+  convert(text: string): string {
     text = encodeHTML(text);
 
     // Returns the text if the string has no ANSI escape code
     if (!ANSI_RE.test(text)) return text;
 
     // Cache opened sequence
-    const codes = [];
+    const codes: string[] = [];
     const { open, close } = this;
 
     // Replace with markup

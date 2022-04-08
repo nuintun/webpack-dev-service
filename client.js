@@ -702,7 +702,7 @@ function attemptUpdates(hmr, fallback) {
 
 var reloadTimer;
 var retryTimes = 0;
-var RELOAD_DELAY = 250;
+var RELOAD_DELAY = 300;
 var MAX_RETRY_TIMES = 10;
 var RETRY_INTERVAL = 3000;
 var options = resolveOptions();

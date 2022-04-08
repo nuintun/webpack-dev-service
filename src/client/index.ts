@@ -4,10 +4,11 @@
 
 import Overlay from './ui/overlay';
 import Progress from './ui/progress';
+import { StatsError } from 'webpack';
 import { attemptUpdates, updateHash } from './hot';
 
-let reloadTimer;
 let retryTimes = 0;
+let reloadTimer: number;
 
 const RELOAD_DELAY = 300;
 const MAX_RETRY_TIMES = 10;
@@ -18,11 +19,11 @@ const options = resolveOptions();
 const progress = new Progress();
 const overlay = new Overlay(options.name);
 
-function isTLS(protocol) {
+function isTLS(protocol: string): boolean {
   return protocol === 'https:';
 }
 
-function parseMessage(message) {
+function parseMessage(message: { data: string }): any {
   try {
     return JSON.parse(message.data);
   } catch {
@@ -30,30 +31,34 @@ function parseMessage(message) {
   }
 }
 
-function getCurrentScript() {
+function getCurrentScript(): HTMLScriptElement | undefined {
   const { currentScript } = document;
 
-  if (currentScript) return currentScript;
+  if (currentScript) {
+    return currentScript as HTMLScriptElement;
+  }
 
   const scripts = document.scripts;
 
   for (let i = scripts.length - 1; i >= 0; i--) {
     const script = scripts[i];
 
+    // @ts-ignore
     if (script.readyState === 'interactive') {
       return script;
     }
   }
 }
 
-function resolveHost(params) {
+function resolveHost(params: URLSearchParams): string {
   let host = params.get('host');
-  let tls = params.get(tls) || isTLS(window.location.protocol);
+  let tls = params.get('tls') || isTLS(window.location.protocol);
 
   if (!host) {
-    const { src } = getCurrentScript();
+    const script = getCurrentScript();
 
-    if (src) {
+    if (script) {
+      const { src } = script;
       const url = new URL(src);
 
       host = url.host;
@@ -80,9 +85,9 @@ function resolveOptions() {
   }
 }
 
-function fallback(error) {
+function fallback(error?: Error): void {
   if (options.live) {
-    reloadTimer = setTimeout(() => {
+    reloadTimer = self.setTimeout(() => {
       window.location.reload();
     }, RELOAD_DELAY);
   } else if (error) {
@@ -100,18 +105,18 @@ function onInvalid() {
   }
 }
 
-function onProgress({ value }) {
+function onProgress({ value }: { value: number }) {
   if (options.progress) {
     progress.update(value);
   }
 }
 
-function onHash({ hash }) {
+function onHash({ hash }: { hash: string }) {
   updateHash(hash);
 }
 
-function setProblems(type, problems) {
-  const nameMaps = {
+function setProblems(type: 'errors' | 'warnings', problems: StatsError[]) {
+  const nameMaps: Record<string, [string, 'error' | 'warn']> = {
     errors: ['Error', 'error'],
     warnings: ['Warning', 'warn']
   };
@@ -126,7 +131,7 @@ function setProblems(type, problems) {
   }
 }
 
-function onProblems({ errors, warnings }) {
+function onProblems({ errors, warnings }: { errors: StatsError[]; warnings: StatsError[] }) {
   progress.hide();
 
   setProblems('errors', errors);
@@ -148,7 +153,7 @@ function onSuccess() {
   attemptUpdates(options.hmr, fallback);
 }
 
-function createWebSocket(url) {
+function createWebSocket(url: string): void {
   const ws = new WebSocket(url);
 
   ws.onopen = () => {
@@ -175,7 +180,7 @@ function createWebSocket(url) {
           onProblems(payload);
           break;
         case 'ok':
-          onSuccess(payload);
+          onSuccess();
           break;
       }
 
