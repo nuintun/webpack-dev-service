@@ -4,6 +4,7 @@
   "main": "index.js",
   "description": "A development and hot reload middleware for Koa2.",
   "scripts": {
+    "lint": "tsc --noEmit",
     "format": "prettier --write .",
     "prepublishOnly": "npm run build",
     "test": "cd tests && node webpack.js",
