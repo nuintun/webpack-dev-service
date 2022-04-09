@@ -1,11 +1,11 @@
 {
   "name": "webpack-dev-server-middleware",
-  "version": "0.10.0-dev.1",
+  "version": "0.10.0-dev.2",
   "description": "A development and hot reload middleware for Koa2.",
   "files": [
+    "client",
     "typings",
     "index.js",
-    "client.js",
     "index.d.ts",
     "client.d.ts"
   ],
