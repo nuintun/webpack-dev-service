@@ -2,6 +2,10 @@
  * @module global.d.ts
  */
 
+declare interface Window {
+  __WDS_HOT_CLIENT_INITIALLED__: boolean;
+}
+
 declare const __WDS_HOT_OPTIONS__: {
   name: string;
   hmr: boolean;

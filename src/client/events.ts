@@ -2,7 +2,8 @@
  * @module events
  */
 
-import { HashMessage, InvalidMessage, OkMessage, ProblemsMessage, ProgressMessage } from './message';
+import { Options } from './client';
+import * as Message from './message';
 
 interface Events {
   ok: OkEvent[];
@@ -20,34 +21,24 @@ const events: Events = {
   problems: []
 };
 
-export interface Options {
-  readonly hmr: boolean;
-  readonly name: string;
-  readonly host: string;
-  readonly path: string;
-  readonly live: boolean;
-  readonly overlay: boolean;
-  readonly progress: boolean;
-}
-
 export interface InvalidEvent {
-  (message: InvalidMessage['payload'], options: Options): void;
+  (message: Message.Invalid['payload'], options: Options): void;
 }
 
 export interface ProgressEvent {
-  (message: ProgressMessage['payload'], options: Options): void;
+  (message: Message.Progress['payload'], options: Options): void;
 }
 
 export interface HashEvent {
-  (message: HashMessage['payload'], options: Options): void;
+  (message: Message.Hash['payload'], options: Options): void;
 }
 
 export interface ProblemsEvent {
-  (message: ProblemsMessage['payload'], options: Options): void;
+  (message: Message.Problems['payload'], options: Options): void;
 }
 
 export interface OkEvent {
-  (message: OkMessage['payload'], options: Options): void;
+  (message: Message.OK['payload'], options: Options): void;
 }
 
 export function emit(event: keyof Events, message: any, options: Options): void {

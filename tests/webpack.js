@@ -47,7 +47,7 @@ const compiler = webpack({
   mode: 'development',
   target: ['web', 'es5'],
   context: path.resolve('src'),
-  entry: [path.resolve('../client'), path.resolve('src/index.jsx')],
+  entry: [path.resolve('../client?overlay=false'), path.resolve('src/index.jsx')],
   output: {
     publicPath: '/public/',
     filename: `js/[name].js`,
