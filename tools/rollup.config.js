@@ -8,8 +8,8 @@ import resolve from '@rollup/plugin-node-resolve';
 
 const babelHelpers = 'bundled';
 const extensions = ['.ts', '.js'];
-const targets = { browsers: ['defaults'] };
 const corejs = { version: '^3.0.0', proposals: true };
+const targets = { browsers: ['defaults', 'not IE >= 0'] };
 
 const banner = `/**
  * @package ${pkg.name}
