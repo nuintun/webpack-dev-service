@@ -1,5 +1,5 @@
 /**
- * @module global
+ * @module global.d.ts
  */
 
 declare const __WDS_HOT_OPTIONS__: {
