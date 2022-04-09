@@ -41,17 +41,6 @@ function getCurrentScript(): HTMLScriptElement | undefined {
   if (currentScript) {
     return currentScript as HTMLScriptElement;
   }
-
-  const scripts = document.scripts;
-
-  for (let i = scripts.length - 1; i >= 0; i--) {
-    const script = scripts[i];
-
-    // @ts-ignore
-    if (script.readyState === 'interactive') {
-      return script;
-    }
-  }
 }
 
 function resolveHost(params: URLSearchParams): string {
