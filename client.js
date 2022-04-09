@@ -22,6 +22,7 @@ import 'core-js/modules/es.string.repeat.js';
 import ansiRegex from 'ansi-regex';
 import 'core-js/modules/es.string.trim.js';
 import 'core-js/modules/es.regexp.to-string.js';
+import 'core-js/modules/es.array.splice.js';
 
 function ownKeys(object, enumerableOnly) {
   var keys = Object.keys(object);
@@ -663,6 +664,59 @@ var Progress = /*#__PURE__*/ (function () {
 })();
 
 /**
+ * @module events
+ */
+var events = {
+  ok: [],
+  hash: [],
+  invalid: [],
+  progress: [],
+  problems: []
+};
+function emit(event, message, options) {
+  var callbacks = events[event];
+
+  if (callbacks && callbacks.length > 0) {
+    var _iterator = _createForOfIteratorHelper(callbacks),
+      _step;
+
+    try {
+      for (_iterator.s(); !(_step = _iterator.n()).done; ) {
+        var _callback = _step.value;
+
+        _callback(message, options);
+      }
+    } catch (err) {
+      _iterator.e(err);
+    } finally {
+      _iterator.f();
+    }
+  }
+}
+function on(event, callback) {
+  var callbacks = events[event];
+
+  if (callbacks) {
+    callbacks.push(callback);
+  }
+}
+function off(event, callback) {
+  var callbacks = events[event];
+
+  if (callbacks) {
+    if (callback) {
+      var index = callbacks.indexOf(callback);
+
+      if (index >= 0) {
+        callbacks.splice(index, 1);
+      }
+    } else {
+      events[event] = [];
+    }
+  }
+}
+
+/**
  * @module hot
  */
 // Last update hash.
@@ -910,13 +964,7 @@ function createWebSocket(url) {
           break;
       }
 
-      window.postMessage(
-        {
-          action: 'webpack-hot-'.concat(action),
-          payload: payload
-        },
-        '*'
-      );
+      emit(action, payload, options);
     }
   };
 
@@ -933,3 +981,5 @@ function createWebSocket(url) {
 }
 
 createWebSocket(options.host + options.path);
+
+export { off, on };

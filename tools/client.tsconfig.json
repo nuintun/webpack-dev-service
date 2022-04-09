@@ -1,0 +1,12 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "declaration": true,
+    "outFile": "../client.js",
+    "emitDeclarationOnly": true
+  },
+  "include": [
+    "../global.d.ts",
+    "../src/client/index.ts"
+  ]
+}

@@ -2,15 +2,22 @@
   "name": "webpack-dev-server-middleware",
   "version": "0.9.0",
   "main": "index.js",
-  "typings": "index.d.ts",
   "description": "A development and hot reload middleware for Koa2.",
+  "files": [
+    "index.js",
+    "client.js",
+    "index.d.ts",
+    "client.d.ts"
+  ],
   "scripts": {
     "lint": "tsc --noEmit",
     "format": "prettier --write .",
     "prepublishOnly": "npm run build",
     "test": "cd tests && node webpack.js",
-    "build:types": "tsc --project tools/server.tsconfig.json",
-    "build": "rollup -c tools/rollup.config.js & npm run build:types & npm run format"
+    "build:main": "rollup -c tools/rollup.config.js",
+    "build:server.d.ts": "tsc --project tools/server.tsconfig.json",
+    "build:client.d.ts": "tsc --project tools/client.tsconfig.json",
+    "build": "npm run build:main & npm run build:server.d.ts & npm run build:client.d.ts & npm run format"
   },
   "repository": {
     "type": "git",

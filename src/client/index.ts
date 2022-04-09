@@ -5,6 +5,7 @@
 import Overlay from './ui/overlay';
 import Progress from './ui/progress';
 import { StatsError } from 'webpack';
+import { emit, off, on, Options } from './events';
 import { attemptUpdates, updateHash } from './hot';
 import { HashMessage, InvalidMessage, OkMessage, ProblemsMessage, ProgressMessage } from './message';
 
@@ -74,15 +75,7 @@ function resolveHost(params: URLSearchParams): string {
   return `${tls ? 'wss' : 'ws'}://${host}`;
 }
 
-function resolveOptions(): {
-  hmr: boolean;
-  name: string;
-  host: string;
-  path: string;
-  live: boolean;
-  overlay: boolean;
-  progress: boolean;
-} {
+function resolveOptions(): Options {
   const params = new URLSearchParams(__resourceQuery);
 
   const host = resolveHost(params);
@@ -195,7 +188,7 @@ function createWebSocket(url: string): void {
           break;
       }
 
-      window.postMessage({ action: `webpack-hot-${action}`, payload }, '*');
+      emit(action, payload, options);
     }
   };
 
@@ -212,3 +205,5 @@ function createWebSocket(url: string): void {
 }
 
 createWebSocket(options.host + options.path);
+
+export { on, off };
