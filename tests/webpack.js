@@ -85,7 +85,7 @@ const compiler = webpack({
       }
     ]
   },
-  plugins: [new webpack.ProgressPlugin(progress), new HtmlWebpackPlugin(html)]
+  plugins: [new webpack.ProgressPlugin(progress), new webpack.AutomaticPrefetchPlugin(), new HtmlWebpackPlugin(html)]
 });
 
 const port = 8000;
