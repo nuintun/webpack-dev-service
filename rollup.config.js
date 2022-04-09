@@ -18,7 +18,7 @@ function clean(paths) {
   paths.forEach(path => rimraf.sync(path));
 }
 
-clean(['index.js', 'client.js', 'typings']);
+clean(['client', 'typings', 'index.js']);
 
 const banner = `/**
  * @package ${pkg.name}
@@ -65,8 +65,9 @@ export default [
     output: {
       banner,
       format: 'esm',
-      file: 'client.js'
+      dir: 'client'
     },
+    preserveModules: true,
     plugins: [
       resolve({
         extensions
