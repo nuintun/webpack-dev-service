@@ -129,7 +129,7 @@ export default class Ansi {
     const { open, close } = this;
 
     // Replace with markup
-    let html = text.replace(/\033\[(\d+)*m/g, (_match, code) => {
+    let html = text.replace(/\033\[(\d+)m/g, (_match, code) => {
       const openTag = open[code];
 
       if (openTag) {
