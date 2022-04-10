@@ -1,4 +1,5 @@
 import App from './App';
+import { on } from '../../client';
 import { createRoot } from 'react-dom/client';
 
 const app = document.getElementById('app');
@@ -11,3 +12,7 @@ if (import.meta.webpackHot) {
     root.render(<App />);
   });
 }
+
+on('ok', ({ builtAt }) => {
+  console.info(`📌 %c[HMR]: App is up to date at ${new Date(builtAt).toLocaleString()}.`, 'color: #a6e22e;');
+});

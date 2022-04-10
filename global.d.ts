@@ -14,3 +14,5 @@ declare const __WDS_HOT_OPTIONS__: {
 declare interface Window {
   __WDS_HOT_CLIENT_INITIALLED__: boolean;
 }
+
+declare type HotUpdateStatus = keyof typeof webpack.HotUpdateStatus;

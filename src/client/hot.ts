@@ -2,8 +2,19 @@
  * @module hot
  */
 
+// Last error.
+let error: Error;
 // Last update hash.
 let hash: string = __webpack_hash__;
+// HMR status.
+let status: HotUpdateStatus = 'idle';
+
+// Listen HMR status change.
+if (import.meta.webpackHot) {
+  import.meta.webpackHot.addStatusHandler(value => {
+    status = value;
+  });
+}
 
 // Update hash.
 export function updateHash(value: string): void {
@@ -23,7 +34,7 @@ export function attemptUpdates(hmr: boolean, fallback: (error?: Error) => void):
   if (isUpdateAvailable()) {
     // HMR enabled.
     if (hmr && import.meta.webpackHot) {
-      switch (import.meta.webpackHot.status()) {
+      switch (status) {
         case 'idle':
           import.meta.webpackHot
             .check(true)
@@ -35,11 +46,19 @@ export function attemptUpdates(hmr: boolean, fallback: (error?: Error) => void):
                 attemptUpdates(hmr, fallback);
               }
             })
-            .catch(fallback);
+            .catch((exception: Error) => {
+              if (status !== 'fail' && status !== 'abort') {
+                status = 'fail';
+              }
+
+              error = exception;
+
+              fallback(error);
+            });
           break;
         case 'fail':
         case 'abort':
-          fallback();
+          fallback(error);
           break;
       }
     } else {
