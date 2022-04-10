@@ -7,7 +7,8 @@
     "typings",
     "index.js",
     "index.d.ts",
-    "client.d.ts"
+    "client.d.ts",
+    "global.d.ts"
   ],
   "scripts": {
     "lint": "tsc --noEmit",
