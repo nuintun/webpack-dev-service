@@ -2,9 +2,7 @@
  * @module global.d.ts
  */
 
-declare interface Window {
-  __WDS_HOT_CLIENT_INITIALLED__: boolean;
-}
+/// <reference types="webpack/module" />
 
 declare const __WDS_HOT_OPTIONS__: {
   name: string;
@@ -13,14 +11,6 @@ declare const __WDS_HOT_OPTIONS__: {
   progress: boolean;
 };
 
-declare const __resourceQuery: string;
-declare const __webpack_hash__: string;
-
-interface ImportMeta {
-  url: string;
-  webpack: number;
-  webpackHot: {
-    check(autoApply?: boolean): Promise<(string | number)[] | null>;
-    status(): 'idle' | 'check' | 'prepare' | 'ready' | 'dispose' | 'apply' | 'abort' | 'fail';
-  };
+declare interface Window {
+  __WDS_HOT_CLIENT_INITIALLED__: boolean;
 }
