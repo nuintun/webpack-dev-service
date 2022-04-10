@@ -10,11 +10,6 @@ export function updateHash(value: string): void {
   hash = value;
 }
 
-// Webpack disallows updates in other states.
-export function isUpdateIdle(): boolean {
-  return import.meta.webpackHot.status() === 'idle';
-}
-
 // Is there a newer version of this code available?
 export function isUpdateAvailable(): boolean {
   // __webpack_hash__ is the hash of the current compilation.
@@ -28,18 +23,24 @@ export function attemptUpdates(hmr: boolean, fallback: (error?: Error) => void):
   if (isUpdateAvailable()) {
     // HMR enabled.
     if (hmr && import.meta.webpackHot) {
-      if (isUpdateIdle()) {
-        import.meta.webpackHot
-          .check(true)
-          .then(updated => {
-            // When updated modules is available,
-            // it indicates server is ready to serve new bundle.
-            if (updated) {
-              // While update completed, do it again until no update available.
-              attemptUpdates(hmr, fallback);
-            }
-          })
-          .catch(fallback);
+      switch (import.meta.webpackHot.status()) {
+        case 'idle':
+          import.meta.webpackHot
+            .check(true)
+            .then(updated => {
+              // When updated modules is available,
+              // it indicates server is ready to serve new bundle.
+              if (updated) {
+                // While update completed, do it again until no update available.
+                attemptUpdates(hmr, fallback);
+              }
+            })
+            .catch(fallback);
+          break;
+        case 'fail':
+        case 'abort':
+          fallback();
+          break;
       }
     } else {
       // HMR disabled.
