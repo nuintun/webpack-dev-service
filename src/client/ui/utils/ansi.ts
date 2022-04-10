@@ -135,7 +135,7 @@ export default class Ansi {
       if (openTag) {
         // If current sequence has been opened, close it.
         if (!!~codes.indexOf(code)) {
-          // eslint-disable-line no-extra-boolean-cast
+          // Pop sequence
           codes.pop();
 
           return '</span>';
