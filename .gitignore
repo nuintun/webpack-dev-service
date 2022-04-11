@@ -105,4 +105,4 @@ dist
 
 # Build dist
 /client/
-/index.js
+/server/

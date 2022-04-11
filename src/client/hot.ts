@@ -4,13 +4,17 @@
 
 // Last error.
 let error: Error;
+// HMR status.
+let status: HotUpdateStatus;
 // Last update hash.
 let hash: string = __webpack_hash__;
-// HMR status.
-let status: HotUpdateStatus = 'idle';
 
 // Listen HMR status change.
 if (import.meta.webpackHot) {
+  // Initialize status.
+  status = import.meta.webpackHot.status();
+
+  // Add status change event listener.
   import.meta.webpackHot.addStatusHandler(value => {
     status = value;
   });

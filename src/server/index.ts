@@ -17,7 +17,7 @@ export type ExtendMiddleware = BaseMiddleware & HotExtensions;
 
 export default function server(compiler: Compiler): ExtendMiddleware;
 export default function server(compiler: Compiler, options: Options & { hot: false }): BaseMiddleware;
-export default function server(compiler: Compiler, options: Options & { hot: HotOptions }): ExtendMiddleware;
+export default function server(compiler: Compiler, options: Options & { hot?: HotOptions }): ExtendMiddleware;
 export default function server(compiler: Compiler, options: Options = {}): BaseMiddleware | ExtendMiddleware {
   const { hot: hotOptions, ...devOptions } = options;
 

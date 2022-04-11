@@ -18,7 +18,7 @@ function clean(paths) {
   paths.forEach(path => rimraf.sync(path));
 }
 
-clean(['client', 'typings', 'index.js']);
+clean(['server', 'client', 'typings']);
 
 const banner = `/**
  * @package ${pkg.name}
@@ -36,11 +36,12 @@ export default [
     output: {
       banner,
       format: 'cjs',
+      dir: 'server',
       interop: false,
       exports: 'auto',
-      file: 'index.js',
       preferConst: true
     },
+    preserveModules: true,
     plugins: [
       resolve({
         extensions
