@@ -5,9 +5,9 @@
 import { emit } from './events';
 import Overlay from './ui/overlay';
 import Progress from './ui/progress';
-import { StatsError } from 'webpack';
 import * as Message from './message';
-import { attemptUpdates, updateHash } from './hot';
+import { StatsError } from 'webpack';
+import { applyUpdate, updateHash } from './hot';
 
 export interface Options {
   readonly hmr: boolean;
@@ -21,9 +21,9 @@ export interface Options {
 
 export default function createClient(options: Options): void {
   let retryTimes = 0;
-  let reloadTimer: number;
+  let updateTimer: number;
 
-  const RELOAD_DELAY = 300;
+  const UPDATE_DELAY = 128;
   const MAX_RETRY_TIMES = 10;
   const RETRY_INTERVAL = 3000;
 
@@ -32,17 +32,21 @@ export default function createClient(options: Options): void {
 
   const fallback = (error?: Error): void => {
     if (options.live) {
-      reloadTimer = self.setTimeout(() => {
-        window.location.reload();
-      }, RELOAD_DELAY);
+      window.location.reload();
     } else if (error) {
       console.error(error);
       console.warn('Use fallback update but you turn off live reload, please reload by yourself.');
     }
   };
 
+  const applyUpdateAsync = () => {
+    updateTimer = self.setTimeout(() => {
+      applyUpdate(options.hmr, fallback);
+    }, UPDATE_DELAY);
+  };
+
   const onInvalid = (): void => {
-    clearTimeout(reloadTimer);
+    clearTimeout(updateTimer);
 
     if (options.progress) {
       progress.update(0);
@@ -87,7 +91,7 @@ export default function createClient(options: Options): void {
     }
 
     if (errors.length <= 0) {
-      attemptUpdates(options.hmr, fallback);
+      applyUpdateAsync();
     }
   };
 
@@ -95,7 +99,7 @@ export default function createClient(options: Options): void {
     overlay.hide();
     progress.hide();
 
-    attemptUpdates(options.hmr, fallback);
+    applyUpdateAsync();
   };
 
   const parseMessage = (

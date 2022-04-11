@@ -14,5 +14,5 @@ if (import.meta.webpackHot) {
 }
 
 on('ok', ({ builtAt }) => {
-  console.info(`📌 %c[HMR]: App is up to date at ${new Date(builtAt).toLocaleString()}.`, 'color: #099160;');
+  console.info(`📌 %c[HMR]: App is up to date at ${new Date(builtAt).toLocaleString()}.`, `color: #099160;`);
 });

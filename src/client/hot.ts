@@ -43,12 +43,12 @@ if (import.meta.webpackHot) {
 }
 
 /**
- * @function attemptUpdates
- * @description Attempt to update code on the fly, fall back to a hard reload.
+ * @function applyUpdate
+ * @description Apply update.
  * @param hmr Whether to enable HMR.
  * @param fallback Fallback function when HMR fail.
  */
-export function attemptUpdates(hmr: boolean, fallback: (error?: Error) => void): void {
+export function applyUpdate(hmr: boolean, fallback: (error?: Error) => void): void {
   // Update available.
   if (isUpdateAvailable()) {
     // HMR enabled.
@@ -69,7 +69,7 @@ export function attemptUpdates(hmr: boolean, fallback: (error?: Error) => void):
               // it indicates server is ready to serve new bundle.
               if (updated) {
                 // While update completed, do it again until no update available.
-                attemptUpdates(hmr, fallback);
+                applyUpdate(hmr, fallback);
               }
             })
             .catch((exception: Error) => {
