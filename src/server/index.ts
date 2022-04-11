@@ -15,8 +15,25 @@ export type Options = DevOptions & {
 export type BaseMiddleware = Middleware & DevExtensions;
 export type ExtendMiddleware = BaseMiddleware & HotExtensions;
 
+/**
+ * @function server
+ * @description Create koa dev server middleware.
+ * @param compiler The webpack compiler instance.
+ */
 export default function server(compiler: Compiler): ExtendMiddleware;
+/**
+ * @function server
+ * @description Create koa dev server middleware.
+ * @param compiler The webpack compiler instance.
+ * @param options Options.
+ */
 export default function server(compiler: Compiler, options: Options & { hot: false }): BaseMiddleware;
+/**
+ * @function server
+ * @description Create koa dev server middleware.
+ * @param compiler The webpack compiler instance.
+ * @param options Options.
+ */
 export default function server(compiler: Compiler, options: Options & { hot?: HotOptions }): ExtendMiddleware;
 export default function server(compiler: Compiler, options: Options = {}): BaseMiddleware | ExtendMiddleware {
   const { hot: hotOptions, ...devOptions } = options;

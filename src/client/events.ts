@@ -51,6 +51,12 @@ export function emit(event: keyof Events, message: any, options: Options): void 
   }
 }
 
+/**
+ * @function on
+ * @description Add an event listener callback.
+ * @param event Event name.
+ * @param callback Event listener callback.
+ */
 export function on(event: 'invalid', callback: InvalidEvent): void;
 export function on(event: 'progress', callback: ProgressEvent): void;
 export function on(event: 'hash', callback: HashEvent): void;
@@ -64,6 +70,12 @@ export function on(event: keyof Events, callback: (message: any, options: Option
   }
 }
 
+/**
+ * @function off
+ * @description Remove an event listener callback.
+ * @param event Event name.
+ * @param callback Event listener callback.
+ */
 export function off(event: 'invalid', callback?: InvalidEvent): void;
 export function off(event: 'progress', callback?: ProgressEvent): void;
 export function off(event: 'hash', callback?: HashEvent): void;
