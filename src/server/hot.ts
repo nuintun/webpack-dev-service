@@ -31,7 +31,7 @@ function resolveStatsOptions(compiler: Compiler): StatsOptions {
   if (typeof stats === 'object') {
     const { warningsFilter } = stats;
 
-    if (warningsFilter) {
+    if (warningsFilter !== undefined) {
       options.warningsFilter = warningsFilter;
     }
   }
