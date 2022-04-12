@@ -52,7 +52,7 @@ const compiler = webpack({
     publicPath: '/public/',
     filename: `js/[name].js`,
     path: path.resolve('public'),
-    chunkFilename: `js/name].js`,
+    chunkFilename: `js/[name].js`,
     assetModuleFilename: `[path][name][ext]`
   },
   resolve: {
