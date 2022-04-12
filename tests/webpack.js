@@ -59,6 +59,9 @@ const compiler = webpack({
     fallback: { url: false },
     extensions: ['.js', '.jsx']
   },
+  watchOptions: {
+    aggregateTimeout: 256
+  },
   stats: {
     colors: true,
     chunks: false,
