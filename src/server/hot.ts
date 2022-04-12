@@ -15,24 +15,37 @@ export interface Options {
 
 const WEBSOCKET_RE = /^websocket$/i;
 
-const DEFAULT_STATS: StatsOptions = {
-  all: false,
-  hash: true,
-  assets: true,
-  errors: true,
-  builtAt: true,
-  warnings: true,
-  errorDetails: false
-};
+function resolveStatsOptions(compiler: Compiler): StatsOptions {
+  const options: StatsOptions = {
+    all: false,
+    hash: true,
+    colors: true,
+    errors: true,
+    assets: false,
+    builtAt: true,
+    warnings: true,
+    errorDetails: false
+  };
+  const { stats } = compiler.options;
 
-const DEFAULT_OPTIONS: Required<Options> = {
-  hmr: true,
-  path: '/hot',
-  progress: true
-};
+  if (typeof stats === 'object') {
+    const { warningsFilter } = stats;
+
+    if (warningsFilter) {
+      options.warningsFilter = warningsFilter;
+    }
+  }
+
+  return options;
+}
 
 function resolveOptions(options: Options): Required<Options> {
-  const settings = { ...DEFAULT_OPTIONS, ...options };
+  const settings = {
+    hmr: true,
+    path: '/hot',
+    progress: true,
+    ...options
+  };
 
   if (!normalize(settings.path).startsWith('/')) {
     throw new SyntaxError('hot serve path must start with /');
@@ -90,12 +103,14 @@ class HotServer {
   }
 
   setupHooks(): void {
-    const { hooks } = this.compiler;
+    const { compiler } = this;
+    const { hooks } = compiler;
+    const statsOptions = resolveStatsOptions(compiler);
 
     hooks.done.tapAsync(this.name, (stats, next) => {
       next();
 
-      this.stats = stats.toJson(DEFAULT_STATS);
+      this.stats = stats.toJson(statsOptions);
 
       this.broadcastStats(this.clients(), this.stats);
     });
