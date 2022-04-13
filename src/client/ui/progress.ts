@@ -88,6 +88,8 @@ export default class Progress {
       this.hidden = true;
 
       this.timer = self.setTimeout(() => {
+        this.update(0);
+
         this.svg.classList.remove(`${PROGRESS}-show`);
       }, 300);
     }
