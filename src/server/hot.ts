@@ -53,7 +53,7 @@ function normalize(path: string) {
       case '..':
         const { length } = segments;
 
-        if (length && segments[length - 1] !== '..') {
+        if (length > 0 && segments[length - 1] !== '..') {
           segments.pop();
         }
         break;
