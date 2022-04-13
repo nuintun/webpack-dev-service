@@ -59,7 +59,7 @@ export default [
         ]
       })
     ],
-    external: ['ws', 'webpack', 'koa-compose', 'memoize-one', 'path/posix', 'webpack-dev-middleware']
+    external: ['ws', 'tslib', 'webpack', 'koa-compose', 'memoize-one', 'path/posix', 'webpack-dev-middleware']
   },
   {
     input: 'src/client/index.ts',
@@ -95,6 +95,6 @@ export default [
         ]
       })
     ],
-    external: [/core-js/, 'ansi-regex']
+    external: ['tslib', /core-js/, 'ansi-regex']
   }
 ];
