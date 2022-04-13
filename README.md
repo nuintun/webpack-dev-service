@@ -1,3 +1,3 @@
-# webpack-dev-server-middleware
+# koa-webpack-server-middleware
 
-> A development and hot reload middleware for Koa2
+> A koa 2 middleware for webpack development and hot reloading.

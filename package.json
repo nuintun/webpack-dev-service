@@ -1,7 +1,7 @@
 {
   "name": "koa-webpack-server-middleware",
   "version": "0.1.0",
-  "description": "A Koa 2 middleware for webpack development and hot reloading.",
+  "description": "A koa 2 middleware for webpack development and hot reloading.",
   "main": "server/index.js",
   "files": [
     "server",
@@ -22,7 +22,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/nuintun/webpack-dev-server-middleware.git"
+    "url": "git+https://github.com/nuintun/koa-webpack-server-middleware.git"
   },
   "keywords": [
     "dev",
@@ -37,9 +37,9 @@
   },
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/nuintun/webpack-dev-server-middleware/issues"
+    "url": "https://github.com/nuintun/koa-webpack-server-middleware/issues"
   },
-  "homepage": "https://github.com/nuintun/webpack-dev-server-middleware#readme",
+  "homepage": "https://github.com/nuintun/koa-webpack-server-middleware#readme",
   "peerDependencies": {
     "webpack": "^5.0.0"
   },
