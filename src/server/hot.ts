@@ -65,7 +65,7 @@ function normalize(path: string) {
 
   const pathname = segments.join('/');
 
-  return segments[0] ? '/' + pathname : pathname;
+  return pathname.startsWith('/') ? pathname : `/${pathname}`;
 }
 
 function resolveOptions(options: Options): Required<Options> {
