@@ -15,6 +15,10 @@ export interface Options {
 
 const WEBSOCKET_RE = /^websocket$/i;
 
+function isObject(value: unknown): value is object {
+  return Object.prototype.toString.call(value) === '[object Object]';
+}
+
 function resolveStatsOptions(compiler: Compiler): StatsOptions {
   const options: StatsOptions = {
     all: false,
@@ -28,7 +32,7 @@ function resolveStatsOptions(compiler: Compiler): StatsOptions {
   };
   const { stats } = compiler.options;
 
-  if (typeof stats === 'object') {
+  if (isObject(stats)) {
     const { warningsFilter } = stats;
 
     if (warningsFilter !== undefined) {
