@@ -2,7 +2,6 @@
  * @module hot
  */
 
-import { normalize } from 'path/posix';
 import { Context, Middleware } from 'koa';
 import WebSocket, { WebSocketServer } from 'ws';
 import webpack, { Compiler, StatsCompilation, StatsOptions } from 'webpack';
@@ -43,6 +42,32 @@ function resolveStatsOptions(compiler: Compiler): StatsOptions {
   return options;
 }
 
+function normalize(path: string) {
+  const segments: string[] = [];
+  const parts = path.replace(/\\+|\/{2,}/, '/').split('/');
+
+  for (const segment of parts) {
+    switch (segment) {
+      case '.':
+        break;
+      case '..':
+        const { length } = segments;
+
+        if (length && segments[length - 1] !== '..') {
+          segments.pop();
+        }
+        break;
+      default:
+        segments.push(segment);
+        break;
+    }
+  }
+
+  const pathname = segments.join('/');
+
+  return segments[0] ? '/' + pathname : pathname;
+}
+
 function resolveOptions(options: Options): Required<Options> {
   const settings = {
     hmr: true,
@@ -51,9 +76,7 @@ function resolveOptions(options: Options): Required<Options> {
     ...options
   };
 
-  if (!normalize(settings.path).startsWith('/')) {
-    throw new SyntaxError('hot serve path must start with /');
-  }
+  settings.path = normalize(settings.path);
 
   return settings;
 }
