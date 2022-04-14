@@ -40,7 +40,7 @@ export default function createClient(options: Options): void {
   };
 
   const applyUpdateAsync = () => {
-    updateTimer = self.setTimeout(() => {
+    updateTimer = window.setTimeout(() => {
       applyUpdate(options.hmr, fallback);
     }, UPDATE_DELAY);
   };
