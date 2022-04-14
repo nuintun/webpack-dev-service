@@ -53,7 +53,7 @@ function normalize(path: string) {
       case '..':
         const { length } = segments;
 
-        if (length && segments[length - 1] !== '..') {
+        if (length > 0 && segments[length - 1] !== '..') {
           segments.pop();
         }
         break;
@@ -65,7 +65,7 @@ function normalize(path: string) {
 
   const pathname = segments.join('/');
 
-  return segments[0] ? '/' + pathname : pathname;
+  return pathname.startsWith('/') ? pathname : `/${pathname}`;
 }
 
 function resolveOptions(options: Options): Required<Options> {
