@@ -9,6 +9,7 @@ const dev = require('../');
 const Koa = require('koa');
 const path = require('path');
 const memfs = require('memfs');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
@@ -83,12 +84,35 @@ const compiler = webpack({
                 options: { highlightCode: true, cacheDirectory: true }
               }
             ]
+          },
+          {
+            test: /\.css$/,
+            use: [
+              {
+                loader: MiniCssExtractPlugin.loader
+              },
+              {
+                loader: 'css-loader',
+                options: {
+                  esModule: true,
+                  modules: {
+                    auto: true,
+                    exportLocalsConvention: 'camelCaseOnly'
+                  }
+                }
+              }
+            ]
+          },
+          {
+            test: /\.svg$/,
+            type: 'asset/resource',
+            exclude: /[\\/]node_modules[\\/]/
           }
         ]
       }
     ]
   },
-  plugins: [new webpack.ProgressPlugin(progress), new HtmlWebpackPlugin(html)]
+  plugins: [new webpack.ProgressPlugin(progress), new HtmlWebpackPlugin(html), new MiniCssExtractPlugin()]
 });
 
 const port = 8000;

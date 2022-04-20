@@ -1,10 +1,14 @@
+import './App.css';
+
 import { memo } from 'react';
 
-export default memo(function App() {
-  const styles = {
-    textAlign: 'center',
-    lineHeight: '100vh'
-  };
+import logo from './logo.svg';
 
-  return <div style={styles}>Hello React !</div>;
+export default memo(function App() {
+  return (
+    <div className="main">
+      <img className="logo" src={logo} alt="webpack" />
+      <p className="text">hello koa-webpack-dev-server + react!</p>
+    </div>
+  );
 });
