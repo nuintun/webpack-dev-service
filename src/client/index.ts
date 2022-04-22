@@ -5,19 +5,21 @@
 import createClient, { Options } from './client';
 
 if (!window.__WDS_HOT_CLIENT_INITIALLED__) {
-  function isTLS(protocol: string): boolean {
-    return protocol === 'https:';
-  }
+  window.__WDS_HOT_CLIENT_INITIALLED__ = true;
 
-  function getCurrentScript(): HTMLScriptElement | undefined {
+  const isTLS = (protocol: string): boolean => {
+    return protocol === 'https:';
+  };
+
+  const getCurrentScript = (): HTMLScriptElement | undefined => {
     const { currentScript } = document;
 
     if (currentScript) {
       return currentScript as HTMLScriptElement;
     }
-  }
+  };
 
-  function resolveHost(params: URLSearchParams): string {
+  const resolveHost = (params: URLSearchParams): string => {
     let host = params.get('host');
     let tls = params.get('tls') || isTLS(window.location.protocol);
 
@@ -36,9 +38,9 @@ if (!window.__WDS_HOT_CLIENT_INITIALLED__) {
     }
 
     return `${tls ? 'wss' : 'ws'}://${host}`;
-  }
+  };
 
-  function resolveOptions(): Options {
+  const resolveOptions = (): Options => {
     const params = new URLSearchParams(__resourceQuery);
 
     const host = resolveHost(params);
@@ -50,11 +52,9 @@ if (!window.__WDS_HOT_CLIENT_INITIALLED__) {
     } catch {
       throw new Error('Imported the hot client but the hot server is not enabled.');
     }
-  }
+  };
 
   createClient(resolveOptions());
-
-  window.__WDS_HOT_CLIENT_INITIALLED__ = true;
 }
 
 export { off, on } from './events';
