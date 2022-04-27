@@ -27,6 +27,7 @@ const html = {
   filename: entryHTML,
   templateParameters: { lang: 'en' },
   template: path.resolve('index.ejs'),
+  favicon: path.resolve('src/logo.svg'),
   meta: { 'theme-color': '#4285f4', viewport: 'width=device-width,initial-scale=1.0' }
 };
 
@@ -125,7 +126,7 @@ app.use(server);
 
 app.use(async ctx => {
   ctx.type = 'text/html; charset=utf-8';
-  ctx.body = fs.createReadStream(entryHTML);
+  ctx.body = fs.readFileSync(entryHTML);
 });
 
 app.on('error', error => {
