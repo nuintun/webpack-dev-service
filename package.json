@@ -16,12 +16,12 @@
   "exports": {
     ".": {
       "types": "./index.d.ts",
-      "module": "./server/esm/index.js",
+      "import": "./server/esm/index.js",
       "require": "./server/cjs/index.js"
     },
     "./client": {
       "types": "./client.d.ts",
-      "module": "./client/index.js"
+      "import": "./client/index.js"
     }
   },
   "scripts": {
