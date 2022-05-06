@@ -104,5 +104,6 @@ dist
 .tern-port
 
 # Build dist
-/client/
+/types/
 /server/
+/client/

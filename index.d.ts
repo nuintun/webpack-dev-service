@@ -2,5 +2,5 @@
  * @module index.d.ts
  */
 
-export * from './typings/server';
-export { default } from './typings/server';
+export * from './types/server';
+export { default } from './types/server';

@@ -2,4 +2,4 @@
  * @module client.d.ts
  */
 
-export * from './typings/client';
+export * from './types/client';
