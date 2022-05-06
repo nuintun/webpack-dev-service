@@ -21,7 +21,8 @@
     },
     "./client": {
       "types": "./client.d.ts",
-      "import": "./client/index.js"
+      "import": "./client/index.js",
+      "default": "./client/index.js"
     }
   },
   "scripts": {
