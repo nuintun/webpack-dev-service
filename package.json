@@ -1,6 +1,6 @@
 {
   "name": "koa-webpack-dev-service",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "A koa 2 middleware for webpack development and hot reloading.",
   "main": "server/cjs/index.js",
   "module": "server/esm/index.js",
@@ -13,18 +13,6 @@
     "client.d.ts",
     "global.d.ts"
   ],
-  "exports": {
-    ".": {
-      "types": "./index.d.ts",
-      "import": "./server/esm/index.js",
-      "require": "./server/cjs/index.js"
-    },
-    "./client": {
-      "types": "./client.d.ts",
-      "import": "./client/index.js",
-      "default": "./client/index.js"
-    }
-  },
   "scripts": {
     "lint": "tsc --noEmit",
     "clean": "node tools/clean.js",
