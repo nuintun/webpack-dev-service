@@ -1,6 +1,6 @@
 {
   "name": "koa-webpack-dev-service",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "A koa 2 middleware for webpack development and hot reloading.",
   "type": "module",
   "types": "index.d.ts",
@@ -18,7 +18,7 @@
     ".": {
       "types": "./index.d.ts",
       "import": "./server/esm/index.js",
-      "require": "./server/esm/index.cjs"
+      "require": "./server/cjs/index.cjs"
     }
   },
   "files": [
