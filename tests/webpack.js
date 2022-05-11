@@ -3,16 +3,13 @@
  * @description Webpack 配置
  */
 
-'use strict';
-
-const dev = require('../');
-const Koa = require('koa');
-const path = require('path');
-const memfs = require('memfs');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-
-const webpack = require('webpack');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
+import Koa from 'koa';
+import path from 'path';
+import memfs from 'memfs';
+import webpack from 'webpack';
+import dev from '../server/esm/index.js';
+import HtmlWebpackPlugin from 'html-webpack-plugin';
+import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 
 const progress = {
   percentBy: 'entries'
