@@ -18,10 +18,6 @@ indent_size = 4
 [Makefile]
 indent_style = tab
 
-# JSON files
-[*.json]
-insert_final_newline = false
-
 # Minified files
 [*.min.*]
 indent_style = false

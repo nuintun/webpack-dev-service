@@ -1,5 +1,2 @@
 # Ignore files
-*.json
 *.min.*
-README.md
-.prettierrc
