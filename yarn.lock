@@ -1631,17 +1631,17 @@ cookies@~0.8.0:
     keygrip "~1.1.0"
 
 core-js-compat@^3.21.0, core-js-compat@^3.22.1:
-  version "3.22.6"
-  resolved "https://registry.npmjs.org/core-js-compat/-/core-js-compat-3.22.6.tgz#2e7c7a703238c168883dbf55c24bbb67503cddcb"
-  integrity sha512-dQ/SxlHcuiywaPIoSUCU6Fx+Mk/H5TXENqd/ZJcK85ta0ZcQkbzHwblxPeL0hF5o+NsT2uK3q9ZOG5TboiVuWw==
+  version "3.22.7"
+  resolved "https://registry.npmjs.org/core-js-compat/-/core-js-compat-3.22.7.tgz#8359eb66ecbf726dd0cfced8e48d5e73f3224239"
+  integrity sha512-uI9DAQKKiiE/mclIC5g4AjRpio27g+VMRhe6rQoz+q4Wm4L6A/fJhiLtBw+sfOpDG9wZ3O0pxIw7GbfOlBgjOA==
   dependencies:
     browserslist "^4.20.3"
     semver "7.0.0"
 
-core-js@^3.22.6:
-  version "3.22.6"
-  resolved "https://registry.npmjs.org/core-js/-/core-js-3.22.6.tgz#294dd824b4cae2c24725a36baa4a791ed00bb0de"
-  integrity sha512-2IGcGH00z9I4twgNWU4uGCNEsBFG1s2JudVQrgSCoVhOfwoTwQjxC8aMo9exrpTMOxvobggEpaHnGMmQY4cfBQ==
+core-js@^3.22.7:
+  version "3.22.7"
+  resolved "https://registry.npmjs.org/core-js/-/core-js-3.22.7.tgz#8d6c37f630f6139b8732d10f2c114c3f1d00024f"
+  integrity sha512-Jt8SReuDKVNZnZEzyEQT5eK6T2RRCXkfTq7Lo09kpm+fHjgGewSbNjV+Wt4yZMhPDdzz2x1ulI5z/w4nxpBseg==
 
 css-loader@^6.7.1:
   version "6.7.1"
@@ -2326,14 +2326,14 @@ node-gyp-build@^4.3.0:
   integrity sha512-amJnQCcgtRVw9SvoebO3BKGESClrfXGCUTX9hSn1OuGQTQBOZmVd0Z0OlecpuRksKvbsUqALE8jls/ErClAPuQ==
 
 node-releases@^2.0.3:
-  version "2.0.4"
-  resolved "https://registry.npmjs.org/node-releases/-/node-releases-2.0.4.tgz#f38252370c43854dc48aa431c766c6c398f40476"
-  integrity sha512-gbMzqQtTtDz/00jQzZ21PQzdI9PyLYqUSvD0p3naOhX4odFji0ZxYdnVwPTxmSwkmxhcFImpozceidSG+AgoPQ==
+  version "2.0.5"
+  resolved "https://registry.npmjs.org/node-releases/-/node-releases-2.0.5.tgz#280ed5bc3eba0d96ce44897d8aee478bfb3d9666"
+  integrity sha512-U9h1NLROZTq9uE1SNffn6WuPDg8icmi3ns4rEl/oTfIle4iLjTliCzgTsbaIFMq/Xn078/lfY/BL0GWZ+psK4Q==
 
 nth-check@^2.0.1:
-  version "2.1.0"
-  resolved "https://registry.npmjs.org/nth-check/-/nth-check-2.1.0.tgz#0cd91c5c08967b58b409fa76282e13851a33fa47"
-  integrity sha512-/sJnahgHzXT7OGgQeAPJ5WDcxs7teA2FU1wo6fEoYqjoHBU+AQi3Qz5hecKPlnOr1YjnSYwJTlBXADbEsaBMLg==
+  version "2.1.1"
+  resolved "https://registry.npmjs.org/nth-check/-/nth-check-2.1.1.tgz#c9eab428effce36cd6b92c924bdb000ef1f1ed1d"
+  integrity sha512-lqjrjmaOoAnWfMmBPL+XNnynZh2+swxiX3WUE0s4yEHI6m+AwrK2UZOimIRl3X/4QctVqS8AiZjFqyOGrMXb/w==
   dependencies:
     boolbase "^1.0.0"
 
@@ -2826,10 +2826,10 @@ type-is@^1.6.16:
     media-typer "0.3.0"
     mime-types "~2.1.24"
 
-typescript@^4.6.4:
-  version "4.6.4"
-  resolved "https://registry.npmjs.org/typescript/-/typescript-4.6.4.tgz#caa78bbc3a59e6a5c510d35703f6a09877ce45e9"
-  integrity sha512-9ia/jWHIEbo49HfjrLGfKbZSuWo9iTMwXO+Ca3pRsSpbsMbc7/IU8NKdCZVRRBafVPGnoJeFL76ZOAA84I9fEg==
+typescript@^4.7.2:
+  version "4.7.2"
+  resolved "https://registry.npmjs.org/typescript/-/typescript-4.7.2.tgz#1f9aa2ceb9af87cca227813b4310fff0b51593c4"
+  integrity sha512-Mamb1iX2FDUpcTRzltPxgWMKy3fhg0TN378ylbktPGPK/99KbDtMQ4W1hwgsbPAsG3a0xKa1vmw4VKZQbkvz5A==
 
 unicode-canonical-property-names-ecmascript@^2.0.0:
   version "2.0.0"
