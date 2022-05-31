@@ -119,6 +119,19 @@ const fs = createMemfs();
 const server = dev(compiler, { index: false, outputFileSystem: fs });
 const logger = compiler.getInfrastructureLogger('webpack-dev-middleware');
 
+app.use(async (ctx, next) => {
+  ctx.set({
+    'Cache-Control': 'no-store',
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': '*',
+    'Access-Control-Allow-Headers': '*',
+    'X-Content-Type-Options': 'nosniff',
+    'Access-Control-Allow-Credentials': 'true'
+  });
+
+  await next();
+});
+
 app.use(server);
 
 app.use(async ctx => {
