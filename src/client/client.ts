@@ -32,7 +32,7 @@ export default function createClient(options: Options): void {
 
   const fallback = (error?: Error): void => {
     if (options.live) {
-      window.location.reload();
+      self.location.reload();
     } else if (error) {
       console.error(error);
       console.warn('Use fallback update but you turn off live reload, please reload by yourself.');
@@ -40,7 +40,7 @@ export default function createClient(options: Options): void {
   };
 
   const applyUpdateAsync = () => {
-    updateTimer = window.setTimeout(() => {
+    updateTimer = self.setTimeout(() => {
       applyUpdate(options.hmr, fallback);
     }, UPDATE_DELAY);
   };

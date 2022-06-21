@@ -4,8 +4,8 @@
 
 import createClient, { Options } from './client';
 
-if (!window.__WDS_HOT_CLIENT_INITIALLED__) {
-  window.__WDS_HOT_CLIENT_INITIALLED__ = true;
+if (!self.__WDS_HOT_CLIENT_INITIALLED__) {
+  self.__WDS_HOT_CLIENT_INITIALLED__ = true;
 
   const isTLS = (protocol: string): boolean => {
     return protocol === 'https:';
@@ -21,7 +21,7 @@ if (!window.__WDS_HOT_CLIENT_INITIALLED__) {
 
   const resolveHost = (params: URLSearchParams): string => {
     let host = params.get('host');
-    let tls = params.get('tls') || isTLS(window.location.protocol);
+    let tls = params.get('tls') || isTLS(self.location.protocol);
 
     if (!host) {
       const script = getCurrentScript();
@@ -33,7 +33,7 @@ if (!window.__WDS_HOT_CLIENT_INITIALLED__) {
         host = url.host;
         tls = isTLS(url.protocol) || tls;
       } else {
-        host = window.location.host;
+        host = self.location.host;
       }
     }
 
