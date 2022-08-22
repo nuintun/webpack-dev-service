@@ -76,7 +76,7 @@
     "@rollup/plugin-babel": "^5.3.1",
     "@rollup/plugin-node-resolve": "^13.3.0",
     "@types/koa-compose": "^3.2.5",
-    "@types/node": "^18.7.6",
+    "@types/node": "^18.7.9",
     "babel-loader": "^8.2.5",
     "css-loader": "^6.7.1",
     "html-webpack-plugin": "^5.5.0",
