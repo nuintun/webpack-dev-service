@@ -1552,9 +1552,9 @@ camel-case@^4.1.2:
     tslib "^2.0.3"
 
 caniuse-lite@^1.0.30001370:
-  version "1.0.30001382"
-  resolved "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30001382.tgz#4d37f0d0b6fffb826c8e5e1c0f4bf8ce592db949"
-  integrity sha512-2rtJwDmSZ716Pxm1wCtbPvHtbDWAreTPxXbkc5RkKglow3Ig/4GNGazDI9/BVnXbG/wnv6r3B5FEbkfg9OcTGg==
+  version "1.0.30001383"
+  resolved "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30001383.tgz#aecf317ccd940690725ae3ae4f28293c5fb8050e"
+  integrity sha512-swMpEoTp5vDoGBZsYZX7L7nXHe6dsHxi9o6/LKf/f0LukVtnrxly5GVb/fWdCDTqi/yw6Km6tiJ0pmBacm0gbg==
 
 chalk@^2.0.0:
   version "2.4.2"
@@ -1790,9 +1790,9 @@ ee-first@1.1.1:
   integrity sha512-WMwm9LhRUo+WUaRN+vRuETqG89IgZphVSNkdFgeb6sS/E4OrDIN7t48CAewSHXc6C8lefD8KKfr5vY61brQlow==
 
 electron-to-chromium@^1.4.202:
-  version "1.4.229"
-  resolved "https://registry.npmjs.org/electron-to-chromium/-/electron-to-chromium-1.4.229.tgz#506107e357a59e3241f69cdd1a179626164ddd86"
-  integrity sha512-kdye32s/padLGpiLzhrMraBBs/M5hDspB8PCdCP6L11AJ6dw3Gg3xdvT4b4pqWaW5tc5oAwCfKCS+PAsZM3ipw==
+  version "1.4.230"
+  resolved "https://registry.npmjs.org/electron-to-chromium/-/electron-to-chromium-1.4.230.tgz#666909fdf5765acb1348b69752ee9955dc1664b7"
+  integrity sha512-3pwjAK0qHSDN9+YAF4fJknsSruP7mpjdWzUSruIJD/JCH77pEh0SorEyb3xVaKkfwk2tzjOt2D8scJ0KAdfXLA==
 
 emojis-list@^3.0.0:
   version "3.0.0"
@@ -2823,10 +2823,10 @@ type-is@^1.6.16:
     media-typer "0.3.0"
     mime-types "~2.1.24"
 
-typescript@^4.7.4:
-  version "4.7.4"
-  resolved "https://registry.npmjs.org/typescript/-/typescript-4.7.4.tgz#1a88596d1cf47d59507a1bcdfb5b9dfe4d488235"
-  integrity sha512-C0WQT0gezHuw6AdY1M2jxUO83Rjf0HP7Sk1DtXj6j1EwkQNZrHAg2XPWlq62oqEhYvONq5pkC2Y9oPljWToLmQ==
+typescript@^4.8.2:
+  version "4.8.2"
+  resolved "https://registry.npmjs.org/typescript/-/typescript-4.8.2.tgz#e3b33d5ccfb5914e4eeab6699cf208adee3fd790"
+  integrity sha512-C0I1UsrrDHo2fYI5oaCGbSejwX4ch+9Y5jTQELvovfmFkK3HHSZJB8MSJcWLmCUBzQBchCrZ9rMRV6GuNrvGtw==
 
 unicode-canonical-property-names-ecmascript@^2.0.0:
   version "2.0.0"
