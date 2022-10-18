@@ -2,7 +2,7 @@
  * @module rollup.base
  */
 
-import pkg from '../package.json';
+import { createRequire } from 'module';
 import babel from '@rollup/plugin-babel';
 import resolve from '@rollup/plugin-node-resolve';
 
@@ -10,6 +10,7 @@ const babelHelpers = 'bundled';
 const extensions = ['.ts', '.js'];
 const corejs = { version: '^3.0.0', proposals: true };
 const targets = { browsers: ['defaults', 'not IE >= 0'] };
+const pkg = createRequire(import.meta.url)('../package.json');
 
 const banner = `/**
   * @package ${pkg.name}
@@ -32,16 +33,16 @@ export default function rollup(esnext) {
       input: 'src/server/index.ts',
       output: {
         banner,
-        interop: false,
+        interop: 'auto',
         exports: 'auto',
         esModule: false,
-        preferConst: true,
+        preserveModules: true,
         format: esnext ? 'esm' : 'cjs',
+        generatedCode: { constBindings: true },
         dir: esnext ? 'server/esm' : 'server/cjs',
         entryFileNames: `[name].${esnext ? 'js' : 'cjs'}`,
         chunkFileNames: `[name].${esnext ? 'js' : 'cjs'}`
       },
-      preserveModules: true,
       plugins: [
         resolve({
           extensions
@@ -72,12 +73,12 @@ export default function rollup(esnext) {
         banner,
         dir: 'client',
         format: 'esm',
-        interop: false,
+        interop: 'auto',
         exports: 'auto',
         esModule: false,
-        preferConst: true
+        preserveModules: true,
+        generatedCode: { constBindings: true }
       },
-      preserveModules: true,
       plugins: [
         resolve({
           extensions
