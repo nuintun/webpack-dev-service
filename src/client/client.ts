@@ -4,8 +4,8 @@
 
 import { emit } from './events';
 import Overlay from './ui/overlay';
-import Progress from './ui/progress';
 import * as Message from './message';
+import Progress from './ui/progress';
 import { StatsError } from 'webpack';
 import { applyUpdate, updateHash } from './hot';
 
