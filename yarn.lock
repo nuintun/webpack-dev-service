@@ -2217,10 +2217,10 @@ mime-types@^2.1.18, mime-types@^2.1.27, mime-types@^2.1.31, mime-types@~2.1.24, 
   dependencies:
     mime-db "1.52.0"
 
-mini-css-extract-plugin@^2.6.1:
-  version "2.6.1"
-  resolved "https://registry.npmjs.org/mini-css-extract-plugin/-/mini-css-extract-plugin-2.6.1.tgz#9a1251d15f2035c342d99a468ab9da7a0451b71e"
-  integrity sha512-wd+SD57/K6DiV7jIR34P+s3uckTRuQvx0tKPcvjFlrEylk6P4mQ2KSWk1hblj1Kxaqok7LogKOieygXqBczNlg==
+mini-css-extract-plugin@^2.7.0:
+  version "2.7.0"
+  resolved "https://registry.npmjs.org/mini-css-extract-plugin/-/mini-css-extract-plugin-2.7.0.tgz#d7d9ba0c5b596d155e36e2b174082fc7f010dd64"
+  integrity sha512-auqtVo8KhTScMsba7MbijqZTfibbXiBNlPAQbsVt7enQfcDYLdgG57eGxMqwVU3mfeWANY4F1wUg+rMF+ycZgw==
   dependencies:
     schema-utils "^4.0.0"
 
@@ -2717,10 +2717,10 @@ type-is@^1.6.16:
     media-typer "0.3.0"
     mime-types "~2.1.24"
 
-typescript@^4.8.4:
-  version "4.8.4"
-  resolved "https://registry.npmjs.org/typescript/-/typescript-4.8.4.tgz#c464abca159669597be5f96b8943500b238e60e6"
-  integrity sha512-QCh+85mCy+h0IGff8r5XWzOVSbBO+KfeYrMQh7NJ58QujwcE22u+NUSmUxqF+un70P9GXKxa2HCNiTTMJknyjQ==
+typescript@^4.9.3:
+  version "4.9.3"
+  resolved "https://registry.npmjs.org/typescript/-/typescript-4.9.3.tgz#3aea307c1746b8c384435d8ac36b8a2e580d85db"
+  integrity sha512-CIfGzTelbKNEnLpLdGFgdyKhG23CKdKgQPOBc+OUNrkJ2vr+KSzsSV5kq5iWhEQbok+quxgGzrAtGWCyU7tHnA==
 
 unicode-canonical-property-names-ecmascript@^2.0.0:
   version "2.0.0"
