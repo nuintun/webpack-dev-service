@@ -33,15 +33,15 @@ export default function rollup(esnext) {
       input: 'src/server/index.ts',
       output: {
         banner,
-        interop: 'auto',
-        exports: 'auto',
         esModule: false,
+        exports: 'auto',
+        interop: 'auto',
         preserveModules: true,
         format: esnext ? 'esm' : 'cjs',
         generatedCode: { constBindings: true },
         dir: esnext ? 'server/esm' : 'server/cjs',
-        entryFileNames: `[name].${esnext ? 'js' : 'cjs'}`,
-        chunkFileNames: `[name].${esnext ? 'js' : 'cjs'}`
+        chunkFileNames: `[name].${esnext ? 'js' : 'cjs'}`,
+        entryFileNames: `[name].${esnext ? 'js' : 'cjs'}`
       },
       plugins: [
         resolve({
