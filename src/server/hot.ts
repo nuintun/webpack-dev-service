@@ -44,18 +44,14 @@ function resolveStatsOptions(compiler: Compiler): StatsOptions {
 
 function normalize(path: string) {
   const segments: string[] = [];
-  const parts = path.replace(/\\+|\/{2,}/, '/').split('/');
+  const parts = path.split(/[\\/]+/);
 
   for (const segment of parts) {
     switch (segment) {
       case '.':
         break;
       case '..':
-        const { length } = segments;
-
-        if (length > 0 && segments[length - 1] !== '..') {
-          segments.pop();
-        }
+        segments.pop();
         break;
       default:
         segments.push(segment);
