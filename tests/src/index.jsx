@@ -1,5 +1,4 @@
 import App from './App';
-import { on } from '../../client';
 import { createRoot } from 'react-dom/client';
 
 const app = document.getElementById('app');
@@ -11,8 +10,13 @@ if (import.meta.webpackHot) {
   import.meta.webpackHot.accept(['./App.jsx'], () => {
     root.render(<App />);
   });
-}
 
-on('ok', ({ builtAt }) => {
-  console.log(`[HMR] App is up to date at ${new Date(builtAt).toLocaleString()}`);
-});
+  import(
+    // webpackMode: 'eager'
+    '../../client'
+  ).then(({ on }) => {
+    on('ok', ({ builtAt }) => {
+      console.log(`[HMR] App is up to date at ${new Date(builtAt).toLocaleString()}`);
+    });
+  });
+}
