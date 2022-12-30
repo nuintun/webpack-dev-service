@@ -74,7 +74,7 @@ const compiler = webpack({
       {
         oneOf: [
           {
-            test: /\.jsx?$/,
+            test: /\.jsx?$/i,
             exclude: /[\\/]node_modules[\\/]/,
             use: [
               {
@@ -84,7 +84,7 @@ const compiler = webpack({
             ]
           },
           {
-            test: /\.css$/,
+            test: /\.css$/i,
             use: [
               {
                 loader: MiniCssExtractPlugin.loader
@@ -102,7 +102,7 @@ const compiler = webpack({
             ]
           },
           {
-            test: /\.svg$/,
+            test: /\.svg$/i,
             type: 'asset/resource',
             exclude: /[\\/]node_modules[\\/]/
           }
