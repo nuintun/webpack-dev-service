@@ -50,6 +50,7 @@ const compiler = webpack({
   output: {
     publicPath: '/public/',
     filename: `js/[name].js`,
+    hashFunction: 'xxhash64',
     path: path.resolve('public'),
     chunkFilename: `js/[name].js`,
     assetModuleFilename: `[path][name][ext]`
