@@ -44,7 +44,6 @@ function httpError(error) {
 const compiler = webpack({
   name: 'react',
   mode: 'development',
-  target: ['web', 'es5'],
   context: path.resolve('src'),
   entry: [path.resolve('../client'), path.resolve('src/index.jsx')],
   output: {
@@ -71,6 +70,7 @@ const compiler = webpack({
     dependentModules: false
   },
   module: {
+    strictExportPresence: true,
     rules: [
       {
         oneOf: [
@@ -86,6 +86,7 @@ const compiler = webpack({
           },
           {
             test: /\.css$/i,
+            exclude: /[\\/]node_modules[\\/]/,
             use: [
               {
                 loader: MiniCssExtractPlugin.loader
