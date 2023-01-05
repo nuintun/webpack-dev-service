@@ -4,31 +4,34 @@
 
 import { TokenType } from './enum';
 
-export interface AnsiColor {
-  rgb: [
-    // Red
-    R: number,
-    // Green
-    G: number,
-    // Blue
-    B: number
-  ];
-  type: string;
-}
+// type ColorType = 'black' | 'red' | 'green' | 'yellow' | 'blue' | 'magenta' | 'cyan' | 'white';
+
+// export type AnsiColorType = ColorType | `bright-${ColorType}`;
+
+export type AnsiColor = [
+  // Red
+  R: number,
+  // Green
+  G: number,
+  // Blue
+  B: number
+];
 
 export interface AnsiBlock {
-  dim: boolean;
-  text: string;
   url?: string;
-  bold: boolean;
-  bg?: AnsiColor;
-  fg?: AnsiColor;
-  blink: boolean;
-  hidden: boolean;
-  italic: boolean;
-  reverse: boolean;
-  underline: boolean;
-  strikethrough: boolean;
+  value: string;
+  style: {
+    dim: boolean;
+    bold: boolean;
+    blink: boolean;
+    hidden: boolean;
+    italic: boolean;
+    reverse: boolean;
+    color?: AnsiColor;
+    underline: boolean;
+    background?: AnsiColor;
+    strikethrough: boolean;
+  };
 }
 
 export interface EOSToken {
@@ -36,23 +39,22 @@ export interface EOSToken {
 }
 
 export interface ESCToken {
-  text: string;
   type: TokenType.ESC;
 }
 
 export interface OSCToken {
   url: string;
-  text: string;
+  value: string;
   type: TokenType.OSC;
 }
 
 export interface SGRToken {
-  text: string;
+  signal: string;
   type: TokenType.SGR;
 }
 
 export interface TEXTToken {
-  text: string;
+  value: string;
   type: TokenType.TEXT;
 }
 
@@ -61,10 +63,10 @@ export interface INCESCToken {
 }
 
 export interface UNKNOWNToken {
-  text: string;
+  value: string;
   type: TokenType.UNKNOWN;
 }
 
-export type AnsiToken = BlockToken | EOSToken | INCESCToken;
+export type BlockToken = OSCToken | TEXTToken | UNKNOWNToken;
 
-export type BlockToken = ESCToken | OSCToken | SGRToken | TEXTToken | UNKNOWNToken;
+export type AnsiToken = EOSToken | ESCToken | SGRToken | INCESCToken | BlockToken;

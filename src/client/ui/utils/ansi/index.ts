@@ -20,32 +20,49 @@ export default class Ansi {
   private reverse = false;
   private underline = false;
   private strikethrough = false;
-  private bg: AnsiColor | null = null;
-  private fg: AnsiColor | null = null;
+
+  private color: AnsiColor | null = null;
+  private background: AnsiColor | null = null;
 
   constructor() {
     const colors: AnsiColor[][] = [
       // Normal colors
       [
-        { type: 'black', rgb: [0, 0, 0] },
-        { type: 'red', rgb: [187, 0, 0] },
-        { type: 'green', rgb: [0, 187, 0] },
-        { type: 'yellow', rgb: [187, 187, 0] },
-        { type: 'blue', rgb: [0, 0, 187] },
-        { type: 'magenta', rgb: [187, 0, 187] },
-        { type: 'cyan', rgb: [0, 187, 187] },
-        { type: 'white', rgb: [255, 255, 255] }
+        // Black
+        [0, 0, 0],
+        // Red
+        [187, 0, 0],
+        // Green
+        [0, 187, 0],
+        // Yellow
+        [187, 187, 0],
+        // Blue
+        [0, 0, 187],
+        // Magenta
+        [187, 0, 187],
+        // Cyan
+        [0, 187, 187],
+        // White
+        [255, 255, 255]
       ],
       // Bright colors
       [
-        { type: 'bright-black', rgb: [85, 85, 85] },
-        { type: 'bright-red', rgb: [255, 85, 85] },
-        { type: 'bright-green', rgb: [0, 255, 0] },
-        { type: 'bright-yellow', rgb: [255, 255, 85] },
-        { type: 'bright-blue', rgb: [85, 85, 255] },
-        { type: 'bright-magenta', rgb: [255, 85, 255] },
-        { type: 'bright-cyan', rgb: [85, 255, 255] },
-        { type: 'bright-white', rgb: [255, 255, 255] }
+        // Bright Black
+        [85, 85, 85],
+        // Bright Red
+        [255, 85, 85],
+        // Bright Green
+        [0, 255, 0],
+        // Bright Yellow
+        [255, 255, 85],
+        // Bright Blue
+        [85, 85, 255],
+        // Bright Magenta
+        [255, 85, 255],
+        // Bright Cyan
+        [85, 255, 255],
+        // Bright White
+        [255, 255, 255]
       ]
     ];
 
@@ -65,10 +82,8 @@ export default class Ansi {
     for (let r = 0; r < 6; ++r) {
       for (let g = 0; g < 6; ++g) {
         for (let b = 0; b < 6; ++b) {
-          colors256.push({
-            type: 'color-256',
-            rgb: [levels[r], levels[g], levels[b]]
-          });
+          // Color 256
+          colors256.push([levels[r], levels[g], levels[b]]);
         }
       }
     }
@@ -77,10 +92,8 @@ export default class Ansi {
     let grayscale = 8;
 
     for (let i = 0; i < 24; ++i, grayscale += 10) {
-      colors256.push({
-        type: 'color-256',
-        rgb: [grayscale, grayscale, grayscale]
-      });
+      // Color 256
+      colors256.push([grayscale, grayscale, grayscale]);
     }
 
     // Init props
@@ -98,7 +111,7 @@ export default class Ansi {
       this.buffer = '';
 
       return {
-        text: buffer,
+        value: buffer,
         type: TokenType.TEXT
       };
     }
@@ -108,7 +121,7 @@ export default class Ansi {
 
       return {
         type: TokenType.TEXT,
-        text: buffer.slice(0, pos)
+        value: buffer.slice(0, pos)
       };
     }
 
@@ -128,8 +141,7 @@ export default class Ansi {
 
       // DeMorgan
       return {
-        type: TokenType.ESC,
-        text: buffer.slice(0, 1)
+        type: TokenType.ESC
       };
     }
 
@@ -178,8 +190,7 @@ export default class Ansi {
 
         // Illegal sequence, just remove the ESC
         return {
-          type: TokenType.ESC,
-          text: buffer.slice(0, 1)
+          type: TokenType.ESC
         };
       }
 
@@ -188,12 +199,12 @@ export default class Ansi {
       // If not a valid SGR, we don't handle
       if (match[1] !== '' || match[3] !== 'm') {
         return {
-          text: match[2],
+          value: match[2],
           type: TokenType.UNKNOWN
         };
       } else {
         return {
-          text: match[2],
+          signal: match[2],
           type: TokenType.SGR
         };
       }
@@ -212,8 +223,7 @@ export default class Ansi {
 
         // This is not a match, so we'll just treat it as ESC
         return {
-          type: TokenType.ESC,
-          text: buffer.slice(0, 1)
+          type: TokenType.ESC
         };
       }
 
@@ -268,8 +278,7 @@ export default class Ansi {
 
           // Illegal sequence, just remove the ESC
           return {
-            type: TokenType.ESC,
-            text: buffer.slice(0, 1)
+            type: TokenType.ESC
           };
         }
       }
@@ -283,8 +292,7 @@ export default class Ansi {
 
         // Illegal sequence, just remove the ESC
         return {
-          type: TokenType.ESC,
-          text: buffer.slice(0, 1)
+          type: TokenType.ESC
         };
       }
 
@@ -297,7 +305,7 @@ export default class Ansi {
       // 2 - Text
       return {
         url: match[1],
-        text: match[2],
+        value: match[2],
         type: TokenType.OSC
       };
     }
@@ -320,7 +328,7 @@ export default class Ansi {
     // Each of these params affects the SGR state
     // Why do we shift through the array instead of a forEach??
     // ... because some commands consume the params that follow !
-    for (let index = 0; index <= maxIndex; index++) {
+    for (; index <= maxIndex; index++) {
       const code = read();
 
       if (code === 1) {
@@ -357,17 +365,17 @@ export default class Ansi {
       } else if (code === 29) {
         this.strikethrough = false;
       } else if (code === 39) {
-        this.fg = null;
+        this.color = null;
       } else if (code === 49) {
-        this.bg = null;
+        this.background = null;
       } else if (code >= 30 && code < 38) {
-        this.fg = this.colors[0][code - 30];
+        this.color = this.colors[0][code - 30];
       } else if (code >= 40 && code < 48) {
-        this.bg = this.colors[0][code - 40];
+        this.background = this.colors[0][code - 40];
       } else if (code >= 90 && code < 98) {
-        this.fg = this.colors[1][code - 90];
+        this.color = this.colors[1][code - 90];
       } else if (code >= 100 && code < 108) {
-        this.bg = this.colors[1][code - 100];
+        this.background = this.colors[1][code - 100];
       } else if (code === 38 || code === 48) {
         // Extended set foreground/background color
         // validate that param exists
@@ -381,9 +389,9 @@ export default class Ansi {
             const index = read() & 0xff;
 
             if (isForeground) {
-              this.fg = this.colors256[index];
+              this.color = this.colors256[index];
             } else {
-              this.bg = this.colors256[index];
+              this.background = this.colors256[index];
             }
           }
 
@@ -393,21 +401,19 @@ export default class Ansi {
             const g = read() & 0xff;
             const b = read() & 0xff;
 
-            const color: AnsiColor = {
-              rgb: [r, g, b],
-              type: 'true-color'
-            };
+            // True Color
+            const color: AnsiColor = [r, g, b];
 
             if (isForeground) {
-              this.fg = color;
+              this.color = color;
             } else {
-              this.bg = color;
+              this.background = color;
             }
           }
         }
       } else {
-        this.fg = null;
-        this.bg = null;
+        this.color = null;
+        this.background = null;
         this.bold = false;
         this.italic = false;
         this.underline = false;
@@ -416,25 +422,29 @@ export default class Ansi {
   }
 
   private block(token: BlockToken): AnsiBlock {
-    const { bg, fg } = this;
     const block: AnsiBlock = {
-      dim: this.dim,
-      bold: this.bold,
-      text: token.text,
-      blink: this.blink,
-      hidden: this.hidden,
-      italic: this.italic,
-      reverse: this.reverse,
-      underline: this.underline,
-      strikethrough: this.strikethrough
+      value: token.value,
+      style: {
+        dim: this.dim,
+        bold: this.bold,
+        blink: this.blink,
+        hidden: this.hidden,
+        italic: this.italic,
+        reverse: this.reverse,
+        underline: this.underline,
+        strikethrough: this.strikethrough
+      }
     };
 
-    if (bg) {
-      block.bg = bg;
+    const { style } = block;
+    const { color, background } = this;
+
+    if (color) {
+      style.color = color;
     }
 
-    if (fg) {
-      block.fg = fg;
+    if (background) {
+      style.background = background;
     }
 
     if ('url' in token) {
@@ -460,7 +470,7 @@ export default class Ansi {
         case TokenType.UNKNOWN:
           continue;
         case TokenType.SGR:
-          this.process(token.text);
+          this.process(token.signal);
           continue;
         case TokenType.OSC:
         case TokenType.TEXT:
