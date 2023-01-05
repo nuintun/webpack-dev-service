@@ -18,14 +18,14 @@ export default class Ansi {
   private underline = false;
   private strikethrough = false;
 
-  private colors: AnsiColor[][];
   private colors256: AnsiColor[];
+  private colors16: AnsiColor[][];
 
   private color: AnsiColor | null = null;
   private background: AnsiColor | null = null;
 
   constructor() {
-    const colors: AnsiColor[][] = [
+    const colors16: AnsiColor[][] = [
       // Normal colors
       [
         // Black
@@ -69,7 +69,7 @@ export default class Ansi {
     const colors256: AnsiColor[] = [];
 
     // Index 0..15 : Ansi-Colors
-    for (const palette of colors) {
+    for (const palette of colors16) {
       for (const color of palette) {
         colors256.push(color);
       }
@@ -97,7 +97,7 @@ export default class Ansi {
     }
 
     // Init props
-    this.colors = colors;
+    this.colors16 = colors16;
     this.colors256 = colors256;
   }
 
@@ -369,13 +369,13 @@ export default class Ansi {
       } else if (code === 49) {
         this.background = null;
       } else if (code >= 30 && code < 38) {
-        this.color = this.colors[0][code - 30];
+        this.color = this.colors16[0][code - 30];
       } else if (code >= 40 && code < 48) {
-        this.background = this.colors[0][code - 40];
+        this.background = this.colors16[0][code - 40];
       } else if (code >= 90 && code < 98) {
-        this.color = this.colors[1][code - 90];
+        this.color = this.colors16[1][code - 90];
       } else if (code >= 100 && code < 108) {
-        this.background = this.colors[1][code - 100];
+        this.background = this.colors16[1][code - 100];
       } else if (code === 38 || code === 48) {
         // Extended set foreground/background color
         // validate that param exists
