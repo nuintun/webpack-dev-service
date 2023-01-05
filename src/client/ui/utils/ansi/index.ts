@@ -9,9 +9,6 @@ import { AnsiBlock, AnsiColor, AnsiToken, BlockToken } from './interface';
 export default class Ansi {
   private buffer = '';
 
-  private colors: AnsiColor[][];
-  private colors256: AnsiColor[];
-
   private dim = false;
   private bold = false;
   private blink = false;
@@ -20,6 +17,9 @@ export default class Ansi {
   private reverse = false;
   private underline = false;
   private strikethrough = false;
+
+  private colors: AnsiColor[][];
+  private colors256: AnsiColor[];
 
   private color: AnsiColor | null = null;
   private background: AnsiColor | null = null;
