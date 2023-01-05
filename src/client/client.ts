@@ -78,7 +78,7 @@ export default function createClient(options: Options): void {
     const debug = console[method];
 
     for (const { moduleName, message } of problems) {
-      debug(`\u001b[0m${name} in ${moduleName}\r\n${message}`);
+      debug(`\x1b[0m${name} in ${moduleName}\r\n${message}`);
     }
   };
 
