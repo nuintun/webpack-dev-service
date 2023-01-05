@@ -2,10 +2,9 @@
  * @module index
  */
 
-import { PacketType } from './enum';
-import { escapeHTML } from './utils';
+import { TokenType } from './enum';
 import { CSI_RE, OSC_RE, OSC_ST_RE } from './regx';
-import { AnsiColor, TextPacket } from './interface';
+import { AnsiBlock, AnsiColor, AnsiToken } from './interface';
 
 export default class Ansi {
   private buffer = '';
@@ -23,8 +22,6 @@ export default class Ansi {
   private strikethrough = false;
   private bg: AnsiColor | null = null;
   private fg: AnsiColor | null = null;
-
-  private protocols = { http: true, https: true };
 
   constructor() {
     const colors: AnsiColor[][] = [
@@ -91,230 +88,228 @@ export default class Ansi {
     this.colors256 = colors256;
   }
 
-  private read(): TextPacket {
+  private read(): AnsiToken {
     const { buffer } = this;
     const { length } = buffer;
 
-    const packet: TextPacket = {
+    const token: AnsiToken = {
       url: '',
       text: '',
-      type: PacketType.EOS
+      type: TokenType.EOS
     };
 
-    if (length > 0) {
-      const pos = buffer.indexOf('\x1B');
+    const pos = buffer.indexOf('\x1B');
 
-      // The most common case, no ESC codes
-      if (pos < 0) {
-        packet.text = buffer;
-        packet.type = PacketType.TEXT;
+    // The most common case, no ESC codes
+    if (pos < 0) {
+      token.text = buffer;
+      token.type = TokenType.TEXT;
 
-        this.buffer = '';
+      this.buffer = '';
 
-        return packet;
+      return token;
+    }
+
+    if (pos > 0) {
+      token.type = TokenType.TEXT;
+      token.text = buffer.slice(0, pos);
+
+      this.buffer = buffer.slice(pos);
+
+      return token;
+    }
+
+    if (length === 1) {
+      // Lone ESC in Buffer, We don't know yet
+      token.type = TokenType.INCESC;
+
+      return token;
+    }
+
+    const peek = buffer.charAt(1);
+
+    // We treat this as a single ESC
+    // Which effecitvely shows
+    if (peek !== '[' && peek !== ']') {
+      // DeMorgan
+      token.type = TokenType.ESC;
+      token.text = buffer.slice(0, 1);
+
+      this.buffer = buffer.slice(1);
+
+      return token;
+    }
+
+    // OK is this an SGR or OSC that we handle
+    // SGR CHECK
+    if (peek === '[') {
+      // We do this regex initialization here so
+      // we can keep the regex close to its use (Readability)
+      // All ansi codes are typically in the following format.
+      // We parse it and focus specifically on the
+      // graphics commands (SGR)
+      //
+      // CONTROL-SEQUENCE-INTRODUCER CSI             (ESC, '[')
+      // PRIVATE-MODE-CHAR                           (!, <, >, ?)
+      // Numeric parameters separated by semicolons  ('0' - '9', ';')
+      // Intermediate-modifiers                      (0x20 - 0x2f)
+      // COMMAND-CHAR                                (0x40 - 0x7e)
+      const match = buffer.match(CSI_RE);
+
+      // This match is guaranteed to terminate (even on
+      // invalid input). The key is to match on legal and
+      // illegal sequences.
+      // The first alternate matches everything legal and
+      // the second matches everything illegal.
+      //
+      // If it doesn't match, then we have not received
+      // either the full sequence or an illegal sequence.
+      // If it does match, the presence of field 4 tells
+      // us whether it was legal or illegal.
+
+      if (match === null) {
+        token.type = TokenType.INCESC;
+
+        return token;
       }
 
-      if (pos > 0) {
-        packet.type = PacketType.TEXT;
-        packet.text = buffer.slice(0, pos);
+      // match is an array
+      // 0 - total match
+      // 1 - private mode chars group
+      // 2 - digits and semicolons group
+      // 3 - command
+      // 4 - illegal char
 
-        this.buffer = buffer.slice(pos);
-
-        return packet;
-      }
-
-      if (length === 1) {
-        // Lone ESC in Buffer, We don't know yet
-        packet.type = PacketType.INCESC;
-
-        return packet;
-      }
-
-      const peek = buffer.charAt(1);
-
-      // We treat this as a single ESC
-      // Which effecitvely shows
-      if (peek !== '[' && peek !== ']') {
-        // DeMorgan
-        packet.type = PacketType.ESC;
-        packet.text = buffer.slice(0, 1);
+      if (match[4]) {
+        // Illegal sequence, just remove the ESC
+        token.type = TokenType.ESC;
+        token.text = buffer.slice(0, 1);
 
         this.buffer = buffer.slice(1);
 
-        return packet;
+        return token;
       }
 
-      // OK is this an SGR or OSC that we handle
-      // SGR CHECK
-      if (peek === '[') {
-        // We do this regex initialization here so
-        // we can keep the regex close to its use (Readability)
-        // All ansi codes are typically in the following format.
-        // We parse it and focus specifically on the
-        // graphics commands (SGR)
-        //
-        // CONTROL-SEQUENCE-INTRODUCER CSI             (ESC, '[')
-        // PRIVATE-MODE-CHAR                           (!, <, >, ?)
-        // Numeric parameters separated by semicolons  ('0' - '9', ';')
-        // Intermediate-modifiers                      (0x20 - 0x2f)
-        // COMMAND-CHAR                                (0x40 - 0x7e)
-        const match = buffer.match(CSI_RE);
-
-        // This match is guaranteed to terminate (even on
-        // invalid input). The key is to match on legal and
-        // illegal sequences.
-        // The first alternate matches everything legal and
-        // the second matches everything illegal.
-        //
-        // If it doesn't match, then we have not received
-        // either the full sequence or an illegal sequence.
-        // If it does match, the presence of field 4 tells
-        // us whether it was legal or illegal.
-
-        if (match === null) {
-          packet.type = PacketType.INCESC;
-
-          return packet;
-        }
-
-        // match is an array
-        // 0 - total match
-        // 1 - private mode chars group
-        // 2 - digits and semicolons group
-        // 3 - command
-        // 4 - illegal char
-
-        if (match[4]) {
-          // Illegal sequence, just remove the ESC
-          packet.type = PacketType.ESC;
-          packet.text = buffer.slice(0, 1);
-
-          this.buffer = buffer.slice(1);
-
-          return packet;
-        }
-
-        // If not a valid SGR, we don't handle
-        if (match[1] !== '' || match[3] !== 'm') {
-          packet.type = PacketType.UNKNOWN;
-        } else {
-          packet.type = PacketType.SGR;
-        }
-
-        // Just the parameters
-        packet.text = match[2];
-
-        this.buffer = buffer.slice(match[0].length);
-
-        return packet;
+      // If not a valid SGR, we don't handle
+      if (match[1] !== '' || match[3] !== 'm') {
+        token.type = TokenType.UNKNOWN;
+      } else {
+        token.type = TokenType.SGR;
       }
 
-      // OSC CHECK
-      if (peek === ']') {
-        if (length < 4) {
-          packet.type = PacketType.INCESC;
+      // Just the parameters
+      token.text = match[2];
 
-          return packet;
-        }
+      this.buffer = buffer.slice(match[0].length);
 
-        if (buffer.charAt(2) !== '8' || buffer.charAt(3) !== ';') {
-          // This is not a match, so we'll just treat it as ESC
-          packet.type = PacketType.ESC;
-          packet.text = buffer.slice(0, 1);
-
-          this.buffer = buffer.slice(1);
-
-          return packet;
-        }
-
-        // We do this regex initialization here so
-        // we can keep the regex close to its use (Readability)
-
-        // Matching a Hyperlink OSC with a regex is difficult
-        // because Javascript's regex engine doesn't support
-        // 'partial match' support.
-        //
-        // Therefore, we require the system to match the
-        // string-terminator(ST) before attempting a match.
-        // Once we find it, we attempt the Hyperlink-Begin
-        // match.
-        // If that goes ok, we scan forward for the next
-        // ST.
-        // Finally, we try to match it all and return
-        // the sequence.
-        // Also, it is important to note that we consider
-        // certain control characters as an invalidation of
-        // the entire sequence.
-
-        // We do regex initializations here so
-        // we can keep the regex close to its use (Readability)
-
-        // STRING-TERMINATOR
-        // This is likely to terminate in most scenarios
-        // because it will terminate on a newline
-
-        // VERY IMPORTANT
-        // We do a stateful regex match with exec.
-        // If the regex is global, and it used with 'exec',
-        // then it will search starting at the 'lastIndex'
-        // If it matches, the regex can be used again to
-        // find the next match.
-        OSC_ST_RE.lastIndex = 0;
-
-        // We might have the prefix and URI
-        // Lets start our search for the ST twice
-        for (let count = 0; count < 2; count++) {
-          const match = OSC_ST_RE.exec(buffer);
-
-          if (match === null) {
-            packet.type = PacketType.INCESC;
-
-            return packet;
-          }
-
-          // If an illegal character was found, bail on the match
-          if (match[3]) {
-            // Illegal sequence, just remove the ESC
-            packet.type = PacketType.ESC;
-            packet.text = buffer.slice(0, 1);
-
-            this.buffer = buffer.slice(1);
-
-            return packet;
-          }
-        }
-
-        // OK, at this point we should have a FULL match!
-        // Lets try to match that now
-        const match = buffer.match(OSC_RE);
-
-        if (match === null) {
-          // Illegal sequence, just remove the ESC
-          packet.type = PacketType.ESC;
-          packet.text = buffer.slice(0, 1);
-
-          this.buffer = buffer.slice(1);
-
-          return packet;
-        }
-
-        // match is an array
-        // 0 - total match
-        // 1 - URL
-        // 2 - Text
-
-        // If a valid SGR
-        packet.url = match[1];
-        packet.text = match[2];
-        packet.type = PacketType.OSC;
-
-        this.buffer = buffer.slice(match[0].length);
-
-        return packet;
-      }
+      return token;
     }
 
-    return packet;
+    // OSC CHECK
+    if (peek === ']') {
+      if (length < 4) {
+        token.type = TokenType.INCESC;
+
+        return token;
+      }
+
+      if (buffer.charAt(2) !== '8' || buffer.charAt(3) !== ';') {
+        // This is not a match, so we'll just treat it as ESC
+        token.type = TokenType.ESC;
+        token.text = buffer.slice(0, 1);
+
+        this.buffer = buffer.slice(1);
+
+        return token;
+      }
+
+      // We do this regex initialization here so
+      // we can keep the regex close to its use (Readability)
+
+      // Matching a Hyperlink OSC with a regex is difficult
+      // because Javascript's regex engine doesn't support
+      // 'partial match' support.
+      //
+      // Therefore, we require the system to match the
+      // string-terminator(ST) before attempting a match.
+      // Once we find it, we attempt the Hyperlink-Begin
+      // match.
+      // If that goes ok, we scan forward for the next
+      // ST.
+      // Finally, we try to match it all and return
+      // the sequence.
+      // Also, it is important to note that we consider
+      // certain control characters as an invalidation of
+      // the entire sequence.
+
+      // We do regex initializations here so
+      // we can keep the regex close to its use (Readability)
+
+      // STRING-TERMINATOR
+      // This is likely to terminate in most scenarios
+      // because it will terminate on a newline
+
+      // VERY IMPORTANT
+      // We do a stateful regex match with exec.
+      // If the regex is global, and it used with 'exec',
+      // then it will search starting at the 'lastIndex'
+      // If it matches, the regex can be used again to
+      // find the next match.
+      OSC_ST_RE.lastIndex = 0;
+
+      // We might have the prefix and URI
+      // Lets start our search for the ST twice
+      for (let count = 0; count < 2; count++) {
+        const match = OSC_ST_RE.exec(buffer);
+
+        if (match === null) {
+          token.type = TokenType.INCESC;
+
+          return token;
+        }
+
+        // If an illegal character was found, bail on the match
+        if (match[3]) {
+          // Illegal sequence, just remove the ESC
+          token.type = TokenType.ESC;
+          token.text = buffer.slice(0, 1);
+
+          this.buffer = buffer.slice(1);
+
+          return token;
+        }
+      }
+
+      // OK, at this point we should have a FULL match!
+      // Lets try to match that now
+      const match = buffer.match(OSC_RE);
+
+      if (match === null) {
+        // Illegal sequence, just remove the ESC
+        token.type = TokenType.ESC;
+        token.text = buffer.slice(0, 1);
+
+        this.buffer = buffer.slice(1);
+
+        return token;
+      }
+
+      // match is an array
+      // 0 - total match
+      // 1 - URL
+      // 2 - Text
+
+      // If a valid SGR
+      token.url = match[1];
+      token.text = match[2];
+      token.type = TokenType.OSC;
+
+      this.buffer = buffer.slice(match[0].length);
+
+      return token;
+    }
+
+    return token;
   }
 
   private process(signal: string): void {
@@ -425,13 +420,50 @@ export default class Ansi {
     }
   }
 
-  private hyperlink({ url, text }: TextPacket): string {
-    const [protocol] = url.split(':');
+  private block({ text, url }: AnsiToken): AnsiBlock {
+    return {
+      url,
+      text,
+      bg: this.bg,
+      fg: this.fg,
+      dim: this.dim,
+      bold: this.bold,
+      blink: this.blink,
+      hidden: this.hidden,
+      italic: this.italic,
+      reverse: this.reverse,
+      underline: this.underline,
+      strikethrough: this.strikethrough
+    };
+  }
 
-    if (protocol && this.protocols[protocol.toLowerCase() as 'http' | 'https']) {
-      return `<a href="${escapeHTML(url)}">${escapeHTML(text)}</a>`;
+  public parse(text: string): AnsiBlock[] {
+    this.buffer = text;
+
+    const blocks: AnsiBlock[] = [];
+
+    while (this.buffer) {
+      const packet = this.read();
+
+      switch (packet.type) {
+        case TokenType.EOS:
+        case TokenType.INCESC:
+          break;
+        case TokenType.ESC:
+        case TokenType.UNKNOWN:
+          continue;
+        case TokenType.SGR:
+          this.process(packet.text);
+          continue;
+        case TokenType.OSC:
+        case TokenType.TEXT:
+          blocks.push(this.block(packet));
+          continue;
+        default:
+          continue;
+      }
     }
 
-    return text;
+    return blocks;
   }
 }

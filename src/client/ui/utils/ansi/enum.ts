@@ -2,7 +2,7 @@
  * @module enum
  */
 
-export const enum PacketType {
+export const enum TokenType {
   EOS, // End of Operating System Command
   ESC, // A single ESC char - random
   OSC, // Operating System Command

@@ -1,3 +1,7 @@
+/**
+ * @module regx
+ */
+
 import { regexp } from './utils';
 
 const CSI = String.raw`

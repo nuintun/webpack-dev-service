@@ -1,4 +1,8 @@
-import { PacketType } from './enum';
+/**
+ * @module interface
+ */
+
+import { TokenType } from './enum';
 
 export interface AnsiColor {
   rgb: [
@@ -12,22 +16,23 @@ export interface AnsiColor {
   type: string;
 }
 
-export interface AnsiText {
+export interface AnsiBlock {
+  url: string;
   text: string;
   dim: boolean;
-  bg: AnsiColor;
-  fg: AnsiColor;
   bold: boolean;
   blink: boolean;
   hidden: boolean;
   italic: boolean;
   reverse: boolean;
   underline: boolean;
+  bg: AnsiColor | null;
+  fg: AnsiColor | null;
   strikethrough: boolean;
 }
 
-export interface TextPacket {
+export interface AnsiToken {
   url: string;
   text: string;
-  type: PacketType;
+  type: TokenType;
 }

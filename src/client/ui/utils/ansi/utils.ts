@@ -1,3 +1,7 @@
+/**
+ * @module utils
+ */
+
 export function escapeHTML(text: string): string {
   return text.replace(/[&<>"']/gm, match => {
     switch (match) {
