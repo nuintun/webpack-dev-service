@@ -311,6 +311,20 @@ export default class Ansi {
     };
   }
 
+  private reset(): void {
+    this.dim = false;
+    this.bold = false;
+    this.blink = false;
+    this.hidden = false;
+    this.italic = false;
+    this.reverse = false;
+    this.underline = false;
+    this.strikethrough = false;
+
+    this.color = null;
+    this.background = null;
+  }
+
   private process(signal: string): void {
     let index = 0;
 
@@ -408,17 +422,7 @@ export default class Ansi {
           }
         }
       } else {
-        this.dim = false;
-        this.bold = false;
-        this.blink = false;
-        this.hidden = false;
-        this.italic = false;
-        this.reverse = false;
-        this.underline = false;
-        this.strikethrough = false;
-
-        this.color = null;
-        this.background = null;
+        this.reset();
       }
     }
   }
@@ -484,5 +488,11 @@ export default class Ansi {
     }
 
     return blocks;
+  }
+
+  public clear(): void {
+    this.reset();
+
+    this.buffer = '';
   }
 }
