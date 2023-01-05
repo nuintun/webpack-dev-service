@@ -1,100 +1,11 @@
 /**
- * @module Ansi
+ * @module index
  */
 
-interface AnsiColor {
-  rgb: [
-    // Red
-    R: number,
-    // Green
-    G: number,
-    // Blue
-    B: number
-  ];
-  type: string;
-}
-
-interface AnsiText {
-  text: string;
-  bg: AnsiColor;
-  fg: AnsiColor;
-  bold: boolean;
-  italic: boolean;
-  underline: boolean;
-}
-
-interface TextPacket {
-  url: string;
-  text: string;
-  type: PacketType;
-}
-
-const enum PacketType {
-  EOS,
-  Text,
-  Incomplete, // An Incomplete ESC sequence
-  ESC, // A single ESC char - random
-  Unknown, // A valid CSI but not an SGR code
-  SGR, // Select Graphic Rendition
-  OSCURL // Operating System Command
-}
-
-const CSI = `
-  ^                           # beginning of line
-  (?:                         # legal sequence
-    \x1b\[                      # CSI
-    ([\x3c-\x3f]?)              # private-mode char
-    ([\d;]*)                    # any digits or semicolons
-    ([\x20-\x2f]?               # an intermediate modifier
-    [\x40-\x7e])                # the command
-  )                           # legal sequence end
-  |                           # alternate (second attempt)
-  (?:                         # illegal sequence
-    \x1b\[                      # CSI
-    [\x20-\x7e]*                # anything legal
-    ([\x00-\x1f:])              # anything illegal
-  )                           # illegal sequence end
-`;
-
-const OSC = `
-  ^                           # beginning of line
-  \x1b\]8;                    # OSC Hyperlink
-  [\x20-\x3a\x3c-\x7e]*       # params (excluding ;)
-  ;                           # end of params
-  ([\x21-\x7e]{0,512})        # URL capture
-  (?:                         # ST sequence
-    (?:\x1b\\)                  # ESC \
-    |                           # alternate
-    (?:\x07)                    # BEL (what xterm did)
-  )                           # ST sequence end
-  ([\x20-\x7e]+)              # TEXT capture
-  \x1b\]8;;                   # OSC Hyperlink End
-  (?:                         # ST sequence
-    (?:\x1b\\)                  # ESC \
-    |                           # alternate
-    (?:\x07)                    # BEL (what xterm did)
-  )                           # ST sequence end
-`;
-
-const OSC_ST = `
-  (?:                         # legal sequence
-    (\x1b\\)                    # ESC \
-    |                           # alternate
-    (\x07)                      # BEL (what xterm did)
-  )                           # legal sequence end
-  |                           # alternate (second attempt)
-  (                           # illegal sequence
-    [\x00-\x06]                 # anything illegal
-    |                           # alternate
-    [\x08-\x1a]                 # anything illegal
-    |                           # alternate
-    [\x1c-\x1f]                 # anything illegal
-  )                           # illegal sequence end
-`;
-
-const CSI_RE = regexp(CSI);
-const OSC_RE = regexp(OSC);
-const OSC_ST_RE = regexp(OSC_ST, 'g');
+import { PacketType } from './enum';
+import { escapeHTML } from './utils';
+import { CSI_RE, OSC_RE, OSC_ST_RE } from './regx';
+import { AnsiColor, TextPacket } from './interface';
 
 export default class Ansi {
   private buffer = '';
@@ -102,11 +13,16 @@ export default class Ansi {
   private colors: AnsiColor[][];
   private colors256: AnsiColor[];
 
+  private dim = false;
   private bold = false;
+  private blink = false;
+  private hidden = false;
   private italic = false;
+  private reverse = false;
   private underline = false;
-  private fg: AnsiColor | null = null;
+  private strikethrough = false;
   private bg: AnsiColor | null = null;
+  private fg: AnsiColor | null = null;
 
   private protocols = { http: true, https: true };
 
@@ -191,7 +107,7 @@ export default class Ansi {
       // The most common case, no ESC codes
       if (pos < 0) {
         packet.text = buffer;
-        packet.type = PacketType.Text;
+        packet.type = PacketType.TEXT;
 
         this.buffer = '';
 
@@ -199,7 +115,7 @@ export default class Ansi {
       }
 
       if (pos > 0) {
-        packet.type = PacketType.Text;
+        packet.type = PacketType.TEXT;
         packet.text = buffer.slice(0, pos);
 
         this.buffer = buffer.slice(pos);
@@ -209,7 +125,7 @@ export default class Ansi {
 
       if (length === 1) {
         // Lone ESC in Buffer, We don't know yet
-        packet.type = PacketType.Incomplete;
+        packet.type = PacketType.INCESC;
 
         return packet;
       }
@@ -218,7 +134,7 @@ export default class Ansi {
 
       // We treat this as a single ESC
       // Which effecitvely shows
-      if (peek != '[' && peek != ']') {
+      if (peek !== '[' && peek !== ']') {
         // DeMorgan
         packet.type = PacketType.ESC;
         packet.text = buffer.slice(0, 1);
@@ -230,7 +146,7 @@ export default class Ansi {
 
       // OK is this an SGR or OSC that we handle
       // SGR CHECK
-      if (peek == '[') {
+      if (peek === '[') {
         // We do this regex initialization here so
         // we can keep the regex close to its use (Readability)
         // All ansi codes are typically in the following format.
@@ -256,7 +172,7 @@ export default class Ansi {
         // us whether it was legal or illegal.
 
         if (match === null) {
-          packet.type = PacketType.Incomplete;
+          packet.type = PacketType.INCESC;
 
           return packet;
         }
@@ -279,8 +195,8 @@ export default class Ansi {
         }
 
         // If not a valid SGR, we don't handle
-        if (match[1] != '' || match[3] != 'm') {
-          packet.type = PacketType.Unknown;
+        if (match[1] !== '' || match[3] !== 'm') {
+          packet.type = PacketType.UNKNOWN;
         } else {
           packet.type = PacketType.SGR;
         }
@@ -294,14 +210,14 @@ export default class Ansi {
       }
 
       // OSC CHECK
-      if (peek == ']') {
+      if (peek === ']') {
         if (length < 4) {
-          packet.type = PacketType.Incomplete;
+          packet.type = PacketType.INCESC;
 
           return packet;
         }
 
-        if (buffer.charAt(2) != '8' || buffer.charAt(3) != ';') {
+        if (buffer.charAt(2) !== '8' || buffer.charAt(3) !== ';') {
           // This is not a match, so we'll just treat it as ESC
           packet.type = PacketType.ESC;
           packet.text = buffer.slice(0, 1);
@@ -351,7 +267,7 @@ export default class Ansi {
           const match = OSC_ST_RE.exec(buffer);
 
           if (match === null) {
-            packet.type = PacketType.Incomplete;
+            packet.type = PacketType.INCESC;
 
             return packet;
           }
@@ -390,7 +306,7 @@ export default class Ansi {
         // If a valid SGR
         packet.url = match[1];
         packet.text = match[2];
-        packet.type = PacketType.OSCURL;
+        packet.type = PacketType.OSC;
 
         this.buffer = buffer.slice(match[0].length);
 
@@ -401,53 +317,74 @@ export default class Ansi {
     return packet;
   }
 
-  private process({ text }: TextPacket): void {
+  private process(signal: string): void {
     let index = 0;
 
     // Ok - we have a valid "SGR" (Select Graphic Rendition)
-    const cmds = text.split(';');
-    const maxIndex = cmds.length - 1;
+    const sequences = signal.split(';');
+    const maxIndex = sequences.length - 1;
 
     // Read cmd by index
-    const read = () => parseInt(cmds[index++], 10);
+    const read = () => parseInt(sequences[index++], 10);
 
     // Each of these params affects the SGR state
     // Why do we shift through the array instead of a forEach??
     // ... because some commands consume the params that follow !
     for (let index = 0; index <= maxIndex; index++) {
-      const cmd = read();
+      const code = read();
 
-      if (cmd === 1) {
+      if (code === 1) {
         this.bold = true;
-      } else if (cmd === 3) {
+      } else if (code === 2) {
+        this.dim = true;
+      } else if (code === 3) {
         this.italic = true;
-      } else if (cmd === 4) {
+      } else if (code === 4) {
         this.underline = true;
-      } else if (cmd === 22) {
+      } else if (code === 5) {
+        this.blink = true;
+      } else if (code === 7) {
+        this.reverse = true;
+      } else if (code === 8) {
+        this.hidden = true;
+      } else if (code === 9) {
+        this.strikethrough = true;
+      } else if (code === 21) {
         this.bold = false;
-      } else if (cmd === 23) {
+      } else if (code === 22) {
+        this.dim = false;
+        this.bold = false;
+      } else if (code === 23) {
         this.italic = false;
-      } else if (cmd === 24) {
+      } else if (code === 24) {
         this.underline = false;
-      } else if (cmd === 39) {
+      } else if (code === 25) {
+        this.blink = false;
+      } else if (code === 27) {
+        this.reverse = false;
+      } else if (code === 28) {
+        this.hidden = false;
+      } else if (code === 29) {
+        this.strikethrough = false;
+      } else if (code === 39) {
         this.fg = null;
-      } else if (cmd === 49) {
+      } else if (code === 49) {
         this.bg = null;
-      } else if (cmd >= 30 && cmd < 38) {
-        this.fg = this.colors[0][cmd - 30];
-      } else if (cmd >= 40 && cmd < 48) {
-        this.bg = this.colors[0][cmd - 40];
-      } else if (cmd >= 90 && cmd < 98) {
-        this.fg = this.colors[1][cmd - 90];
-      } else if (cmd >= 100 && cmd < 108) {
-        this.bg = this.colors[1][cmd - 100];
-      } else if (cmd === 38 || cmd === 48) {
+      } else if (code >= 30 && code < 38) {
+        this.fg = this.colors[0][code - 30];
+      } else if (code >= 40 && code < 48) {
+        this.bg = this.colors[0][code - 40];
+      } else if (code >= 90 && code < 98) {
+        this.fg = this.colors[1][code - 90];
+      } else if (code >= 100 && code < 108) {
+        this.bg = this.colors[1][code - 100];
+      } else if (code === 38 || code === 48) {
         // Extended set foreground/background color
         // validate that param exists
         if (index < maxIndex) {
           const mode = read();
           // Extend color (38=fg, 48=bg)
-          const isForeground = cmd === 38;
+          const isForeground = code === 38;
 
           // MODE 5 - 256 color palette
           if (mode === 5 && index <= maxIndex) {
@@ -497,29 +434,4 @@ export default class Ansi {
 
     return text;
   }
-}
-
-function escapeHTML(text: string): string {
-  return text.replace(/[&<>"']/gm, match => {
-    switch (match) {
-      case '&':
-        return '&amp;';
-      case '<':
-        return '&lt;';
-      case '>':
-        return '&gt;';
-      case '"':
-        return '&quot;';
-      case "'":
-        return '&#x27;';
-      default:
-        return match;
-    }
-  });
-}
-
-// ES5 template string transformer
-function regexp(regexp: string, flag?: string): RegExp {
-  // Remove white-space and comments
-  return new RegExp(regexp.replace(/^\s+|\s+\n|\s*#[\s\S]*?\n|\n/gm, ''), flag);
 }
