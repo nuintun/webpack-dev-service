@@ -490,7 +490,7 @@ export default class Ansi {
     return blocks;
   }
 
-  public flush(): void {
+  public clear(): void {
     this.reset();
 
     this.buffer = '';
