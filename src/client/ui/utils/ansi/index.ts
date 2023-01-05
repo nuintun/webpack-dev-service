@@ -457,7 +457,7 @@ export default class Ansi {
   }
 
   public parse(text: string): AnsiBlock[] {
-    this.buffer = text;
+    this.buffer += text;
 
     const blocks: AnsiBlock[] = [];
 
