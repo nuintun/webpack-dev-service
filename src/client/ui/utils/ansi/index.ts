@@ -412,11 +412,17 @@ export default class Ansi {
           }
         }
       } else {
+        this.dim = false;
+        this.bold = false;
+        this.blink = false;
+        this.hidden = false;
+        this.italic = false;
+        this.reverse = false;
+        this.underline = false;
+        this.strikethrough = false;
+
         this.color = null;
         this.background = null;
-        this.bold = false;
-        this.italic = false;
-        this.underline = false;
       }
     }
   }
