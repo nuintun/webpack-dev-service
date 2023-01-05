@@ -3,7 +3,7 @@
  */
 
 export const enum TokenType {
-  EOS, // End of Operating System Command
+  EOS, // End of Operating System
   ESC, // A single ESC char - random
   OSC, // Operating System Command
   SGR, // Select Graphic Rendition
