@@ -171,7 +171,6 @@ export default class Ansi {
       // either the full sequence or an illegal sequence.
       // If it does match, the presence of field 4 tells
       // us whether it was legal or illegal.
-
       if (match === null) {
         return {
           type: TokenType.INCESC
@@ -184,7 +183,6 @@ export default class Ansi {
       // 2 - digits and semicolons group
       // 3 - command
       // 4 - illegal char
-
       if (match[4]) {
         this.buffer = buffer.slice(1);
 
@@ -199,7 +197,6 @@ export default class Ansi {
       // If not a valid SGR, we don't handle
       if (match[1] !== '' || match[3] !== 'm') {
         return {
-          value: match[2],
           type: TokenType.UNKNOWN
         };
       } else {

@@ -31,3 +31,22 @@ export function appendHTML(html: string, parent?: HTMLElement): ChildNode[] {
 
   return nodes;
 }
+
+export function escapeHTML(text: string): string {
+  return text.replace(/[&<>"']/gm, match => {
+    switch (match) {
+      case '&':
+        return '&amp;';
+      case '<':
+        return '&lt;';
+      case '>':
+        return '&gt;';
+      case '"':
+        return '&quot;';
+      case "'":
+        return '&#x27;';
+      default:
+        return match;
+    }
+  });
+}

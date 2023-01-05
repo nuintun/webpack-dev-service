@@ -4,10 +4,6 @@
 
 import { TokenType } from './enum';
 
-// type ColorType = 'black' | 'red' | 'green' | 'yellow' | 'blue' | 'magenta' | 'cyan' | 'white';
-
-// export type AnsiColorType = ColorType | `bright-${ColorType}`;
-
 export type AnsiColor = [
   // Red
   R: number,
@@ -63,10 +59,27 @@ export interface INCESCToken {
 }
 
 export interface UNKNOWNToken {
-  value: string;
   type: TokenType.UNKNOWN;
 }
 
-export type BlockToken = OSCToken | TEXTToken | UNKNOWNToken;
+export type BlockToken =
+  // OSC Token
+  | OSCToken
+  // TEXT Token
+  | TEXTToken;
 
-export type AnsiToken = EOSToken | ESCToken | SGRToken | INCESCToken | BlockToken;
+export type AnsiToken =
+  // EOS Token
+  | EOSToken
+  // ESC Token
+  | ESCToken
+  // OSC Token
+  | OSCToken
+  // SGR Token
+  | SGRToken
+  // TEXT Token
+  | TEXTToken
+  // INC ESC Token
+  | INCESCToken
+  // UNKNOWN Token
+  | UNKNOWNToken;
