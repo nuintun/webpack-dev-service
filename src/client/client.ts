@@ -69,14 +69,16 @@ export default function createClient(options: Options): void {
       errors: ['Error', 'error'],
       warnings: ['Warning', 'warn']
     };
-    const [name, method] = maps[type];
 
     if (options.overlay) {
       overlay.setProblems(type, problems);
     }
 
+    const [name, method] = maps[type];
+    const debug = console[method];
+
     for (const { moduleName, message } of problems) {
-      console[method](`${name} in ${moduleName}\r\n${message}`);
+      debug(`\u001b[0m${name} in ${moduleName}\r\n${message}`);
     }
   };
 
