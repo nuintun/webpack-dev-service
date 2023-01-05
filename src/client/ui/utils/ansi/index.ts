@@ -26,7 +26,7 @@ export default class Ansi {
 
   constructor() {
     const colors16: AnsiColor[][] = [
-      // Normal colors
+      // Colors 16 bit
       [
         // Black
         [0, 0, 0],
@@ -66,6 +66,7 @@ export default class Ansi {
       ]
     ];
 
+    // Colors 256 bit
     const colors256: AnsiColor[] = [];
 
     // Index 0..15 : Ansi-Colors
@@ -82,7 +83,6 @@ export default class Ansi {
     for (let r = 0; r < 6; ++r) {
       for (let g = 0; g < 6; ++g) {
         for (let b = 0; b < 6; ++b) {
-          // Color 256
           colors256.push([levels[r], levels[g], levels[b]]);
         }
       }
@@ -92,11 +92,10 @@ export default class Ansi {
     let grayscale = 8;
 
     for (let i = 0; i < 24; ++i, grayscale += 10) {
-      // Color 256
       colors256.push([grayscale, grayscale, grayscale]);
     }
 
-    // Init props
+    // Init ANSI colors
     this.colors16 = colors16;
     this.colors256 = colors256;
   }
