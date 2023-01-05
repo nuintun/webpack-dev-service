@@ -4,7 +4,7 @@
 
 import { TokenType } from './enum';
 import { CSI_RE, OSC_RE, OSC_ST_RE } from './regx';
-import { AnsiBlock, AnsiColor, AnsiToken } from './interface';
+import { AnsiBlock, AnsiColor, AnsiToken, BlockToken } from './interface';
 
 export default class Ansi {
   private buffer = '';
@@ -91,39 +91,32 @@ export default class Ansi {
   private read(): AnsiToken {
     const { buffer } = this;
     const { length } = buffer;
-
-    const token: AnsiToken = {
-      url: '',
-      text: '',
-      type: TokenType.EOS
-    };
-
     const pos = buffer.indexOf('\x1B');
 
     // The most common case, no ESC codes
     if (pos < 0) {
-      token.text = buffer;
-      token.type = TokenType.TEXT;
-
       this.buffer = '';
 
-      return token;
+      return {
+        text: buffer,
+        type: TokenType.TEXT
+      };
     }
 
     if (pos > 0) {
-      token.type = TokenType.TEXT;
-      token.text = buffer.slice(0, pos);
-
       this.buffer = buffer.slice(pos);
 
-      return token;
+      return {
+        type: TokenType.TEXT,
+        text: buffer.slice(0, pos)
+      };
     }
 
     if (length === 1) {
       // Lone ESC in Buffer, We don't know yet
-      token.type = TokenType.INCESC;
-
-      return token;
+      return {
+        type: TokenType.INCESC
+      };
     }
 
     const peek = buffer.charAt(1);
@@ -131,13 +124,13 @@ export default class Ansi {
     // We treat this as a single ESC
     // Which effecitvely shows
     if (peek !== '[' && peek !== ']') {
-      // DeMorgan
-      token.type = TokenType.ESC;
-      token.text = buffer.slice(0, 1);
-
       this.buffer = buffer.slice(1);
 
-      return token;
+      // DeMorgan
+      return {
+        type: TokenType.ESC,
+        text: buffer.slice(0, 1)
+      };
     }
 
     // OK is this an SGR or OSC that we handle
@@ -168,9 +161,9 @@ export default class Ansi {
       // us whether it was legal or illegal.
 
       if (match === null) {
-        token.type = TokenType.INCESC;
-
-        return token;
+        return {
+          type: TokenType.INCESC
+        };
       }
 
       // match is an array
@@ -181,46 +174,47 @@ export default class Ansi {
       // 4 - illegal char
 
       if (match[4]) {
-        // Illegal sequence, just remove the ESC
-        token.type = TokenType.ESC;
-        token.text = buffer.slice(0, 1);
-
         this.buffer = buffer.slice(1);
 
-        return token;
+        // Illegal sequence, just remove the ESC
+        return {
+          type: TokenType.ESC,
+          text: buffer.slice(0, 1)
+        };
       }
-
-      // If not a valid SGR, we don't handle
-      if (match[1] !== '' || match[3] !== 'm') {
-        token.type = TokenType.UNKNOWN;
-      } else {
-        token.type = TokenType.SGR;
-      }
-
-      // Just the parameters
-      token.text = match[2];
 
       this.buffer = buffer.slice(match[0].length);
 
-      return token;
+      // If not a valid SGR, we don't handle
+      if (match[1] !== '' || match[3] !== 'm') {
+        return {
+          text: match[2],
+          type: TokenType.UNKNOWN
+        };
+      } else {
+        return {
+          text: match[2],
+          type: TokenType.SGR
+        };
+      }
     }
 
     // OSC CHECK
     if (peek === ']') {
       if (length < 4) {
-        token.type = TokenType.INCESC;
-
-        return token;
+        return {
+          type: TokenType.INCESC
+        };
       }
 
       if (buffer.charAt(2) !== '8' || buffer.charAt(3) !== ';') {
-        // This is not a match, so we'll just treat it as ESC
-        token.type = TokenType.ESC;
-        token.text = buffer.slice(0, 1);
-
         this.buffer = buffer.slice(1);
 
-        return token;
+        // This is not a match, so we'll just treat it as ESC
+        return {
+          type: TokenType.ESC,
+          text: buffer.slice(0, 1)
+        };
       }
 
       // We do this regex initialization here so
@@ -263,20 +257,20 @@ export default class Ansi {
         const match = OSC_ST_RE.exec(buffer);
 
         if (match === null) {
-          token.type = TokenType.INCESC;
-
-          return token;
+          return {
+            type: TokenType.INCESC
+          };
         }
 
         // If an illegal character was found, bail on the match
         if (match[3]) {
-          // Illegal sequence, just remove the ESC
-          token.type = TokenType.ESC;
-          token.text = buffer.slice(0, 1);
-
           this.buffer = buffer.slice(1);
 
-          return token;
+          // Illegal sequence, just remove the ESC
+          return {
+            type: TokenType.ESC,
+            text: buffer.slice(0, 1)
+          };
         }
       }
 
@@ -285,31 +279,32 @@ export default class Ansi {
       const match = buffer.match(OSC_RE);
 
       if (match === null) {
-        // Illegal sequence, just remove the ESC
-        token.type = TokenType.ESC;
-        token.text = buffer.slice(0, 1);
-
         this.buffer = buffer.slice(1);
 
-        return token;
+        // Illegal sequence, just remove the ESC
+        return {
+          type: TokenType.ESC,
+          text: buffer.slice(0, 1)
+        };
       }
 
+      this.buffer = buffer.slice(match[0].length);
+
+      // If a valid SGR
       // match is an array
       // 0 - total match
       // 1 - URL
       // 2 - Text
-
-      // If a valid SGR
-      token.url = match[1];
-      token.text = match[2];
-      token.type = TokenType.OSC;
-
-      this.buffer = buffer.slice(match[0].length);
-
-      return token;
+      return {
+        url: match[1],
+        text: match[2],
+        type: TokenType.OSC
+      };
     }
 
-    return token;
+    return {
+      type: TokenType.EOS
+    };
   }
 
   private process(signal: string): void {
@@ -420,14 +415,12 @@ export default class Ansi {
     }
   }
 
-  private block({ text, url }: AnsiToken): AnsiBlock {
-    return {
-      url,
-      text,
-      bg: this.bg,
-      fg: this.fg,
+  private block(token: BlockToken): AnsiBlock {
+    const { bg, fg } = this;
+    const block: AnsiBlock = {
       dim: this.dim,
       bold: this.bold,
+      text: token.text,
       blink: this.blink,
       hidden: this.hidden,
       italic: this.italic,
@@ -435,6 +428,20 @@ export default class Ansi {
       underline: this.underline,
       strikethrough: this.strikethrough
     };
+
+    if (bg) {
+      block.bg = bg;
+    }
+
+    if (fg) {
+      block.fg = fg;
+    }
+
+    if ('url' in token) {
+      block.url = token.url;
+    }
+
+    return block;
   }
 
   public parse(text: string): AnsiBlock[] {
@@ -443,9 +450,9 @@ export default class Ansi {
     const blocks: AnsiBlock[] = [];
 
     while (this.buffer) {
-      const packet = this.read();
+      const token = this.read();
 
-      switch (packet.type) {
+      switch (token.type) {
         case TokenType.EOS:
         case TokenType.INCESC:
           break;
@@ -453,11 +460,11 @@ export default class Ansi {
         case TokenType.UNKNOWN:
           continue;
         case TokenType.SGR:
-          this.process(packet.text);
+          this.process(token.text);
           continue;
         case TokenType.OSC:
         case TokenType.TEXT:
-          blocks.push(this.block(packet));
+          blocks.push(this.block(token));
           continue;
         default:
           continue;
