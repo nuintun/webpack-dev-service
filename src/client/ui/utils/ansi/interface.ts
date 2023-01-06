@@ -13,21 +13,23 @@ export type AnsiColor = [
   B: number
 ];
 
+export interface AnsiStyle {
+  dim: boolean;
+  bold: boolean;
+  blink: boolean;
+  hidden: boolean;
+  italic: boolean;
+  reverse: boolean;
+  underline: boolean;
+  strikethrough: boolean;
+  color: AnsiColor | null;
+  background: AnsiColor | null;
+}
+
 export interface AnsiBlock {
   url?: string;
   value: string;
-  style: {
-    dim: boolean;
-    bold: boolean;
-    blink: boolean;
-    hidden: boolean;
-    italic: boolean;
-    reverse: boolean;
-    color?: AnsiColor;
-    underline: boolean;
-    background?: AnsiColor;
-    strikethrough: boolean;
-  };
+  style: AnsiStyle;
 }
 
 export interface EOSToken {

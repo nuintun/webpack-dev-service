@@ -4,27 +4,28 @@
 
 import { TokenType } from './enum';
 import { CSI_RE, OSC_RE, OSC_ST_RE } from './regx';
-import { AnsiBlock, AnsiColor, AnsiToken, BlockToken } from './interface';
+import { AnsiBlock, AnsiColor, AnsiStyle, AnsiToken, BlockToken } from './interface';
 
 export default class Ansi {
-  private buffer = '';
+  protected buffer = '';
 
-  private dim = false;
-  private bold = false;
-  private blink = false;
-  private hidden = false;
-  private italic = false;
-  private reverse = false;
-  private underline = false;
-  private strikethrough = false;
+  protected style: AnsiStyle = {
+    dim: false,
+    bold: false,
+    color: null,
+    blink: false,
+    hidden: false,
+    italic: false,
+    reverse: false,
+    background: null,
+    underline: false,
+    strikethrough: false
+  };
 
-  private colors256: AnsiColor[];
-  private colors16: AnsiColor[][];
+  protected colors256: AnsiColor[];
+  protected colors16: AnsiColor[][];
 
-  private color: AnsiColor | null = null;
-  private background: AnsiColor | null = null;
-
-  constructor() {
+  public constructor() {
     const colors16: AnsiColor[][] = [
       // Colors 16 bit
       [
@@ -312,17 +313,18 @@ export default class Ansi {
   }
 
   private reset(): void {
-    this.dim = false;
-    this.bold = false;
-    this.blink = false;
-    this.hidden = false;
-    this.italic = false;
-    this.reverse = false;
-    this.underline = false;
-    this.strikethrough = false;
+    const { style } = this;
 
-    this.color = null;
-    this.background = null;
+    style.dim = false;
+    style.bold = false;
+    style.color = null;
+    style.blink = false;
+    style.hidden = false;
+    style.italic = false;
+    style.reverse = false;
+    style.background = null;
+    style.underline = false;
+    style.strikethrough = false;
   }
 
   private process(signal: string): void {
@@ -331,6 +333,9 @@ export default class Ansi {
     // Ok - we have a valid "SGR" (Select Graphic Rendition)
     const sequences = signal.split(';');
     const maxIndex = sequences.length - 1;
+
+    // ANSI style and colors
+    const { style, colors16, colors256 } = this;
 
     // Read cmd by index
     const read = () => parseInt(sequences[index++], 10);
@@ -342,50 +347,50 @@ export default class Ansi {
       const code = read();
 
       if (code === 1) {
-        this.bold = true;
+        style.bold = true;
       } else if (code === 2) {
-        this.dim = true;
+        style.dim = true;
       } else if (code === 3) {
-        this.italic = true;
+        style.italic = true;
       } else if (code === 4) {
-        this.underline = true;
+        style.underline = true;
       } else if (code === 5) {
-        this.blink = true;
+        style.blink = true;
       } else if (code === 7) {
-        this.reverse = true;
+        style.reverse = true;
       } else if (code === 8) {
-        this.hidden = true;
+        style.hidden = true;
       } else if (code === 9) {
-        this.strikethrough = true;
+        style.strikethrough = true;
       } else if (code === 21) {
-        this.bold = false;
+        style.bold = false;
       } else if (code === 22) {
-        this.dim = false;
-        this.bold = false;
+        style.dim = false;
+        style.bold = false;
       } else if (code === 23) {
-        this.italic = false;
+        style.italic = false;
       } else if (code === 24) {
-        this.underline = false;
+        style.underline = false;
       } else if (code === 25) {
-        this.blink = false;
+        style.blink = false;
       } else if (code === 27) {
-        this.reverse = false;
+        style.reverse = false;
       } else if (code === 28) {
-        this.hidden = false;
+        style.hidden = false;
       } else if (code === 29) {
-        this.strikethrough = false;
+        style.strikethrough = false;
       } else if (code === 39) {
-        this.color = null;
+        style.color = null;
       } else if (code === 49) {
-        this.background = null;
+        style.background = null;
       } else if (code >= 30 && code < 38) {
-        this.color = this.colors16[0][code - 30];
+        style.color = colors16[0][code - 30];
       } else if (code >= 40 && code < 48) {
-        this.background = this.colors16[0][code - 40];
+        style.background = colors16[0][code - 40];
       } else if (code >= 90 && code < 98) {
-        this.color = this.colors16[1][code - 90];
+        style.color = colors16[1][code - 90];
       } else if (code >= 100 && code < 108) {
-        this.background = this.colors16[1][code - 100];
+        style.background = colors16[1][code - 100];
       } else if (code === 38 || code === 48) {
         // Extended set foreground/background color
         // validate that param exists
@@ -399,9 +404,9 @@ export default class Ansi {
             const index = read() & 0xff;
 
             if (isForeground) {
-              this.color = this.colors256[index];
+              style.color = colors256[index];
             } else {
-              this.background = this.colors256[index];
+              style.background = colors256[index];
             }
           }
 
@@ -415,9 +420,9 @@ export default class Ansi {
             const color: AnsiColor = [r, g, b];
 
             if (isForeground) {
-              this.color = color;
+              style.color = color;
             } else {
-              this.background = color;
+              style.background = color;
             }
           }
         }
@@ -430,28 +435,8 @@ export default class Ansi {
   private block(token: BlockToken): AnsiBlock {
     const block: AnsiBlock = {
       value: token.value,
-      style: {
-        dim: this.dim,
-        bold: this.bold,
-        blink: this.blink,
-        hidden: this.hidden,
-        italic: this.italic,
-        reverse: this.reverse,
-        underline: this.underline,
-        strikethrough: this.strikethrough
-      }
+      style: { ...this.style }
     };
-
-    const { style } = block;
-    const { color, background } = this;
-
-    if (color) {
-      style.color = color;
-    }
-
-    if (background) {
-      style.background = background;
-    }
 
     if ('url' in token) {
       block.url = token.url;
