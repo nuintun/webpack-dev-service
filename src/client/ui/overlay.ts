@@ -27,7 +27,7 @@ const CSS = `
    background: rgba(0, 0, 0, .85);
    transform: scale(0) translateZ(0);
    transition: transform .25s ease-out;
-   font-family: Menlo, "Lucida Console", monospace;
+   font-family: Consolas, "Lucida Console", monospace;
  }
  .${OVERLAY}-show {
    transform: scale(1) translateZ(0);
