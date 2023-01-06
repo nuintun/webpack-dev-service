@@ -60,7 +60,7 @@ export default function rollup(esnext) {
           ]
         })
       ],
-      external: ['ws', 'tslib', 'webpack', 'koa-compose', 'memoize-one', 'path/posix', 'webpack-dev-middleware'],
+      external: ['ws', 'tslib', 'webpack', 'koa-compose', 'path/posix', 'webpack-dev-middleware'],
       onwarn(error, warn) {
         if (error.code !== 'CIRCULAR_DEPENDENCY') {
           warn(error);
@@ -105,7 +105,7 @@ export default function rollup(esnext) {
           ]
         })
       ],
-      external: ['tslib', /core-js/, 'ansi-regex'],
+      external: ['tslib', /core-js/],
       onwarn(error, warn) {
         if (error.code !== 'CIRCULAR_DEPENDENCY') {
           warn(error);

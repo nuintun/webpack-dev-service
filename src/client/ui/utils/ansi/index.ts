@@ -6,6 +6,8 @@ import { TokenType } from './enum';
 import { CSI_RE, OSC_RE, OSC_ST_RE } from './regx';
 import { AnsiBlock, AnsiColor, AnsiStyle, AnsiToken, BlockToken } from './interface';
 
+export type { AnsiBlock, AnsiStyle };
+
 export default class Ansi {
   protected buffer = '';
 

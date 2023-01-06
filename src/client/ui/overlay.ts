@@ -3,9 +3,8 @@
  * @see https://github.com/shellscape/webpack-plugin-serve
  */
 
-import Ansi from './utils/ansi';
 import { StatsError } from 'webpack';
-import { appendHTML, injectCSS } from './utils';
+import { ansiToHTML, appendHTML, injectCSS } from './utils';
 
 const OVERLAY = 'wds-overlay';
 
@@ -168,22 +167,18 @@ const HTML = `
  </aside>
  `;
 
-const ANSI = new Ansi({
-  black: '#181818',
-  red: '#ff3348',
-  green: '#3fff4f',
-  yellow: '#ffd30e',
-  blue: '#169be0',
-  magenta: '#f840b7',
-  cyan: '#0ad8e9',
-  lightgrey: '#ebe7e3',
-  darkgrey: '#6d7891',
-  reset: ['#fff', '#282d35']
-});
-
-function ansiHTML(text: string): string {
-  return ANSI.convert(text);
-}
+// const ANSI = new Ansi({
+//   black: '#181818',
+//   red: '#ff3348',
+//   green: '#3fff4f',
+//   yellow: '#ffd30e',
+//   blue: '#169be0',
+//   magenta: '#f840b7',
+//   cyan: '#0ad8e9',
+//   lightgrey: '#ebe7e3',
+//   darkgrey: '#6d7891',
+//   reset: ['#fff', '#282d35']
+// });
 
 export default class Overlay {
   private hidden: boolean = true;
@@ -231,8 +226,8 @@ export default class Overlay {
       problemTitle.innerText = `${count} ${name}(s)`;
 
       for (const { moduleName = 'unknown', message } of problems) {
-        const src = ansiHTML(moduleName);
-        const details = ansiHTML(message);
+        const src = ansiToHTML(moduleName);
+        const details = ansiToHTML(message);
 
         html += `<div><em>${name}</em> in ${src}<div>${details}</div></div>`;
       }
