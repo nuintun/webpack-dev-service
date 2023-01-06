@@ -14,8 +14,6 @@ const CSS = `
    left: 0;
    right: 0;
    bottom: 0;
-   width: 100vw;
-   height: 100vh;
    display: flex;
    position: fixed;
    font-size: 16px;
@@ -98,6 +96,8 @@ const CSS = `
    overflow-y: auto;
    scrollbar-width: none;
    -ms-overflow-style: none;
+   -ms-scroll-chaining: none;
+   overscroll-behavior: contain;
    -webkit-overflow-scrolling: touch;
  }
  .${OVERLAY}-problems::-webkit-scrollbar {
