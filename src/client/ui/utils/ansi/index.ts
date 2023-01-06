@@ -490,9 +490,28 @@ export default class Ansi {
     return blocks;
   }
 
-  public clear(): void {
+  public flush(): AnsiBlock | null {
+    const { buffer } = this;
+
+    // Flush buffer
+    this.buffer = '';
+
+    // Get flush block
+    if (buffer !== '') {
+      const block = this.block({
+        value: buffer,
+        type: TokenType.TEXT
+      });
+
+      // Reset
+      this.reset();
+
+      return block;
+    }
+
+    // Reset
     this.reset();
 
-    this.buffer = '';
+    return null;
   }
 }
