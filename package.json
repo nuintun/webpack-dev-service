@@ -3,7 +3,7 @@
   "version": "0.9.8",
   "description": "A koa 2 middleware for webpack development and hot reloading.",
   "type": "module",
-  "sideEffects": false,
+  "sideEffects": true,
   "types": "index.d.ts",
   "main": "server/cjs/index.cjs",
   "module": "server/esm/index.js",
