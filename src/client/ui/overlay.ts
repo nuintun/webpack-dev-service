@@ -113,7 +113,7 @@ const CSS = `
    border-radius: 4px;
    background: #282d35;
    white-space: pre-wrap;
-   font-family: Menlo, "Lucida Console", monospace;
+   font-family: Consolas, "Lucida Console", monospace;
  }
  .${OVERLAY}-errors > div,
  .${OVERLAY}-warnings > div {
