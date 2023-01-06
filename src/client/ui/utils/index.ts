@@ -4,6 +4,8 @@
 
 import Ansi, { AnsiBlock } from './ansi';
 
+const ansi = new Ansi();
+
 const defaultStyleElement = document.createElement('style');
 
 export function injectCSS(css: string, styleElement = defaultStyleElement): HTMLStyleElement {
@@ -123,8 +125,6 @@ export function blockToHTML({ style, value, url }: AnsiBlock): string {
 
   return `<a style=${inlineStyle} href=${href} target="_blank">${escapedValue}</a>`;
 }
-
-const ansi = new Ansi();
 
 export function ansiToHTML(text: string): string {
   let html = '';

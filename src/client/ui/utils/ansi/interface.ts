@@ -86,3 +86,22 @@ export type AnsiToken =
   | INCESCToken
   // UNKNOWN Token
   | UNKNOWNToken;
+
+export interface Theme {
+  red?: AnsiColor;
+  blue?: AnsiColor;
+  cyan?: AnsiColor;
+  black?: AnsiColor;
+  green?: AnsiColor;
+  white?: AnsiColor;
+  yellow?: AnsiColor;
+  magenta?: AnsiColor;
+  brightRed?: AnsiColor;
+  brightBlue?: AnsiColor;
+  brightCyan?: AnsiColor;
+  brightBlack?: AnsiColor;
+  brightGreen?: AnsiColor;
+  brightWhite?: AnsiColor;
+  brightYellow?: AnsiColor;
+  brightMagenta?: AnsiColor;
+}

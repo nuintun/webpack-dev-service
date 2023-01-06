@@ -45,7 +45,12 @@ const compiler = webpack({
   name: 'react',
   mode: 'development',
   context: path.resolve('src'),
-  entry: [path.resolve('../client'), path.resolve('src/index.jsx')],
+  entry: [
+    // Hot client
+    path.resolve('../client'),
+    // Entry file
+    path.resolve('src/index.jsx')
+  ],
   output: {
     publicPath: '/public/',
     filename: `js/[name].js`,
@@ -97,6 +102,7 @@ const compiler = webpack({
                   esModule: true,
                   modules: {
                     auto: true,
+                    localIdentName: '[local]-[hash:8]',
                     exportLocalsConvention: 'camelCaseOnly'
                   }
                 }

@@ -3,8 +3,9 @@
  */
 
 import { TokenType } from './enum';
+import { getThemeColor, toUint8 } from './utils';
 import { CSI_RE, OSC_RE, OSC_ST_RE } from './regx';
-import { AnsiBlock, AnsiColor, AnsiStyle, AnsiToken, BlockToken } from './interface';
+import { AnsiBlock, AnsiColor, AnsiStyle, AnsiToken, BlockToken, Theme } from './interface';
 
 export type { AnsiBlock, AnsiStyle };
 
@@ -28,45 +29,45 @@ export default class Ansi {
   protected colors256: AnsiColor[];
   protected colors16: AnsiColor[][];
 
-  public constructor() {
+  public constructor(theme: Theme = {}) {
     const colors16: AnsiColor[][] = [
       // Colors 16 bit
       [
         // Black
-        [0, 0, 0],
+        getThemeColor([0, 0, 0], theme.black),
         // Red
-        [187, 0, 0],
+        getThemeColor([187, 0, 0], theme.red),
         // Green
-        [0, 187, 0],
+        getThemeColor([0, 187, 0], theme.green),
         // Yellow
-        [187, 187, 0],
+        getThemeColor([187, 187, 0], theme.yellow),
         // Blue
-        [0, 0, 187],
+        getThemeColor([0, 0, 187], theme.blue),
         // Magenta
-        [187, 0, 187],
+        getThemeColor([187, 0, 187], theme.magenta),
         // Cyan
-        [0, 187, 187],
+        getThemeColor([0, 187, 187], theme.cyan),
         // White
-        [255, 255, 255]
+        getThemeColor([255, 255, 255], theme.white)
       ],
       // Bright colors
       [
         // Bright Black
-        [85, 85, 85],
+        getThemeColor([85, 85, 85], theme.brightBlack),
         // Bright Red
-        [255, 85, 85],
+        getThemeColor([255, 85, 85], theme.brightRed),
         // Bright Green
-        [0, 255, 0],
+        getThemeColor([0, 255, 0], theme.brightGreen),
         // Bright Yellow
-        [255, 255, 85],
+        getThemeColor([255, 255, 85], theme.brightYellow),
         // Bright Blue
-        [85, 85, 255],
+        getThemeColor([85, 85, 255], theme.brightBlue),
         // Bright Magenta
-        [255, 85, 255],
+        getThemeColor([255, 85, 255], theme.brightMagenta),
         // Bright Cyan
-        [85, 255, 255],
+        getThemeColor([85, 255, 255], theme.brightCyan),
         // Bright White
-        [255, 255, 255]
+        getThemeColor([255, 255, 255], theme.brightWhite)
       ]
     ];
 
@@ -408,7 +409,7 @@ export default class Ansi {
 
           // MODE 5 - 256 color palette
           if (mode === 5 && index <= maxIndex) {
-            const index = read() & 0xff;
+            const index = toUint8(read());
 
             if (isForeground) {
               style.color = colors256[index];
@@ -419,9 +420,9 @@ export default class Ansi {
 
           // MODE 2 - True Color
           if (mode === 2 && index + 2 <= maxIndex) {
-            const r = read() & 0xff;
-            const g = read() & 0xff;
-            const b = read() & 0xff;
+            const r = toUint8(read());
+            const g = toUint8(read());
+            const b = toUint8(read());
 
             // True Color
             const color: AnsiColor = [r, g, b];
