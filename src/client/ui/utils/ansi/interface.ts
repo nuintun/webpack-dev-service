@@ -19,7 +19,8 @@ export interface AnsiStyle {
   blink: boolean;
   hidden: boolean;
   italic: boolean;
-  reverse: boolean;
+  inverse: boolean;
+  overline: boolean;
   underline: boolean;
   strikethrough: boolean;
   color: AnsiColor | null;

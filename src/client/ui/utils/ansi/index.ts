@@ -16,7 +16,8 @@ export default class Ansi {
     blink: false,
     hidden: false,
     italic: false,
-    reverse: false,
+    inverse: false,
+    overline: false,
     background: null,
     underline: false,
     strikethrough: false
@@ -321,7 +322,7 @@ export default class Ansi {
     style.blink = false;
     style.hidden = false;
     style.italic = false;
-    style.reverse = false;
+    style.inverse = false;
     style.background = null;
     style.underline = false;
     style.strikethrough = false;
@@ -357,11 +358,13 @@ export default class Ansi {
       } else if (code === 5) {
         style.blink = true;
       } else if (code === 7) {
-        style.reverse = true;
+        style.inverse = true;
       } else if (code === 8) {
         style.hidden = true;
       } else if (code === 9) {
         style.strikethrough = true;
+      } else if (code === 53) {
+        style.overline = true;
       } else if (code === 21) {
         style.bold = false;
       } else if (code === 22) {
@@ -374,13 +377,15 @@ export default class Ansi {
       } else if (code === 25) {
         style.blink = false;
       } else if (code === 27) {
-        style.reverse = false;
+        style.inverse = false;
       } else if (code === 28) {
         style.hidden = false;
       } else if (code === 29) {
         style.strikethrough = false;
-      } else if (code === 39) {
-        style.color = null;
+      } else if (code === 29) {
+        style.strikethrough = false;
+      } else if (code === 55) {
+        style.overline = false;
       } else if (code === 49) {
         style.background = null;
       } else if (code >= 30 && code < 38) {
