@@ -453,7 +453,7 @@ export default class Ansi {
     return block;
   }
 
-  public parse(text: string, callback: (block: AnsiBlock) => void): void {
+  public write(text: string, callback: (block: AnsiBlock) => void): void {
     this.buffer += text;
 
     while (this.buffer) {

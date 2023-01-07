@@ -129,7 +129,7 @@ export function blockToHTML({ style, value, url }: AnsiBlock): string {
 export function ansiToHTML(text: string): string {
   let html = '';
 
-  ansi.parse(text, block => {
+  ansi.write(text, block => {
     html += blockToHTML(block);
   });
 
