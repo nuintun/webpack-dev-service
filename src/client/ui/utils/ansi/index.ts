@@ -453,10 +453,8 @@ export default class Ansi {
     return block;
   }
 
-  public parse(text: string): AnsiBlock[] {
+  public parse(text: string, callback: (block: AnsiBlock) => void): void {
     this.buffer += text;
-
-    const blocks: AnsiBlock[] = [];
 
     while (this.buffer) {
       const token = this.read();
@@ -473,38 +471,31 @@ export default class Ansi {
           continue;
         case TokenType.OSC:
         case TokenType.TEXT:
-          blocks.push(this.block(token));
+          callback(this.block(token));
           continue;
         default:
           continue;
       }
     }
-
-    return blocks;
   }
 
-  public flush(): AnsiBlock | null {
+  public flush(callback: (block: AnsiBlock) => void): void {
     const { buffer } = this;
-
-    // Flush buffer
-    this.buffer = '';
 
     // Get flush block
     if (buffer !== '') {
-      const block = this.block({
-        value: buffer,
-        type: TokenType.TEXT
-      });
-
-      // Reset
-      this.reset();
-
-      return block;
+      callback(
+        this.block({
+          value: buffer,
+          type: TokenType.TEXT
+        })
+      );
     }
 
     // Reset
     this.reset();
 
-    return null;
+    // Flush buffer
+    this.buffer = '';
   }
 }

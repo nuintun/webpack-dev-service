@@ -129,16 +129,13 @@ export function blockToHTML({ style, value, url }: AnsiBlock): string {
 export function ansiToHTML(text: string): string {
   let html = '';
 
-  const blocks = ansi.parse(text);
-  const flushedBlock = ansi.flush();
-
-  for (const block of blocks) {
+  ansi.parse(text, block => {
     html += blockToHTML(block);
-  }
+  });
 
-  if (flushedBlock) {
-    html += blockToHTML(flushedBlock);
-  }
+  ansi.flush(block => {
+    html += blockToHTML(block);
+  });
 
   return html;
 }
