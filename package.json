@@ -1,6 +1,6 @@
 {
   "name": "koa-webpack-dev-service",
-  "version": "0.9.9",
+  "version": "0.9.10",
   "description": "A koa 2 middleware for webpack development and hot reloading.",
   "type": "module",
   "sideEffects": true,
@@ -64,11 +64,11 @@
     "core-js": "^3.27.1",
     "koa-compose": "^4.1.0",
     "webpack-dev-middleware": "^6.0.1",
-    "ws": "^8.11.0"
+    "ws": "^8.12.0"
   },
   "optionalDependencies": {
-    "bufferutil": "^4.0.0",
-    "utf-8-validate": "^5.0.0"
+    "bufferutil": ">=4.0.0",
+    "utf-8-validate": ">=5.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.12",
@@ -83,9 +83,9 @@
     "css-loader": "^6.7.3",
     "html-webpack-plugin": "^5.5.0",
     "koa": "^2.14.1",
-    "memfs": "^3.4.12",
+    "memfs": "^3.4.13",
     "mini-css-extract-plugin": "^2.7.2",
-    "prettier": "^2.8.1",
+    "prettier": "^2.8.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "rimraf": "^3.0.2",
