@@ -4,7 +4,7 @@
     "pretty": true,
     "newLine": "lf",
     "jsx": "react-jsx",
-    "target": "ES2017",
+    "target": "ES2015",
     "module": "ESNext",
     "skipLibCheck": true,
     "importHelpers": true,

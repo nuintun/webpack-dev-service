@@ -3,13 +3,9 @@
  */
 
 import { createRequire } from 'module';
-import babel from '@rollup/plugin-babel';
-import resolve from '@rollup/plugin-node-resolve';
+import treeShake from './plugins/tree-shake.js';
+import typescript from '@rollup/plugin-typescript';
 
-const babelHelpers = 'bundled';
-const extensions = ['.ts', '.js'];
-const corejs = { version: '^3.0.0', proposals: true };
-const targets = { browsers: ['defaults', 'not IE >= 0'] };
 const pkg = createRequire(import.meta.url)('../package.json');
 
 const banner = `/**
@@ -30,6 +26,26 @@ const banner = `/**
 export default function rollup(esnext) {
   return [
     {
+      input: 'src/client/index.ts',
+      output: {
+        banner,
+        dir: 'client',
+        format: 'esm',
+        interop: 'auto',
+        exports: 'auto',
+        esModule: false,
+        preserveModules: true,
+        generatedCode: { constBindings: true }
+      },
+      plugins: [typescript(), treeShake()],
+      onwarn(error, warn) {
+        if (error.code !== 'CIRCULAR_DEPENDENCY') {
+          warn(error);
+        }
+      },
+      external: ['tslib']
+    },
+    {
       input: 'src/server/index.ts',
       output: {
         banner,
@@ -43,74 +59,13 @@ export default function rollup(esnext) {
         entryFileNames: `[name].${esnext ? 'js' : 'cjs'}`,
         chunkFileNames: `[name].${esnext ? 'js' : 'cjs'}`
       },
-      plugins: [
-        resolve({
-          extensions
-        }),
-        babel({
-          extensions,
-          babelHelpers,
-          presets: [
-            [
-              '@babel/preset-typescript',
-              {
-                optimizeConstEnums: true
-              }
-            ]
-          ]
-        })
-      ],
-      external: ['ws', 'tslib', 'webpack', 'koa-compose', 'path/posix', 'webpack-dev-middleware'],
+      plugins: [typescript(), treeShake()],
       onwarn(error, warn) {
         if (error.code !== 'CIRCULAR_DEPENDENCY') {
           warn(error);
         }
-      }
-    },
-    {
-      input: 'src/client/index.ts',
-      output: {
-        banner,
-        dir: 'client',
-        format: 'esm',
-        interop: 'auto',
-        exports: 'auto',
-        esModule: false,
-        preserveModules: true,
-        generatedCode: { constBindings: true }
       },
-      plugins: [
-        resolve({
-          extensions
-        }),
-        babel({
-          extensions,
-          babelHelpers,
-          presets: [
-            [
-              '@babel/preset-env',
-              {
-                corejs,
-                targets,
-                bugfixes: true,
-                useBuiltIns: 'usage'
-              }
-            ],
-            [
-              '@babel/preset-typescript',
-              {
-                optimizeConstEnums: true
-              }
-            ]
-          ]
-        })
-      ],
-      external: ['tslib', /core-js/],
-      onwarn(error, warn) {
-        if (error.code !== 'CIRCULAR_DEPENDENCY') {
-          warn(error);
-        }
-      }
+      external: ['ws', 'tslib', 'webpack', 'koa-compose', 'webpack-dev-middleware']
     }
   ];
 }

@@ -84,8 +84,25 @@ const compiler = webpack({
             exclude: /[\\/]node_modules[\\/]/,
             use: [
               {
-                loader: 'babel-loader',
-                options: { highlightCode: true, cacheDirectory: true }
+                loader: 'swc-loader',
+                options: {
+                  swcrc: false,
+                  jsc: {
+                    parser: {
+                      tsx: true,
+                      syntax: 'typescript'
+                    },
+                    transform: {
+                      react: {
+                        runtime: 'automatic'
+                      }
+                    },
+                    externalHelpers: true
+                  },
+                  env: {
+                    targets: ['defaults', 'not IE >= 0']
+                  }
+                }
               }
             ]
           },
