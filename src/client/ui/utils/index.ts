@@ -110,18 +110,21 @@ export function blockToHTML({ style, value, url }: AnsiBlock): string {
   }
 
   const escapedValue = escapeHTML(value);
+  const href = url ? JSON.stringify(escapeHTML(url)) : null;
 
   if (styles.length <= 0) {
-    return escapedValue;
+    if (!href) {
+      return escapedValue;
+    }
+
+    return `<a href=${href} target="_blank">${escapedValue}</a>`;
   }
 
   const inlineStyle = JSON.stringify(`${styles.join(';')};`);
 
-  if (!url) {
+  if (!href) {
     return `<span style=${inlineStyle}>${escapedValue}</span>`;
   }
-
-  const href = JSON.stringify(escapeHTML(url));
 
   return `<a style=${inlineStyle} href=${href} target="_blank">${escapedValue}</a>`;
 }
