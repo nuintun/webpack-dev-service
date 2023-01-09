@@ -1,11 +1,11 @@
 {
   "compilerOptions": {
-    "strict": true,
     "pretty": true,
+    "strict": true,
     "newLine": "lf",
     "jsx": "react-jsx",
-    "target": "ESNext",
     "module": "ESNext",
+    "target": "ESNext",
     "skipLibCheck": true,
     "importHelpers": true,
     "noUnusedLocals": true,
