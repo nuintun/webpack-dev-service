@@ -178,9 +178,9 @@
     "@types/estree" "*"
 
 "@types/eslint@*":
-  version "8.4.10"
-  resolved "https://registry.npmjs.org/@types/eslint/-/eslint-8.4.10.tgz#19731b9685c19ed1552da7052b6f668ed7eb64bb"
-  integrity sha512-Sl/HOqN8NKPmhWo2VBEPm0nvHnu2LL3v9vKo8MEq0EtbJ4eVzGPl41VNPvn5E1i5poMk4/XD8UriLHpJvEP/Nw==
+  version "8.21.0"
+  resolved "https://registry.npmjs.org/@types/eslint/-/eslint-8.21.0.tgz#21724cfe12b96696feafab05829695d4d7bd7c48"
+  integrity sha512-35EhHNOXgxnUgh4XCJsGhE7zdlDhYDN/aMG6UbkByCFFNgQ7b3U+uVoqBpicFydR8JEfgdjCF7SJ7MiJfzuiTA==
   dependencies:
     "@types/estree" "*"
     "@types/json-schema" "*"
@@ -1299,10 +1299,10 @@ rimraf@^4.1.2:
   resolved "https://registry.npmjs.org/rimraf/-/rimraf-4.1.2.tgz#20dfbc98083bdfaa28b01183162885ef213dbf7c"
   integrity sha512-BlIbgFryTbw3Dz6hyoWFhKk+unCcHMSkZGrTFVAx2WmttdBSonsdtRlwiuTbDqTKr+UlXIUqJVS4QT5tUzGENQ==
 
-rollup@^3.12.0:
-  version "3.12.0"
-  resolved "https://registry.npmjs.org/rollup/-/rollup-3.12.0.tgz#813d88ec11e36108da788fc471b3c81b365a7c29"
-  integrity sha512-4MZ8kA2HNYahIjz63rzrMMRvDqQDeS9LoriJvMuV0V6zIGysP36e9t4yObUfwdT9h/szXoHQideICftcdZklWg==
+rollup@^3.12.1:
+  version "3.12.1"
+  resolved "https://registry.npmjs.org/rollup/-/rollup-3.12.1.tgz#2975b97713e4af98c15e7024b88292d7fddb3853"
+  integrity sha512-t9elERrz2i4UU9z7AwISj3CQcXP39cWxgRWLdf4Tm6aKm1eYrqHIgjzXBgb67GNY1sZckTFFi0oMozh3/S++Ig==
   optionalDependencies:
     fsevents "~2.3.2"
 
