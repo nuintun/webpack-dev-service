@@ -532,9 +532,9 @@ camel-case@^4.1.2:
     tslib "^2.0.3"
 
 caniuse-lite@^1.0.30001449:
-  version "1.0.30001450"
-  resolved "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30001450.tgz#022225b91200589196b814b51b1bbe45144cf74f"
-  integrity sha512-qMBmvmQmFXaSxexkjjfMvD5rnDL0+m+dUMZKoDYsGG8iZN29RuYh9eRoMvKsT6uMAWlyUUGDEQGJJYjzCIO9ew==
+  version "1.0.30001451"
+  resolved "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30001451.tgz#2e197c698fc1373d63e1406d6607ea4617c613f1"
+  integrity sha512-XY7UbUpGRatZzoRft//5xOa69/1iGJRBlrieH6QYrkKLIFn3m7OVEJ81dSrKoy2BnKsdbX5cLrOispZNYo9v2w==
 
 chrome-trace-event@^1.0.2:
   version "1.0.3"
@@ -706,9 +706,9 @@ ee-first@1.1.1:
   integrity sha512-WMwm9LhRUo+WUaRN+vRuETqG89IgZphVSNkdFgeb6sS/E4OrDIN7t48CAewSHXc6C8lefD8KKfr5vY61brQlow==
 
 electron-to-chromium@^1.4.284:
-  version "1.4.288"
-  resolved "https://registry.npmjs.org/electron-to-chromium/-/electron-to-chromium-1.4.288.tgz#bbce00eb03c1819fe3d0d0d861374b76c53f7507"
-  integrity sha512-8s9aJf3YiokIrR+HOQzNOGmEHFXVUQzXM/JaViVvKdCkNUjS+lEa/uT7xw3nDVG/IgfxiIwUGkwJ6AR1pTpYsQ==
+  version "1.4.289"
+  resolved "https://registry.npmjs.org/electron-to-chromium/-/electron-to-chromium-1.4.289.tgz#02b59b1096486fc0bd4871a0484d8317802c6658"
+  integrity sha512-relLdMfPBxqGCxy7Gyfm1HcbRPcFUJdlgnCPVgQ23sr1TvUrRJz0/QPoGP0+x41wOVSTN/Wi3w6YDgHiHJGOzg==
 
 encodeurl@^1.0.2:
   version "1.0.2"
@@ -1219,10 +1219,10 @@ postcss@^8.4.19:
     picocolors "^1.0.0"
     source-map-js "^1.0.2"
 
-prettier@^2.8.3:
-  version "2.8.3"
-  resolved "https://registry.npmjs.org/prettier/-/prettier-2.8.3.tgz#ab697b1d3dd46fb4626fbe2f543afe0cc98d8632"
-  integrity sha512-tJ/oJ4amDihPoufT5sM0Z1SKEuKay8LfVAMlbbhnnkvt6BUserZylqo2PN+p9KeljLr0OHa2rXHU1T8reeoTrw==
+prettier@^2.8.4:
+  version "2.8.4"
+  resolved "https://registry.npmjs.org/prettier/-/prettier-2.8.4.tgz#34dd2595629bfbb79d344ac4a91ff948694463c3"
+  integrity sha512-vIS4Rlc2FNh0BySk3Wkd6xmwxB0FpOndW5fisM5H8hsZSxU2VWVB5CWIkIjWvrHjIhxk2g3bfMKM87zNTrZddw==
 
 pretty-error@^4.0.0:
   version "4.0.0"
