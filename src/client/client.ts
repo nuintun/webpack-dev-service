@@ -7,7 +7,7 @@ import Overlay from './ui/overlay';
 import * as Message from './message';
 import Progress from './ui/progress';
 import { StatsError } from 'webpack';
-import { applyUpdate, updateHash } from './hot';
+import { applyUpdate, setHash } from './hot';
 
 export interface Options {
   readonly hmr: boolean;
@@ -61,7 +61,7 @@ export default function createClient(options: Options): void {
   };
 
   const onHash = ({ hash }: Message.Hash['payload']): void => {
-    updateHash(hash);
+    setHash(hash);
   };
 
   const setProblems = (type: 'errors' | 'warnings', problems: StatsError[]): void => {
