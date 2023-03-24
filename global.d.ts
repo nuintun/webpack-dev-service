@@ -5,8 +5,8 @@
 /// <reference types="webpack/module" />
 
 declare const __WDS_HOT_OPTIONS__: {
-  name: string;
   hmr: boolean;
+  name: string;
   path: string;
   progress: boolean;
 };
