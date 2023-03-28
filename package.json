@@ -56,7 +56,7 @@
     "build:types": "tsc --declaration --emitDeclarationOnly --declarationDir types"
   },
   "dependencies": {
-    "@types/koa": "^2.13.5",
+    "@types/koa": "^2.13.6",
     "@types/ws": "^8.5.4",
     "koa-compose": "^4.1.0",
     "tslib": "^2.5.0",
