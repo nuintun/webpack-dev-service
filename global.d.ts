@@ -15,4 +15,4 @@ declare interface Window {
   __WDS_HOT_CLIENT_INITIALLED__: boolean;
 }
 
-declare type HotUpdateStatus = keyof typeof webpack.HotUpdateStatus;
+declare type HotUpdateStatus = `${webpack.HotUpdateStatus}`;

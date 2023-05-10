@@ -77,10 +77,12 @@ export function applyUpdate(hmr: boolean, fallback: (error?: Error) => void): vo
               const status = import.meta.webpackHot.status();
 
               // Update status.
-              if (status === 'fail' || status === 'abort') {
-                setStatus(status);
-              } else {
-                setStatus('fail');
+              switch (status) {
+                case 'fail':
+                case 'abort':
+                  setStatus(status);
+                default:
+                  setStatus('fail');
               }
 
               // Cache error.
