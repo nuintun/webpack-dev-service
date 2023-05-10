@@ -20,11 +20,9 @@ export interface Options {
 }
 
 export default function createClient(options: Options): void {
-  let retryTimes = 0;
   let updateTimer: number;
 
   const UPDATE_DELAY = 128;
-  const MAX_RETRY_TIMES = 10;
   const RETRY_INTERVAL = 3000;
 
   const progress = new Progress();
@@ -117,10 +115,6 @@ export default function createClient(options: Options): void {
   const createWebSocket = (url: string): void => {
     const ws = new WebSocket(url);
 
-    ws.onopen = (): void => {
-      retryTimes = 0;
-    };
-
     ws.onmessage = (message: MessageEvent<string>): void => {
       const parsed = parseMessage(message);
 
@@ -153,11 +147,9 @@ export default function createClient(options: Options): void {
       overlay.hide();
       progress.hide();
 
-      if (retryTimes++ < MAX_RETRY_TIMES) {
-        setTimeout((): void => {
-          createWebSocket(url);
-        }, RETRY_INTERVAL);
-      }
+      setTimeout((): void => {
+        createWebSocket(url);
+      }, RETRY_INTERVAL);
     };
   };
 
