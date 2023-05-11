@@ -5,51 +5,33 @@
 import { Options } from './client';
 import * as Message from './message';
 
-interface Events {
-  ok: OkEvent[];
-  hash: HashEvent[];
-  invalid: InvalidEvent[];
-  progress: ProgressEvent[];
-  problems: ProblemsEvent[];
+type Listeners = {
+  [E in keyof Events]: Events[E][];
+};
+
+interface Messages {
+  ok: Message.OK['payload'];
+  hash: Message.Hash['payload'];
+  invalid: Message.Invalid['payload'];
+  problems: Message.Problems['payload'];
+  progress: Message.Progress['payload'];
 }
 
-const events: Events = {
+interface Events {
+  ok: (message: Messages['ok'], options: Options) => void;
+  hash: (message: Messages['hash'], options: Options) => void;
+  invalid: (message: Messages['invalid'], options: Options) => void;
+  problems: (message: Messages['problems'], options: Options) => void;
+  progress: (message: Messages['progress'], options: Options) => void;
+}
+
+const events: Listeners = {
   ok: [],
   hash: [],
   invalid: [],
-  progress: [],
-  problems: []
+  problems: [],
+  progress: []
 };
-
-export interface InvalidEvent {
-  (message: Message.Invalid['payload'], options: Options): void;
-}
-
-export interface ProgressEvent {
-  (message: Message.Progress['payload'], options: Options): void;
-}
-
-export interface HashEvent {
-  (message: Message.Hash['payload'], options: Options): void;
-}
-
-export interface ProblemsEvent {
-  (message: Message.Problems['payload'], options: Options): void;
-}
-
-export interface OkEvent {
-  (message: Message.OK['payload'], options: Options): void;
-}
-
-export function emit(event: keyof Events, message: any, options: Options): void {
-  const callbacks = events[event];
-
-  if (callbacks && callbacks.length > 0) {
-    for (const callback of callbacks) {
-      callback(message, options);
-    }
-  }
-}
 
 /**
  * @function on
@@ -57,12 +39,7 @@ export function emit(event: keyof Events, message: any, options: Options): void 
  * @param event Event name.
  * @param callback Event listener callback.
  */
-export function on(event: 'invalid', callback: InvalidEvent): void;
-export function on(event: 'progress', callback: ProgressEvent): void;
-export function on(event: 'hash', callback: HashEvent): void;
-export function on(event: 'problems', callback: ProblemsEvent): void;
-export function on(event: 'ok', callback: OkEvent): void;
-export function on(event: keyof Events, callback: (message: any, options: Options) => void): void {
+export function on<E extends keyof Events>(event: E, callback: Events[E]): void {
   const callbacks = events[event];
 
   if (callbacks) {
@@ -76,12 +53,7 @@ export function on(event: keyof Events, callback: (message: any, options: Option
  * @param event Event name.
  * @param callback Event listener callback.
  */
-export function off(event: 'invalid', callback?: InvalidEvent): void;
-export function off(event: 'progress', callback?: ProgressEvent): void;
-export function off(event: 'hash', callback?: HashEvent): void;
-export function off(event: 'problems', callback?: ProblemsEvent): void;
-export function off(event: 'ok', callback?: OkEvent): void;
-export function off(event: keyof Events, callback?: (message: any, options: Options) => void): void {
+export function off<E extends keyof Events>(event: E, callback?: Events[E]): void {
   const callbacks = events[event];
 
   if (callbacks) {
@@ -93,6 +65,16 @@ export function off(event: keyof Events, callback?: (message: any, options: Opti
       }
     } else {
       events[event] = [];
+    }
+  }
+}
+
+export function emit<E extends keyof Events>(event: E, message: Messages[E], options: Options): void {
+  const callbacks = events[event];
+
+  if (callbacks && callbacks.length > 0) {
+    for (const callback of callbacks) {
+      callback(message as any, options);
     }
   }
 }
