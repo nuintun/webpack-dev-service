@@ -1,5 +1,5 @@
 {
-  "name": "koa-webpack-dev-service",
+  "name": "webpack-dev-service",
   "version": "0.10.0",
   "description": "A koa 2 middleware for webpack development and hot reloading.",
   "type": "module",
@@ -52,7 +52,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/nuintun/koa-webpack-dev-service.git"
+    "url": "git+https://github.com/nuintun/webpack-dev-service.git"
   },
   "keywords": [
     "dev",
@@ -67,9 +67,9 @@
   },
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/nuintun/koa-webpack-dev-service/issues"
+    "url": "https://github.com/nuintun/webpack-dev-service/issues"
   },
-  "homepage": "https://github.com/nuintun/koa-webpack-dev-service#readme",
+  "homepage": "https://github.com/nuintun/webpack-dev-service#readme",
   "scripts": {
     "lint": "tsc --noEmit",
     "clean": "node tools/clean.js",

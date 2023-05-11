@@ -49,7 +49,7 @@ const compiler = webpack({
     // Entry file
     path.resolve('src/index.jsx'),
     // Hot client
-    'koa-webpack-dev-service/client'
+    'webpack-dev-service/client'
   ],
   output: {
     publicPath: '/public/',
