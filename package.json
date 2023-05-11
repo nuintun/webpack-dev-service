@@ -1,18 +1,45 @@
 {
   "name": "koa-webpack-dev-service",
-  "version": "0.9.20",
+  "version": "0.10.0",
   "description": "A koa 2 middleware for webpack development and hot reloading.",
   "type": "module",
-  "sideEffects": true,
-  "types": "index.d.ts",
+  "sideEffects": [
+    "client/esm/main.js",
+    "client/cjs/main.cjs"
+  ],
   "main": "server/cjs/index.cjs",
   "module": "server/esm/index.js",
+  "types": "types/server/index.d.ts",
   "exports": {
-    "./*": "./*",
     ".": {
-      "types": "./index.d.ts",
       "import": "./server/esm/index.js",
-      "require": "./server/cjs/index.cjs"
+      "require": "./server/cjs/index.cjs",
+      "types": "./types/server/index.d.ts"
+    },
+    "./client": {
+      "import": "./client/esm/main.js",
+      "require": "./client/cjs/main.cjs",
+      "types": "./types/client/main.d.ts"
+    },
+    "./client?*": {
+      "import": "./client/esm/main.js",
+      "require": "./client/cjs/main.cjs",
+      "types": "./types/client/main.d.ts"
+    },
+    "./events": {
+      "import": "./client/esm/index.js",
+      "require": "./client/cjs/index.cjs",
+      "types": "./types/client/index.d.ts"
+    }
+  },
+  "typesVersions": {
+    "*": {
+      "client": [
+        "./types/client/main.d.ts"
+      ],
+      "events": [
+        "./types/client/index.d.ts"
+      ]
     }
   },
   "files": [

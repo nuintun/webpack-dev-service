@@ -46,10 +46,10 @@ const compiler = webpack({
   mode: 'development',
   context: path.resolve('src'),
   entry: [
-    // Hot client
-    path.resolve('../client'),
     // Entry file
-    path.resolve('src/index.jsx')
+    path.resolve('src/index.jsx'),
+    // Hot client
+    'koa-webpack-dev-service/client'
   ],
   output: {
     publicPath: '/public/',
@@ -59,6 +59,7 @@ const compiler = webpack({
     chunkFilename: `js/[name].js`,
     assetModuleFilename: `[path][name][ext]`
   },
+  devtool: 'eval-cheap-module-source-map',
   resolve: {
     fallback: { url: false },
     extensions: ['.js', '.jsx']

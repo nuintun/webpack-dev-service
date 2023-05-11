@@ -26,26 +26,6 @@ const banner = `/**
 export default function rollup(esnext) {
   return [
     {
-      input: 'src/client/index.ts',
-      output: {
-        banner,
-        dir: 'client',
-        format: 'esm',
-        interop: 'auto',
-        exports: 'auto',
-        esModule: false,
-        preserveModules: true,
-        generatedCode: { constBindings: true }
-      },
-      plugins: [typescript(), treeShake()],
-      onwarn(error, warn) {
-        if (error.code !== 'CIRCULAR_DEPENDENCY') {
-          warn(error);
-        }
-      },
-      external: ['tslib']
-    },
-    {
       input: 'src/server/index.ts',
       output: {
         banner,
@@ -66,6 +46,28 @@ export default function rollup(esnext) {
         }
       },
       external: ['ws', 'tslib', 'webpack', 'koa-compose', 'webpack-dev-middleware']
+    },
+    {
+      input: ['src/client/main.ts', 'src/client/index.ts'],
+      output: {
+        banner,
+        esModule: false,
+        exports: 'auto',
+        interop: 'auto',
+        preserveModules: true,
+        format: esnext ? 'esm' : 'cjs',
+        generatedCode: { constBindings: true },
+        dir: esnext ? 'client/esm' : 'client/cjs',
+        entryFileNames: `[name].${esnext ? 'js' : 'cjs'}`,
+        chunkFileNames: `[name].${esnext ? 'js' : 'cjs'}`
+      },
+      plugins: [typescript(), treeShake()],
+      onwarn(error, warn) {
+        if (error.code !== 'CIRCULAR_DEPENDENCY') {
+          warn(error);
+        }
+      },
+      external: ['tslib']
     }
   ];
 }
