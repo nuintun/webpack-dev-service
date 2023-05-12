@@ -1,5 +1,5 @@
 /**
- * @module .babelrc
+ * @module webpack
  * @description Webpack 配置
  */
 
