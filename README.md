@@ -8,7 +8,7 @@
 > [![Snyk Vulnerabilities][snyk-image]][snyk-url]
 > [![License][license-image]][license-url]
 
-### Usage
+### Usage:
 
 ```js
 import Koa from 'koa';
