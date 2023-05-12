@@ -1,6 +1,6 @@
 /**
  * @module webpack
- * @description Webpack 配置
+ * @description Webpack config
  */
 
 import Koa from 'koa';
