@@ -7,7 +7,7 @@ import Koa from 'koa';
 import path from 'path';
 import memfs from 'memfs';
 import webpack from 'webpack';
-import dev from '../server/esm/index.js';
+import dev from 'webpack-dev-service';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 
