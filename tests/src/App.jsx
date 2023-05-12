@@ -8,7 +8,7 @@ export default memo(function App() {
   return (
     <div className={styles.main}>
       <img className={styles.logo} src={logo} alt="webpack" />
-      <p className={styles.text}>hello koa-webpack-dev-server + react!</p>
+      <p className={styles.text}>hello webpack-dev-service + react!</p>
     </div>
   );
 });
