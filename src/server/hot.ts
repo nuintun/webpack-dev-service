@@ -102,10 +102,6 @@ class HotServer {
     this.logger = compiler.getInfrastructureLogger(this.name);
     this.server = new WebSocketServer({ path: this.options.path, noServer: true });
 
-    this.setup();
-  }
-
-  setup(): void {
     this.setupWss();
     this.setupHooks();
     this.setupPlugins();
