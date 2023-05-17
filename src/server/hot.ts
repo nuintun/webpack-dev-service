@@ -149,7 +149,10 @@ class HotServer {
     const plugins = [
       new webpack.NoEmitOnErrorsPlugin(),
       new webpack.DefinePlugin({
-        __WDS_HOT_OPTIONS__: JSON.stringify({ ...options, name: compiler.name })
+        __WDS_HOT_OPTIONS__: JSON.stringify({
+          ...options,
+          name: compiler.name
+        })
       })
     ];
 
