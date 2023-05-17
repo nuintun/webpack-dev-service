@@ -16,7 +16,7 @@ const getCurrentScript = (): HTMLScriptElement | undefined => {
   }
 };
 
-const resolveHost = (params: URLSearchParams): string => {
+const resolveOrigin = (params: URLSearchParams): string => {
   let host = params.get('host');
   let tls = params.get('tls') || isTLS(self.location.protocol);
 
@@ -40,7 +40,7 @@ const resolveHost = (params: URLSearchParams): string => {
 const resolveOptions = (): Options => {
   const params = new URLSearchParams(__resourceQuery);
 
-  const host = resolveHost(params);
+  const origin = resolveOrigin(params);
   const hmr = params.get('hmr') !== 'false';
   const live = params.get('live') !== 'false';
   const overlay = params.get('overlay') !== 'false';
@@ -50,8 +50,8 @@ const resolveOptions = (): Options => {
     const options = __WDS_HOT_OPTIONS__;
 
     return {
-      host,
       live,
+      origin,
       overlay,
       name: options.name,
       path: options.path,

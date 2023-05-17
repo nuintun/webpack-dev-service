@@ -12,9 +12,9 @@ import { applyUpdate, setHash } from './hot';
 export interface Options {
   readonly hmr: boolean;
   readonly name: string;
-  readonly host: string;
   readonly path: string;
   readonly live: boolean;
+  readonly origin: string;
   readonly overlay: boolean;
   readonly progress: boolean;
 }
@@ -153,5 +153,5 @@ export default function createClient(options: Options): void {
     };
   };
 
-  createWebSocket(options.host + options.path);
+  createWebSocket(options.origin + options.path);
 }
