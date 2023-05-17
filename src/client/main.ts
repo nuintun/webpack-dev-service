@@ -4,6 +4,8 @@
 
 import createClient, { Options } from './client';
 
+type WebSocketProtocol = 'ws:' | 'wss:';
+
 const isTLS = (protocol: string): boolean => {
   return protocol === 'https:';
 };
@@ -16,25 +18,41 @@ const getCurrentScript = (): HTMLScriptElement | undefined => {
   }
 };
 
-const resolveOrigin = (params: URLSearchParams): string => {
-  let host = params.get('host');
-  let tls = params.get('tls') || isTLS(self.location.protocol);
+const resolveProtocol = (params: URLSearchParams, protocol: string): WebSocketProtocol => {
+  switch (params.get('tls')) {
+    case 'true':
+      return 'wss:';
+    case 'false':
+      return 'ws:';
+    default:
+      return isTLS(protocol) ? 'wss:' : 'ws:';
+  }
+};
 
-  if (!host) {
+const resolveOrigin = (params: URLSearchParams): string => {
+  const { location } = self;
+
+  let host = params.get('host');
+  let protocol: WebSocketProtocol;
+
+  if (host) {
+    protocol = resolveProtocol(params, location.protocol);
+  } else {
     const script = getCurrentScript();
 
     if (script) {
       const { src } = script;
-      const url = new URL(src);
+      const url = new URL(src, location.href);
 
       host = url.host;
-      tls = isTLS(url.protocol) || tls;
+      protocol = resolveProtocol(params, url.protocol);
     } else {
-      host = self.location.host;
+      host = location.host;
+      protocol = resolveProtocol(params, location.protocol);
     }
   }
 
-  return `${tls ? 'wss' : 'ws'}://${host}`;
+  return `${protocol}//${host}`;
 };
 
 const resolveOptions = (): Options => {

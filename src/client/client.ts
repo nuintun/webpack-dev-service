@@ -153,5 +153,5 @@ export default function createClient(options: Options): void {
     };
   };
 
-  createWebSocket(options.origin + options.path);
+  createWebSocket(`${options.origin}${options.path}`);
 }
