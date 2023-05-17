@@ -41,11 +41,23 @@ const resolveOptions = (): Options => {
   const params = new URLSearchParams(__resourceQuery);
 
   const host = resolveHost(params);
+  const hmr = params.get('hmr') !== 'false';
   const live = params.get('live') !== 'false';
   const overlay = params.get('overlay') !== 'false';
+  const progress = params.get('progress') !== 'false';
 
   try {
-    return { ...__WDS_HOT_OPTIONS__, host, live, overlay };
+    const options = __WDS_HOT_OPTIONS__;
+
+    return {
+      host,
+      live,
+      overlay,
+      name: options.name,
+      path: options.path,
+      hmr: options.hmr === false ? false : hmr,
+      progress: options.progress === false ? false : progress
+    };
   } catch {
     throw new Error('Imported the hot client but the hot server is not enabled.');
   }
