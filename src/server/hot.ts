@@ -235,15 +235,15 @@ class HotServer {
   }
 }
 
-export type Extensions = {
+export type Instance = {
   clients(): Set<WebSocket>;
   broadcast<T>(clients: Set<WebSocket> | WebSocket[], action: string, payload: T): void;
 };
 
-export default function hot(compiler: Compiler, options: Options = {}): Middleware & Extensions {
+export default function hot(compiler: Compiler, options: Options = {}): Middleware & Instance {
   const server = new HotServer(compiler, options);
 
-  const hotMiddleware: Middleware & Extensions = async (context, next) => {
+  const hotMiddleware: Middleware & Instance = async (context, next) => {
     if (!server.upgrade(context)) {
       await next();
     }

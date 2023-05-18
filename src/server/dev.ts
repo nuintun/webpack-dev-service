@@ -21,9 +21,9 @@ export interface OutgoingMessage extends ServerResponse, ExtendedServerResponse 
 
 export type Options = DevOptions<IncomingMessage, OutgoingMessage>;
 
-export type Extensions = AdditionalMethods<IncomingMessage, OutgoingMessage>;
+export type Instance = AdditionalMethods<IncomingMessage, OutgoingMessage>;
 
-export default function dev(compiler: Compiler, options: Options): Middleware & Extensions {
+export default function dev(compiler: Compiler, options: Options): Middleware & Instance {
   const middleware = webpackDevMiddleware<IncomingMessage, OutgoingMessage>(compiler, options);
 
   const devMiddleware: Middleware = async (context, next) => {

@@ -5,37 +5,37 @@
 import { Middleware } from 'koa';
 import compose from 'koa-compose';
 import { Compiler } from 'webpack';
-import dev, { Extensions as DevExtensions, Options as DevOptions } from './dev';
-import hot, { Extensions as HotExtensions, Options as HotOptions } from './hot';
+import dev, { Instance as DevInstance, Options as DevOptions } from './dev';
+import hot, { Instance as HotInstance, Options as HotOptions } from './hot';
 
-export type Options = DevOptions & {
-  hot?: false | HotOptions;
-};
+type DisableHotOptions = DevOptions & { hot: false };
+type EnableHotOptions = DevOptions & { hot?: HotOptions };
 
-export type BaseMiddleware = Middleware & DevExtensions;
-export type ExtendMiddleware = BaseMiddleware & HotExtensions;
+export type Options = EnableHotOptions | DisableHotOptions;
+export type DisableHotMiddleware = Middleware & DevInstance;
+export type EnableHotMiddleware = DisableHotMiddleware & HotInstance;
 
 /**
  * @function server
  * @description Create koa dev server middleware.
  * @param compiler The webpack compiler instance.
  */
-export default function server(compiler: Compiler): ExtendMiddleware;
-/**
- * @function server
- * @description Create koa dev server middleware.
- * @param compiler The webpack compiler instance.
- * @param options Options.
- */
-export default function server(compiler: Compiler, options: Options & { hot: false }): BaseMiddleware;
+export default function server(compiler: Compiler): EnableHotMiddleware;
 /**
  * @function server
  * @description Create koa dev server middleware.
  * @param compiler The webpack compiler instance.
  * @param options Options.
  */
-export default function server(compiler: Compiler, options: Options & { hot?: HotOptions }): ExtendMiddleware;
-export default function server(compiler: Compiler, options: Options = {}): BaseMiddleware | ExtendMiddleware {
+export default function server(compiler: Compiler, options: DisableHotOptions): DisableHotMiddleware;
+/**
+ * @function server
+ * @description Create koa dev server middleware.
+ * @param compiler The webpack compiler instance.
+ * @param options Options.
+ */
+export default function server(compiler: Compiler, options: EnableHotOptions): EnableHotMiddleware;
+export default function server(compiler: Compiler, options: Options = {}): EnableHotMiddleware | DisableHotMiddleware {
   const { hot: hotOptions, ...devOptions } = options;
 
   const devMiddleware = dev(compiler, devOptions);
