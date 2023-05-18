@@ -4,6 +4,7 @@
 
 import { createRequire } from 'module';
 import treeShake from './plugins/tree-shake.js';
+import webpackHot from './plugins/webpack-hot.js';
 import typescript from '@rollup/plugin-typescript';
 
 const pkg = createRequire(import.meta.url)('../package.json');
@@ -20,8 +21,8 @@ const banner = `/**
 
 /**
  * @function rollup
- * @param esnext
- * @return {import('rollup').RollupOptions}
+ * @param {boolean} [esnext]
+ * @return {import('rollup').RollupOptions[]}
  */
 export default function rollup(esnext) {
   return [
@@ -61,7 +62,7 @@ export default function rollup(esnext) {
         entryFileNames: `[name].${esnext ? 'js' : 'cjs'}`,
         chunkFileNames: `[name].${esnext ? 'js' : 'cjs'}`
       },
-      plugins: [typescript(), treeShake()],
+      plugins: [typescript(), treeShake(), webpackHot(esnext)],
       onwarn(error, warn) {
         if (error.code !== 'CIRCULAR_DEPENDENCY') {
           warn(error);
