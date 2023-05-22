@@ -98,7 +98,10 @@ const compiler = webpack({
                         runtime: 'automatic'
                       }
                     },
-                    externalHelpers: true
+                    externalHelpers: true,
+                    experimental: {
+                      cacheRoot: path.resolve('../node_modules/.cache/swc')
+                    }
                   },
                   env: {
                     targets: ['defaults', 'not IE >= 0']
