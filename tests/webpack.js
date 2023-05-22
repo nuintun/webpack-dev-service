@@ -87,8 +87,9 @@ const compiler = webpack({
               {
                 loader: 'swc-loader',
                 options: {
-                  swcrc: false,
                   jsc: {
+                    target: 'es2015',
+                    externalHelpers: true,
                     parser: {
                       tsx: true,
                       syntax: 'typescript'
@@ -98,7 +99,6 @@ const compiler = webpack({
                         runtime: 'automatic'
                       }
                     },
-                    externalHelpers: true,
                     experimental: {
                       cacheRoot: path.resolve('../node_modules/.cache/swc')
                     }
