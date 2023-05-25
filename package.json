@@ -112,7 +112,7 @@
     "rollup": "^3.23.0",
     "swc-loader": "^0.2.3",
     "typescript": "^5.0.4",
-    "webpack": "^5.83.1"
+    "webpack": "^5.84.0"
   },
   "peerDependencies": {
     "webpack": "^5.0.0"
