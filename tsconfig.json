@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "baseUrl": ".",
     "pretty": true,
     "strict": true,
     "newLine": "lf",
@@ -10,11 +11,18 @@
     "importHelpers": true,
     "noUnusedLocals": true,
     "esModuleInterop": true,
+    "noImplicitReturns": true,
     "resolveJsonModule": true,
     "moduleResolution": "node",
+    "noImplicitOverride": true,
     "noUnusedParameters": true,
     "experimentalDecorators": true,
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "paths": {
+      "/*": [
+        "src/*"
+      ]
+    }
   },
   "include": [
     "src/**/*",
