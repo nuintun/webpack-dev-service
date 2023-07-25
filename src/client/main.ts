@@ -10,7 +10,7 @@ const isTLS = (protocol: string): boolean => {
   return protocol === 'https:';
 };
 
-const getCurrentScript = (): HTMLScriptElement | undefined => {
+const getCurrentScript = (): HTMLScriptElement | void => {
   const { currentScript } = document;
 
   if (currentScript) {
