@@ -4,7 +4,7 @@
 
 import { TokenType } from './enum';
 import { getThemeColor, toUint8 } from './utils';
-import { CSI_RE, OSC_RE, OSC_ST_RE } from './regx';
+import { CSI_RE, OSC_RE, OSC_ST_RE } from './regexp';
 import { AnsiBlock, AnsiColor, AnsiStyle, AnsiToken, BlockToken, Theme } from './interface';
 
 export type { AnsiBlock, AnsiStyle };
