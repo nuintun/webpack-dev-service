@@ -88,7 +88,6 @@ const compiler = webpack({
                 loader: 'swc-loader',
                 options: {
                   jsc: {
-                    target: 'es2015',
                     externalHelpers: true,
                     parser: {
                       tsx: true,
