@@ -1,6 +1,6 @@
 {
   "name": "webpack-dev-service",
-  "version": "0.5.8",
+  "version": "0.5.9",
   "description": "A koa 2 middleware for webpack development and hot reloading.",
   "type": "module",
   "sideEffects": [
@@ -91,7 +91,7 @@
     "koa-compose": "^4.1.0",
     "tslib": "^2.6.2",
     "webpack-dev-middleware": "^6.1.1",
-    "ws": "^8.13.0"
+    "ws": "^8.14.0"
   },
   "devDependencies": {
     "@rollup/plugin-typescript": "^11.1.3",
