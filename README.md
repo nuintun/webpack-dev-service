@@ -5,7 +5,9 @@
 >
 > [![NPM Version][npm-image]][npm-url]
 > [![Download Status][download-image]][npm-url]
-> [![Snyk Vulnerabilities][snyk-image]][snyk-url]
+> [![Languages Status][languages-image]][github-url]
+> [![Tree Shakeable][tree-shakeable-image]][bundle-phobia-url]
+> [![Side Effect][side-effect-image]][bundle-phobia-url]
 > [![License][license-image]][license-url]
 
 ### Usage
@@ -203,7 +205,10 @@ app.listen(port, () => {
 [npm-image]: https://img.shields.io/npm/v/webpack-dev-service?style=flat-square
 [npm-url]: https://www.npmjs.org/package/webpack-dev-service
 [download-image]: https://img.shields.io/npm/dm/webpack-dev-service?style=flat-square
-[snyk-image]: https://img.shields.io/snyk/vulnerabilities/github/nuintun/webpack-dev-service?style=flat-square
-[snyk-url]: https://snyk.io/test/github/nuintun/webpack-dev-service
+[languages-image]: https://img.shields.io/github/languages/top/nuintun/webpack-dev-service?style=flat-square
+[github-url]: https://github.com/nuintun/webpack-dev-service
+[tree-shakeable-image]: https://img.shields.io/badge/tree--shakeable-true-brightred?style=flat-square
+[side-effect-image]: https://img.shields.io/badge/side--effect-true-yellow?style=flat-square
+[bundle-phobia-url]: https://bundlephobia.com/result?p=webpack-dev-service
 [license-image]: https://img.shields.io/github/license/nuintun/webpack-dev-service?style=flat-square
 [license-url]: https://github.com/nuintun/webpack-dev-service/blob/master/LICENSE
