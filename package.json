@@ -91,7 +91,7 @@
     "koa-compose": "^4.1.0",
     "tslib": "^2.6.2",
     "webpack-dev-middleware": "^6.1.1",
-    "ws": "^8.14.2"
+    "ws": "^8.15.1"
   },
   "devDependencies": {
     "@rollup/plugin-typescript": "^11.1.5",
@@ -105,11 +105,11 @@
     "magic-string": "^0.30.5",
     "memfs": "^4.6.0",
     "mini-css-extract-plugin": "^2.7.6",
-    "prettier": "^3.1.0",
+    "prettier": "^3.1.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "rimraf": "^5.0.5",
-    "rollup": "^4.7.0",
+    "rollup": "^4.8.0",
     "swc-loader": "^0.2.3",
     "tsc-alias": "^1.8.8",
     "typescript": "^5.3.3",
