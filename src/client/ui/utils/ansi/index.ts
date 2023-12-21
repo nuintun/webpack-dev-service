@@ -108,6 +108,15 @@ export default class Ansi {
   private read(): AnsiToken {
     const { buffer } = this;
     const { length } = buffer;
+
+    // Nothing in buffer
+    if (length === 0) {
+      return {
+        type: TokenType.EOS
+      };
+    }
+
+    // Find ESC
     const pos = buffer.indexOf('\x1B');
 
     // The most common case, no ESC codes
