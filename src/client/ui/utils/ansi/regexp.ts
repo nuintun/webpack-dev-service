@@ -1,5 +1,5 @@
 /**
- * @module regx
+ * @module regexp
  */
 
 // prettier-ignore
