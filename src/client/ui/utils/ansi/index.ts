@@ -139,8 +139,9 @@ export default class Ansi {
       };
     }
 
-    if (length === 1) {
-      // Lone ESC in Buffer, We don't know yet
+    // All of the sequences typically need at least 3 characters
+    // So, wait until we have at least that many
+    if (length < 3) {
       return {
         type: TokenType.INCESC
       };
@@ -150,7 +151,7 @@ export default class Ansi {
 
     // We treat this as a single ESC
     // Which effecitvely shows
-    if (peek !== '[' && peek !== ']') {
+    if (peek !== '[' && peek !== ']' && peek !== '(') {
       this.buffer = buffer.slice(1);
 
       // DeMorgan
@@ -213,12 +214,12 @@ export default class Ansi {
         return {
           type: TokenType.UNKNOWN
         };
-      } else {
-        return {
-          signal: match[2],
-          type: TokenType.SGR
-        };
       }
+
+      return {
+        signal: match[2],
+        type: TokenType.SGR
+      };
     }
 
     // OSC CHECK
