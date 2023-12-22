@@ -4,7 +4,7 @@
 
 export const enum TokenType {
   EOS, // End Operating System
-  ESC, // A single ESC char - random
+  ESC, // ASCII ESC(escape) char
   OSC, // Operating System Command
   SGR, // Select Graphic Rendition
   TEXT, // ANSI normal text group
