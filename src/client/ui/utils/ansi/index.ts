@@ -361,7 +361,9 @@ export default class Ansi {
     for (; index <= maxIndex; index++) {
       const code = read();
 
-      if (code === 1) {
+      if (code === 0) {
+        this.reset();
+      } else if (code === 1) {
         style.bold = true;
       } else if (code === 2) {
         style.dim = true;
@@ -377,8 +379,6 @@ export default class Ansi {
         style.hidden = true;
       } else if (code === 9) {
         style.strikethrough = true;
-      } else if (code === 53) {
-        style.overline = true;
       } else if (code === 21) {
         style.bold = false;
       } else if (code === 22) {
@@ -396,20 +396,10 @@ export default class Ansi {
         style.hidden = false;
       } else if (code === 29) {
         style.strikethrough = false;
-      } else if (code === 29) {
-        style.strikethrough = false;
-      } else if (code === 55) {
-        style.overline = false;
-      } else if (code === 49) {
-        style.background = null;
       } else if (code >= 30 && code < 38) {
         style.color = colors16[0][code - 30];
       } else if (code >= 40 && code < 48) {
         style.background = colors16[0][code - 40];
-      } else if (code >= 90 && code < 98) {
-        style.color = colors16[1][code - 90];
-      } else if (code >= 100 && code < 108) {
-        style.background = colors16[1][code - 100];
       } else if (code === 38 || code === 48) {
         // Extended set foreground/background color
         // validate that param exists
@@ -445,8 +435,16 @@ export default class Ansi {
             }
           }
         }
-      } else {
-        this.reset();
+      } else if (code === 49) {
+        style.background = null;
+      } else if (code === 53) {
+        style.overline = true;
+      } else if (code === 55) {
+        style.overline = false;
+      } else if (code >= 90 && code < 98) {
+        style.color = colors16[1][code - 90];
+      } else if (code >= 100 && code < 108) {
+        style.background = colors16[1][code - 100];
       }
     }
   }
