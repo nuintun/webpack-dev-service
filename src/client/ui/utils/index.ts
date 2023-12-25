@@ -110,7 +110,7 @@ export function blockToHTML({ style, value, url }: AnsiBlock): string {
   }
 
   const escapedValue = escapeHTML(value);
-  const href = url ? JSON.stringify(escapeHTML(url)) : null;
+  const href = url ? JSON.stringify(new URL(url).toString()) : null;
 
   if (styles.length <= 0) {
     if (!href) {
