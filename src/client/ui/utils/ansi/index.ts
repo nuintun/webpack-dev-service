@@ -361,90 +361,122 @@ export default class Ansi {
     for (; index <= maxIndex; index++) {
       const code = read();
 
-      if (code === 0) {
-        this.reset();
-      } else if (code === 1) {
-        style.bold = true;
-      } else if (code === 2) {
-        style.dim = true;
-      } else if (code === 3) {
-        style.italic = true;
-      } else if (code === 4) {
-        style.underline = true;
-      } else if (code === 5) {
-        style.blink = true;
-      } else if (code === 7) {
-        style.inverse = true;
-      } else if (code === 8) {
-        style.hidden = true;
-      } else if (code === 9) {
-        style.strikethrough = true;
-      } else if (code === 21) {
-        style.bold = false;
-      } else if (code === 22) {
-        style.dim = false;
-        style.bold = false;
-      } else if (code === 23) {
-        style.italic = false;
-      } else if (code === 24) {
-        style.underline = false;
-      } else if (code === 25) {
-        style.blink = false;
-      } else if (code === 27) {
-        style.inverse = false;
-      } else if (code === 28) {
-        style.hidden = false;
-      } else if (code === 29) {
-        style.strikethrough = false;
-      } else if (code >= 30 && code < 38) {
-        style.color = colors16[0][code - 30];
-      } else if (code >= 40 && code < 48) {
-        style.background = colors16[0][code - 40];
-      } else if (code === 38 || code === 48) {
-        // Extended set foreground/background color
-        // validate that param exists
-        if (index < maxIndex) {
-          const mode = read();
-          // Extend color (38=fg, 48=bg)
-          const isForeground = code === 38;
+      switch (code) {
+        case 0:
+          this.reset();
+          break;
+        case 1:
+          style.bold = true;
+          break;
+        case 2:
+          style.dim = true;
+          break;
+        case 3:
+          style.italic = true;
+          break;
+        case 4:
+          style.underline = true;
+          break;
+        case 5:
+          style.blink = true;
+          break;
+        case 7:
+          style.inverse = true;
+          break;
+        case 8:
+          style.hidden = true;
+          break;
+        case 9:
+          style.strikethrough = true;
+          break;
+        case 21:
+          style.bold = false;
+          break;
+        case 22:
+          style.dim = false;
+          style.bold = false;
+          break;
+        case 23:
+          style.italic = false;
+          break;
+        case 24:
+          style.underline = false;
+          break;
+        case 25:
+          style.blink = false;
+          break;
+        case 27:
+          style.inverse = false;
+          break;
+        case 28:
+          style.hidden = false;
+          break;
+        case 29:
+          style.strikethrough = false;
+          break;
+        case 38:
+        case 48:
+          // Extended set foreground/background color
+          // validate that param exists
+          if (index < maxIndex) {
+            const mode = read();
+            // Extend color (38=fg, 48=bg)
+            const isForeground = code === 38;
 
-          // MODE 5 - 256 color palette
-          if (mode === 5 && index <= maxIndex) {
-            const index = toUint8(read());
+            switch (mode) {
+              // MODE 2 - True Color
+              case 2:
+                if (index + 2 <= maxIndex) {
+                  const r = toUint8(read());
+                  const g = toUint8(read());
+                  const b = toUint8(read());
+                  // True Color
+                  const color: AnsiColor = [r, g, b];
 
-            if (isForeground) {
-              style.color = colors256[index];
-            } else {
-              style.background = colors256[index];
+                  if (isForeground) {
+                    style.color = color;
+                  } else {
+                    style.background = color;
+                  }
+                }
+                break;
+              // MODE 5 - 256 color palette
+              case 5:
+                // Extended set foreground/background color
+                // validate that param exists
+                if (index <= maxIndex) {
+                  const index = toUint8(read());
+
+                  if (isForeground) {
+                    style.color = colors256[index];
+                  } else {
+                    style.background = colors256[index];
+                  }
+                }
+                break;
             }
           }
-
-          // MODE 2 - True Color
-          if (mode === 2 && index + 2 <= maxIndex) {
-            const r = toUint8(read());
-            const g = toUint8(read());
-            const b = toUint8(read());
-
-            // True Color
-            const color: AnsiColor = [r, g, b];
-
-            if (isForeground) {
-              style.color = color;
-            } else {
-              style.background = color;
-            }
+          break;
+        case 49:
+          style.background = null;
+          break;
+        case 53:
+          style.overline = true;
+          break;
+        case 55:
+          style.overline = false;
+          break;
+        default:
+          if (code >= 30 && code < 38) {
+            style.color = colors16[0][code - 30];
+          } else if (code >= 40 && code < 48) {
+            style.background = colors16[0][code - 40];
+          } else if (code >= 90 && code < 98) {
+            style.color = colors16[1][code - 90];
+          } else if (code >= 100 && code < 108) {
+            style.background = colors16[1][code - 100];
           }
-        }
-      } else if (code === 49) {
-        style.background = null;
-      } else if (code === 53) {
-        style.overline = true;
-      } else if (code === 55) {
-        style.overline = false;
-      } else if (code >= 90 && code < 98) {
-        style.color = colors16[1][code - 90];
-      } else if (code >= 100 && code < 108) {
-        style.background = colors16[1][code - 100];
+          break;
       }
     }
   }
