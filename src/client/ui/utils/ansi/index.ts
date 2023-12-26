@@ -8,12 +8,12 @@ import { getThemeColor, toUint8 } from './utils';
 import { CSI_RE, OSC_RE, OSC_ST_RE } from './regexp';
 import { AnsiBlock, AnsiColor, AnsiStyle, AnsiToken, BlockToken, Theme } from './interface';
 
-export type { AnsiBlock, AnsiStyle };
+export type { AnsiBlock, AnsiColor, AnsiStyle, Theme };
 
 export default class Ansi {
-  protected buffer = '';
+  private buffer = '';
 
-  protected style: AnsiStyle = {
+  private style: AnsiStyle = {
     dim: false,
     bold: false,
     color: null,
@@ -27,8 +27,8 @@ export default class Ansi {
     strikethrough: false
   };
 
-  protected colors256: AnsiColor[];
-  protected colors16: AnsiColor[][];
+  private colors256: AnsiColor[];
+  private colors16: AnsiColor[][];
 
   public constructor(theme: Theme = {}) {
     const colors16: AnsiColor[][] = [
@@ -420,6 +420,7 @@ export default class Ansi {
           // validate that param exists
           if (index < maxIndex) {
             const mode = read();
+
             // Extend color (38=fg, 48=bg)
             const isForeground = code === 38;
 
@@ -430,6 +431,7 @@ export default class Ansi {
                   const r = toUint8(read());
                   const g = toUint8(read());
                   const b = toUint8(read());
+
                   // True Color
                   const color: AnsiColor = [r, g, b];
 
