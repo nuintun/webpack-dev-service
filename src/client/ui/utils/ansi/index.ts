@@ -31,42 +31,43 @@ export default class Ansi {
   private colors16: AnsiColor[][];
 
   public constructor(theme: Theme = {}) {
+    // https://gist.github.com/jasonm23/2868981
     const colors16: AnsiColor[][] = [
       // Colors 16 bit
       [
         // Black
         getThemeColor([0, 0, 0], theme.black),
         // Red
-        getThemeColor([187, 0, 0], theme.red),
+        getThemeColor([128, 0, 0], theme.red),
         // Green
-        getThemeColor([0, 187, 0], theme.green),
+        getThemeColor([0, 128, 0], theme.green),
         // Yellow
-        getThemeColor([187, 187, 0], theme.yellow),
+        getThemeColor([128, 128, 0], theme.yellow),
         // Blue
-        getThemeColor([0, 0, 187], theme.blue),
+        getThemeColor([0, 0, 128], theme.blue),
         // Magenta
-        getThemeColor([187, 0, 187], theme.magenta),
+        getThemeColor([128, 0, 128], theme.magenta),
         // Cyan
-        getThemeColor([0, 187, 187], theme.cyan),
+        getThemeColor([0, 128, 128], theme.cyan),
         // White
-        getThemeColor([255, 255, 255], theme.white)
+        getThemeColor([192, 192, 192], theme.white)
       ],
       // Bright colors
       [
         // Bright Black
-        getThemeColor([85, 85, 85], theme.brightBlack),
+        getThemeColor([128, 128, 128], theme.brightBlack),
         // Bright Red
-        getThemeColor([255, 85, 85], theme.brightRed),
+        getThemeColor([255, 0, 0], theme.brightRed),
         // Bright Green
         getThemeColor([0, 255, 0], theme.brightGreen),
         // Bright Yellow
-        getThemeColor([255, 255, 85], theme.brightYellow),
+        getThemeColor([255, 255, 0], theme.brightYellow),
         // Bright Blue
-        getThemeColor([85, 85, 255], theme.brightBlue),
+        getThemeColor([0, 0, 255], theme.brightBlue),
         // Bright Magenta
-        getThemeColor([255, 85, 255], theme.brightMagenta),
+        getThemeColor([255, 0, 255], theme.brightMagenta),
         // Bright Cyan
-        getThemeColor([85, 255, 255], theme.brightCyan),
+        getThemeColor([0, 255, 255], theme.brightCyan),
         // Bright White
         getThemeColor([255, 255, 255], theme.brightWhite)
       ]
