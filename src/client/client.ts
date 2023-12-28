@@ -63,22 +63,21 @@ export default function createClient(options: Options): void {
   };
 
   const setProblems = (type: 'errors' | 'warnings', problems: StatsError[]): void => {
-    const maps: Record<string, [string, 'error' | 'warn']> = {
-      errors: ['Error', 'error'],
-      warnings: ['Warning', 'warn']
-    };
-
     if (options.overlay) {
       overlay.setProblems(type, problems);
     }
 
+    const maps: Record<string, [name: string, method: 'error' | 'warn']> = {
+      errors: ['\x1b[38;2;100;30;22m\x1b[48;2;255;95;88m ERROR \x1b[0m', 'error'],
+      warnings: ['\x1b[38;2;32;39;35m\x1b[48;2;255;189;46m WARNING \x1b[0m', 'warn']
+    };
     const [name, method] = maps[type];
     const debug = console[method];
 
     for (const { moduleName, chunkName, message } of problems) {
       const filename = moduleName || chunkName || 'unknown';
 
-      debug(`${name} in ${filename}\r\n${message}`);
+      debug(`\x1b[0m${name} in ${filename}\r\n${message}`);
     }
   };
 
