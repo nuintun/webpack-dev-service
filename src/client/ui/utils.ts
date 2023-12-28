@@ -2,7 +2,7 @@
  * @module utils
  */
 
-import Ansi, { AnsiBlock } from './ansi';
+import Ansi, { AnsiBlock } from '@nuintun/ansi';
 
 const ansi = new Ansi();
 
@@ -60,23 +60,23 @@ export function blockToHTML({ style, value, url }: AnsiBlock): string {
   const textDecorations: string[] = [];
 
   if (style.dim) {
-    styles.push(`opacity:0.5`);
+    styles.push(`opacity: 0.5`);
   }
 
   if (style.bold) {
-    styles.push(`font-weight:bold`);
+    styles.push(`font-weight: bold`);
   }
 
   if (style.italic) {
-    styles.push(`font-style:italic`);
+    styles.push(`font-style: italic`);
   }
 
   if (style.inverse) {
-    styles.push(`filter:invert(1)`);
+    styles.push(`filter: invert(1)`);
   }
 
   if (style.hidden) {
-    styles.push(`visibility:hidden`);
+    styles.push(`visibility: hidden`);
   }
 
   if (style.blink) {
@@ -98,15 +98,15 @@ export function blockToHTML({ style, value, url }: AnsiBlock): string {
   const { color, background } = style;
 
   if (color) {
-    styles.push(`color:rgb(${color})`);
+    styles.push(`color: rgb(${color})`);
   }
 
   if (background) {
-    styles.push(`background-color:rgb(${background})`);
+    styles.push(`background-color: rgb(${background})`);
   }
 
   if (textDecorations.length > 0) {
-    styles.push(`text-decoration:${textDecorations.join(' ')}`);
+    styles.push(`text-decoration: ${textDecorations.join(' ')}`);
   }
 
   const escapedValue = escapeHTML(value);
@@ -120,7 +120,7 @@ export function blockToHTML({ style, value, url }: AnsiBlock): string {
     return `<a href=${href} target="_blank">${escapedValue}</a>`;
   }
 
-  const inlineStyle = JSON.stringify(`${styles.join(';')};`);
+  const inlineStyle = JSON.stringify(`${styles.join('; ')};`);
 
   if (!href) {
     return `<span style=${inlineStyle}>${escapedValue}</span>`;

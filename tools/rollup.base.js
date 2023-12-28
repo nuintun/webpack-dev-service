@@ -68,7 +68,7 @@ export default function rollup(esnext) {
           warn(error);
         }
       },
-      external: ['tslib']
+      external: ['tslib', '@nuintun/ansi']
     }
   ];
 }

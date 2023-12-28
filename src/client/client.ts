@@ -75,8 +75,10 @@ export default function createClient(options: Options): void {
     const [name, method] = maps[type];
     const debug = console[method];
 
-    for (const { moduleName, message } of problems) {
-      debug(`\x1b[0m${name} in ${moduleName}\r\n\x1b[0m${message}`);
+    for (const { moduleName, chunkName, message } of problems) {
+      const filename = moduleName || chunkName || 'unknown';
+
+      debug(`${name} in ${filename}\r\n${message}`);
     }
   };
 

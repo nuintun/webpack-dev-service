@@ -1,6 +1,6 @@
 {
   "name": "webpack-dev-service",
-  "version": "0.5.19",
+  "version": "0.5.20",
   "description": "A koa 2 middleware for webpack development and hot reloading.",
   "type": "module",
   "sideEffects": [
@@ -86,12 +86,13 @@
     "build:types": "tsc --declaration --emitDeclarationOnly --declarationDir types && node tools/fix-types.js"
   },
   "dependencies": {
+    "@nuintun/ansi": "^0.0.2",
     "@types/koa": "^2.13.12",
     "@types/ws": "^8.5.10",
     "koa-compose": "^4.1.0",
     "tslib": "^2.6.2",
-    "webpack-dev-middleware": "^6.1.1",
-    "ws": "^8.15.1"
+    "webpack-dev-middleware": "^7.0.0",
+    "ws": "^8.16.0"
   },
   "devDependencies": {
     "@rollup/plugin-typescript": "^11.1.5",
