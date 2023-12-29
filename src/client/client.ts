@@ -77,7 +77,7 @@ export default function createClient(options: Options): void {
     for (const { moduleName, chunkName, message } of problems) {
       const filename = moduleName || chunkName || 'unknown';
 
-      debug(`\x1b[0m${name} in ${filename}\r\n${message}`);
+      debug(`${name} in ${filename}\r\n${message}`);
     }
   };
 
