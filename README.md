@@ -204,7 +204,7 @@ app.listen(port, () => {
 
 ### Screenshot
 
-![screenshot](https://raw.githubusercontent.com/nuintun/webpack-dev-service/main/screenshot.png)
+![Screenshot](https://raw.githubusercontent.com/nuintun/webpack-dev-service/main/screenshot.png)
 
 [npm-image]: https://img.shields.io/npm/v/webpack-dev-service?style=flat-square
 [npm-url]: https://www.npmjs.org/package/webpack-dev-service
