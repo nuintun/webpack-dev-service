@@ -141,6 +141,8 @@ const CSS = `
   white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
+.${OVERLAY}-errors > section > pre a,
+.${OVERLAY}-warnings > section > pre a,
 .${OVERLAY}-errors > section > pre span,
 .${OVERLAY}-warnings > section > pre span {
   display: inline-flex;
