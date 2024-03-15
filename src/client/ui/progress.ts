@@ -4,7 +4,7 @@
  * @see https://www.zhangxinxu.com/wordpress/2015/07/svg-circle-loading
  */
 
-import { appendHTML, injectCSS } from './utils';
+import { appendHTML, getRootElement, injectCSS } from './utils';
 
 const PROGRESS = 'wds-progress';
 const PERIMETER = 2 * Math.PI * 44;
@@ -60,9 +60,11 @@ export default class Progress {
   private readonly track: SVGElement;
 
   constructor() {
-    injectCSS(CSS);
+    const root = getRootElement(PROGRESS);
 
-    [this.svg] = appendHTML(HTML) as [SVGElement];
+    injectCSS(CSS, root);
+
+    [this.svg] = appendHTML(HTML, root) as [SVGElement];
 
     this.track = this.svg.querySelector(`.${PROGRESS}-track`)!;
   }

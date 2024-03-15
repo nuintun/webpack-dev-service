@@ -6,36 +6,6 @@ import Ansi, { AnsiBlock } from '@nuintun/ansi';
 
 const ansi = new Ansi();
 
-const defaultStyleElement = document.createElement('style');
-
-export function injectCSS(css: string, styleElement = defaultStyleElement): HTMLStyleElement {
-  const { head } = document;
-
-  styleElement.appendChild(document.createTextNode(css.trim()));
-
-  if (!head.contains(styleElement)) {
-    head.appendChild(styleElement);
-  }
-
-  return styleElement;
-}
-
-export function appendHTML(html: string, parent?: HTMLElement): ChildNode[] {
-  const nodes: ChildNode[] = [];
-  const parser = new DOMParser();
-  const stage = parent || document.body;
-  const fragment = document.createDocumentFragment();
-  const { body } = parser.parseFromString(html.trim(), 'text/html');
-
-  while (body.firstChild) {
-    nodes.push(fragment.appendChild(body.firstChild));
-  }
-
-  stage.appendChild(fragment);
-
-  return nodes;
-}
-
 export function escapeHTML(text: string): string {
   return text.replace(/[&<>"']/gm, match => {
     switch (match) {
@@ -141,4 +111,44 @@ export function ansiToHTML(text: string): string {
   });
 
   return html;
+}
+
+export type RootElement = HTMLElement | ShadowRoot;
+
+export function getRootElement(tagName: string): ShadowRoot {
+  const stage = document.createElement(tagName);
+  const root = stage.attachShadow({ mode: 'open' });
+
+  document.body.appendChild(stage);
+
+  return root;
+}
+
+export function injectCSS(
+  css: string,
+  root: HTMLElement | ShadowRoot = document.body,
+  styleElement: HTMLStyleElement = document.createElement('style')
+): HTMLStyleElement {
+  styleElement.appendChild(document.createTextNode(css.trim()));
+
+  if (!root.contains(styleElement)) {
+    root.appendChild(styleElement);
+  }
+
+  return styleElement;
+}
+
+export function appendHTML(html: string, root: RootElement = document.body): ChildNode[] {
+  const nodes: ChildNode[] = [];
+  const parser = new DOMParser();
+  const fragment = document.createDocumentFragment();
+  const { body } = parser.parseFromString(html.trim(), 'text/html');
+
+  while (body.firstChild) {
+    nodes.push(fragment.appendChild(body.firstChild));
+  }
+
+  root.appendChild(fragment);
+
+  return nodes;
 }

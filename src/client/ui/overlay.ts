@@ -4,7 +4,7 @@
  */
 
 import { StatsError } from 'webpack';
-import { ansiToHTML, appendHTML, injectCSS } from './utils';
+import { ansiToHTML, appendHTML, getRootElement, injectCSS } from './utils';
 
 const OVERLAY = 'wds-overlay';
 
@@ -181,9 +181,11 @@ export default class Overlay {
   private readonly warningsTitle: HTMLElement;
 
   constructor(name: string) {
-    injectCSS(CSS);
+    const root = getRootElement(OVERLAY);
 
-    const [dialog] = appendHTML(HTML) as [HTMLElement];
+    injectCSS(CSS, root);
+
+    const [dialog] = appendHTML(HTML, root) as [HTMLElement];
 
     this.dialog = dialog;
     this.name = dialog.querySelector(`.${OVERLAY}-name`)!;
