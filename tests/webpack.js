@@ -47,7 +47,7 @@ const compiler = webpack({
   context: path.resolve('src'),
   entry: [
     // Entry file
-    path.resolve('src/index.jsx'),
+    path.resolve('src/index.tsx'),
     // Hot client
     'webpack-dev-service/client'
   ],
@@ -62,7 +62,7 @@ const compiler = webpack({
   devtool: 'eval-cheap-module-source-map',
   resolve: {
     fallback: { url: false },
-    extensions: ['.js', '.jsx']
+    extensions: ['.ts', '.tsx', '.js', '.jsx']
   },
   watchOptions: {
     aggregateTimeout: 256
@@ -81,7 +81,7 @@ const compiler = webpack({
       {
         oneOf: [
           {
-            test: /\.jsx?$/i,
+            test: /\.[jt]sx?$/i,
             exclude: /[\\/]node_modules[\\/]/,
             use: [
               {
