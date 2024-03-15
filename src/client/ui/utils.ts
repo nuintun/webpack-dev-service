@@ -117,7 +117,7 @@ export type RootElement = HTMLElement | ShadowRoot;
 
 export function getRootElement(tagName: string): ShadowRoot {
   const stage = document.createElement(tagName);
-  const root = stage.attachShadow({ mode: 'open' });
+  const root = stage.attachShadow({ mode: 'closed' });
 
   document.body.appendChild(stage);
 
