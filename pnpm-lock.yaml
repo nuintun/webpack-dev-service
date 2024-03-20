@@ -14,9 +14,24 @@ dependencies:
   '@types/ws':
     specifier: ^8.5.10
     version: 8.5.10
+  colorette:
+    specifier: ^2.0.20
+    version: 2.0.20
   koa-compose:
     specifier: ^4.1.0
     version: 4.1.0
+  memfs:
+    specifier: ^4.8.0
+    version: 4.8.0
+  mime-types:
+    specifier: ^2.1.35
+    version: 2.1.35
+  on-finished:
+    specifier: ^2.4.1
+    version: 2.4.1
+  range-parser:
+    specifier: ^1.2.1
+    version: 1.2.1
   tslib:
     specifier: ^2.6.2
     version: 2.6.2
@@ -40,9 +55,18 @@ devDependencies:
   '@types/koa-compose':
     specifier: ^3.2.8
     version: 3.2.8
+  '@types/mime-types':
+    specifier: ^2.1.4
+    version: 2.1.4
   '@types/node':
     specifier: ^20.11.30
     version: 20.11.30
+  '@types/on-finished':
+    specifier: ^2.3.4
+    version: 2.3.4
+  '@types/range-parser':
+    specifier: ^1.2.7
+    version: 1.2.7
   '@types/react':
     specifier: ^18.2.67
     version: 18.2.67
@@ -61,9 +85,6 @@ devDependencies:
   magic-string:
     specifier: ^0.30.8
     version: 0.30.8
-  memfs:
-    specifier: ^4.8.0
-    version: 4.8.0
   mini-css-extract-plugin:
     specifier: ^2.8.1
     version: 2.8.1(webpack@5.90.3)
@@ -522,6 +543,10 @@ packages:
       '@types/koa-compose': 3.2.8
       '@types/node': 20.11.30
 
+  /@types/mime-types@2.1.4:
+    resolution: {integrity: sha512-lfU4b34HOri+kAY5UheuFMWPDOI+OPceBSHZKp69gEyTL/mmJ4cnU6Y/rlme3UL3GyOn6Y42hyIEw0/q8sWx5w==}
+    dev: true
+
   /@types/mime@1.3.5:
     resolution: {integrity: sha512-/pyBZWSLD2n0dcHE3hq8s8ZvcETHtEuF+3E7XVt0Ig2nvsVQXdghHVcEkIWjy9A0wKfTn97a/PSDYohKIlnP/w==}
 
@@ -532,6 +557,12 @@ packages:
     resolution: {integrity: sha512-dHM6ZxwlmuZaRmUPfv1p+KrdD1Dci04FbdEm/9wEMouFqxYoFl5aMkt0VMAUtYRQDyYvD41WJLukhq/ha3YuTw==}
     dependencies:
       undici-types: 5.26.5
+
+  /@types/on-finished@2.3.4:
+    resolution: {integrity: sha512-Ld4UQD3udYcKPaAWlI1EYXKhefkZcTlpqOLkQRmN3u5Ml/tUypMivUHbNH8LweP4H4FlhGGO+uBjJI1Y1dkE1g==}
+    dependencies:
+      '@types/node': 20.11.30
+    dev: true
 
   /@types/prop-types@15.7.11:
     resolution: {integrity: sha512-ga8y9v9uyeiLdpKddhxYQkxNDrfvuPrlFb0N1qnZZByvcElJaXthF1UhvCh9TLWJBEHeNtdnbysW7Y6Uq8CVng==}
@@ -1497,6 +1528,7 @@ packages:
     engines: {node: '>= 4.0.0'}
     dependencies:
       tslib: 2.6.2
+    dev: false
 
   /merge-stream@2.0.0:
     resolution: {integrity: sha512-abv/qOcuPfk3URPfDzmZU1LKmuw8kT+0nIHvKrKgFrwifol/doWcdA4ZqsWQ8ENrFKkd67Mfpo/LovbIUsbt3w==}
