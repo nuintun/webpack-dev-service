@@ -5,15 +5,15 @@
 import { Middleware } from 'koa';
 import compose from 'koa-compose';
 import { Compiler } from 'webpack';
-import dev, { Instance as DevInstance, Options as DevOptions } from './dev';
-import hot, { Instance as HotInstance, Options as HotOptions } from './hot';
+import { AdditionalMethods as DevMethods, dev, Options as DevOptions } from './dev';
+import { AdditionalMethods as HotMethods, hot, Options as HotOptions } from './hot';
 
 type DisableHotOptions = DevOptions & { hot: false };
 type EnableHotOptions = DevOptions & { hot?: HotOptions };
 
+export type DisableHotMiddleware = Middleware & DevMethods;
 export type Options = EnableHotOptions | DisableHotOptions;
-export type DisableHotMiddleware = Middleware & DevInstance;
-export type EnableHotMiddleware = DisableHotMiddleware & HotInstance;
+export type EnableHotMiddleware = DisableHotMiddleware & HotMethods;
 
 /**
  * @function server

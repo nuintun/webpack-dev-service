@@ -1,8 +1,8 @@
 /**
- * @module hot
+ * @module HotSocket
  */
 
-import { Context, Middleware } from 'koa';
+import { Context } from 'koa';
 import WebSocket, { WebSocketServer } from 'ws';
 import webpack, { Compiler, StatsCompilation, StatsOptions } from 'webpack';
 
@@ -87,7 +87,7 @@ function hasProblems<T>(problems: ArrayLike<T> | undefined): boolean {
   return !!problems && problems.length > 0;
 }
 
-class HotServer {
+export class HotSocket {
   private stats!: StatsCompilation;
 
   private readonly compiler: Compiler;
@@ -233,29 +233,4 @@ class HotServer {
       }
     }
   }
-}
-
-export type Instance = {
-  clients(): Set<WebSocket>;
-  broadcast<T>(clients: Set<WebSocket> | WebSocket[], action: string, payload: T): void;
-};
-
-export default function hot(compiler: Compiler, options: Options = {}): Middleware & Instance {
-  const server = new HotServer(compiler, options);
-
-  const hotMiddleware: Middleware & Instance = async (context, next) => {
-    if (!server.upgrade(context)) {
-      await next();
-    }
-  };
-
-  hotMiddleware.clients = () => {
-    return server.clients();
-  };
-
-  hotMiddleware.broadcast = (clients, action, payload) => {
-    server.broadcast(clients, action, payload);
-  };
-
-  return hotMiddleware;
 }

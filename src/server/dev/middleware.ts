@@ -12,9 +12,9 @@ interface FilesInstance {
   publicPath: string;
 }
 
-export function middleware(context: Context): Middleware {
+async function getFilesInstances(context: Context): Promise<FilesInstance[]> {
   const { options } = context;
-  const paths = getPaths(context);
+  const paths = await getPaths(context);
   const instances: FilesInstance[] = [];
 
   for (const { outputPath, publicPath } of paths) {
@@ -30,10 +30,15 @@ export function middleware(context: Context): Middleware {
     });
   }
 
+  return instances;
+}
+
+export function middleware(ctx: Context): Middleware {
   return async (context, next) => {
     let found = false;
 
     const { path } = context;
+    const instances = await getFilesInstances(ctx);
 
     for (const { files, publicPath } of instances) {
       if (path.startsWith(publicPath)) {

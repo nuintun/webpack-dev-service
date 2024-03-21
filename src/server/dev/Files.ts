@@ -257,14 +257,14 @@ export default class Files {
 
   /**
    * @private
-   * @method read
+   * @method readTo
    * @description Read file
+   * @param stream Destination stream
    * @param path File path
    * @param range Read range
-   * @param buffer Destination stream
    * @param end Is destory destination stream after read
    */
-  private read(path: string, range: Range, buffer: PassThrough, end: boolean): Promise<true> {
+  private readTo(stream: PassThrough, path: string, range: Range, end: boolean): Promise<true> {
     const { fs } = this.options;
 
     return new Promise((resolve, reject): void => {
@@ -275,14 +275,14 @@ export default class Files {
       if (range.prefix) {
         file.once('open', () => {
           // Write prefix boundary
-          buffer.write(range.prefix);
+          stream.write(range.prefix);
         });
       }
 
       // File read stream error
       file.once('error', error => {
         // Unpipe
-        file.unpipe(buffer);
+        file.unpipe(stream);
         // Destroy file stream
         destroy(file);
         // Reject
@@ -293,14 +293,14 @@ export default class Files {
       if (range.suffix) {
         file.once('end', () => {
           // Push suffix boundary
-          buffer.write(range.suffix);
+          stream.write(range.suffix);
         });
       }
 
       // File read stream close
       file.once('close', () => {
         // Unpipe
-        file.unpipe(buffer);
+        file.unpipe(stream);
         // Destroy file stream
         destroy(file);
         // Resolve
@@ -308,7 +308,7 @@ export default class Files {
       });
 
       // Write data to buffer
-      file.pipe(buffer, { end });
+      file.pipe(stream, { end });
     });
   }
 
@@ -333,7 +333,7 @@ export default class Files {
     // Read file ranges
     try {
       for (const range of ranges) {
-        await this.read(path, range, stream, --length === 0);
+        await this.readTo(stream, path, range, --length === 0);
       }
     } catch (error) {
       // End stream when read exception

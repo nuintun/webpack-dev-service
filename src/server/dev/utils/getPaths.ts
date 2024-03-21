@@ -2,6 +2,7 @@
  * @module getPaths
  */
 
+import { ready } from './ready';
 import { Compilation, MultiStats, Stats } from 'webpack';
 import { Context, Options } from '/server/dev/interface';
 
@@ -42,17 +43,22 @@ interface Path {
   publicPath: string;
 }
 
-export function getPaths({ stats, options }: Context): Path[] {
-  const publicPaths: Path[] = [];
-  const childStats = getStats(stats);
+export function getPaths(context: Context): Promise<Path[]> {
+  return new Promise(resolve => {
+    ready(context, stats => {
+      const { options } = context;
+      const publicPaths: Path[] = [];
+      const childStats = getStats(stats);
 
-  for (const { compilation } of childStats) {
-    // The `output.path` is always present and always absolute
-    const outputPath = getOutputPath(compilation);
-    const publicPath = getPublicPath(options, compilation);
+      for (const { compilation } of childStats) {
+        // The `output.path` is always present and always absolute
+        const outputPath = getOutputPath(compilation);
+        const publicPath = getPublicPath(options, compilation);
 
-    publicPaths.push({ outputPath, publicPath });
-  }
+        publicPaths.push({ outputPath, publicPath });
+      }
 
-  return publicPaths;
+      resolve(publicPaths);
+    });
+  });
 }

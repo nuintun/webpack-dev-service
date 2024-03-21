@@ -13,8 +13,7 @@ import { setupWriteToDisk } from './utils/setupWriteToDisk';
 import { setupOutputFileSystem } from './utils/setupOutputFileSystem';
 import { AdditionalMethods, Context, InitialContext, Options } from './interface';
 
-export { Options };
-export { AdditionalMethods as Instance };
+export { AdditionalMethods, Options };
 
 function setup(compiler: Compiler | MultiCompiler, options: Options): Context {
   const context: InitialContext = {
@@ -39,11 +38,10 @@ function setup(compiler: Compiler | MultiCompiler, options: Options): Context {
   return context as Context;
 }
 
-export default function dev(compiler: Compiler, options: Options = {}): Middleware & AdditionalMethods {
+export function dev(compiler: Compiler, options: Options = {}): Middleware & AdditionalMethods {
   const context = setup(compiler, options);
-  const instance = middleware(context);
 
-  return Object.assign<Middleware, AdditionalMethods>(instance, {
+  return Object.assign<Middleware, AdditionalMethods>(middleware(context), {
     ready(callback) {
       ready(context, callback);
     },
