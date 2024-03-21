@@ -89,14 +89,13 @@
     "@nuintun/ansi": "^0.0.3",
     "@types/koa": "^2.15.0",
     "@types/ws": "^8.5.10",
-    "colorette": "^2.0.20",
+    "destroy": "^1.2.0",
+    "etag": "^1.8.1",
     "koa-compose": "^4.1.0",
     "memfs": "^4.8.0",
-    "mime-types": "^2.1.35",
-    "on-finished": "^2.4.1",
     "range-parser": "^1.2.1",
+    "supports-color": "^9.4.0",
     "tslib": "^2.6.2",
-    "webpack-dev-middleware": "^7.1.0",
     "ws": "^8.16.0"
   },
   "devDependencies": {
@@ -112,7 +111,7 @@
     "@types/react-dom": "^18.2.22",
     "css-loader": "^6.10.0",
     "html-webpack-plugin": "^5.6.0",
-    "koa": "^2.15.1",
+    "koa": "^2.15.2",
     "magic-string": "^0.30.8",
     "memfs": "^4.8.0",
     "mini-css-extract-plugin": "^2.8.1",
@@ -124,7 +123,8 @@
     "swc-loader": "^0.2.6",
     "tsc-alias": "^1.8.8",
     "typescript": "^5.4.3",
-    "webpack": "^5.91.0"
+    "webpack": "^5.91.0",
+    "webpack-dev-middleware": "^7.1.0"
   },
   "peerDependencies": {
     "webpack": "^5.0.0"
