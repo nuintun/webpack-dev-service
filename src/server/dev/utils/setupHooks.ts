@@ -68,11 +68,11 @@ export function setupHooks(context: InitialContext): void {
 
       // Check if still in valid state
       if (state) {
-        context.callbacks = [];
-
         const { logger, callbacks } = context;
 
         logger.log('Compilation finished');
+
+        context.callbacks = [];
 
         for (const callback of callbacks) {
           callback(stats);
