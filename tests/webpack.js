@@ -155,7 +155,6 @@ const logger = compiler.getInfrastructureLogger('webpack-dev-middleware');
 
 app.use(async (ctx, next) => {
   ctx.set({
-    'Cache-Control': 'no-store',
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': '*',
     'Access-Control-Allow-Headers': '*',

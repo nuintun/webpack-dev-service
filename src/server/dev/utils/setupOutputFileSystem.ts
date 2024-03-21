@@ -23,19 +23,29 @@ function getOutputFileSystem({ options, compiler }: InitialContext): IOutputFile
     return createMemfs();
   }
 
-  if (!isMultiCompilerMode(compiler)) {
-    return compiler.outputFileSystem || createMemfs();
-  }
+  if (isMultiCompilerMode(compiler)) {
+    const { compilers } = compiler;
 
-  const { compilers } = compiler;
+    for (const compiler of compilers) {
+      if ('devServer' in compiler) {
+        if (compiler.outputFileSystem) {
+          return compiler.outputFileSystem;
+        }
+      }
+    }
 
-  for (const compiler of compilers) {
-    if ('devServer' in compiler) {
-      return compiler.outputFileSystem || createMemfs();
+    if (compiler.outputFileSystem) {
+      return compiler.outputFileSystem;
+    }
+
+    for (const compiler of compilers) {
+      if (compiler.outputFileSystem) {
+        return compiler.outputFileSystem;
+      }
     }
   }
 
-  return compiler.outputFileSystem || compilers[0].outputFileSystem || createMemfs();
+  return createMemfs();
 }
 
 function supportReadStream(outputFileSystem: IOutputFileSystem): outputFileSystem is OutputFileSystem {

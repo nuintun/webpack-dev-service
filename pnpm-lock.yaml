@@ -79,6 +79,9 @@ devDependencies:
   koa:
     specifier: ^2.15.2
     version: 2.15.2(supports-color@9.4.0)
+  koa-compress:
+    specifier: ^5.1.1
+    version: 5.1.1
   magic-string:
     specifier: ^0.30.8
     version: 0.30.8
@@ -892,6 +895,11 @@ packages:
     resolution: {integrity: sha512-E+XQCRwSbaaiChtv6k6Dwgc+bx+Bs6vuKJHHl5kox/BaKbhiXzqQOwK4cO22yElGp2OCmjwVhT3HmxgyPGnJfQ==}
     dev: true
 
+  /bytes@3.1.2:
+    resolution: {integrity: sha512-/Nf7TyzTx6S3yRJObOAV7956r8cr2+Oj8AC5dt8wSP3BQAoeX58NoHyCU8P8zGkNXStjTSi6fzO6F0pBdcYbEg==}
+    engines: {node: '>= 0.8'}
+    dev: true
+
   /cache-content-type@1.0.1:
     resolution: {integrity: sha512-IKufZ1o4Ut42YUrZSo8+qnMTrFuKkvyoLXUywKz9GJ5BrhOFGhLdkx9sG4KAnVvbY6kEcSFjLQul+DVmBm2bgA==}
     engines: {node: '>= 6.0.0'}
@@ -966,6 +974,13 @@ packages:
   /commander@9.5.0:
     resolution: {integrity: sha512-KRs7WVDKg86PWiuAqhDrAQnTXZKraVcCc6vFdL14qrZ/DcWwuRo7VoiYXalXO7S5GKpqYiVEwCbgFDfxNHKJBQ==}
     engines: {node: ^12.20.0 || >=14}
+    dev: true
+
+  /compressible@2.0.18:
+    resolution: {integrity: sha512-AF3r7P5dWxL8MxyITRMlORQNaOA2IkAFaTr4k7BUumjPtRpGDTZpl0Pb1XCO6JeDCBdp126Cgs9sMxqSjgYyRg==}
+    engines: {node: '>= 0.6'}
+    dependencies:
+      mime-db: 1.52.0
     dev: true
 
   /content-disposition@0.5.4:
@@ -1511,12 +1526,26 @@ packages:
   /koa-compose@4.1.0:
     resolution: {integrity: sha512-8ODW8TrDuMYvXRwra/Kh7/rJo9BtOfPc6qO8eAfC80CnCvSjSl0bkRM24X6/XBBEyj0v1nRUQ1LyOy3dbqOWXw==}
 
+  /koa-compress@5.1.1:
+    resolution: {integrity: sha512-UgMIN7ZoEP2DuoSQmD6CYvFSLt0NReGlc2qSY4bO4Oq0L56OiD9pDG41Kj/zFmVY/A3Wvmn4BqKcfq5H30LGIg==}
+    engines: {node: '>= 12'}
+    dependencies:
+      bytes: 3.1.2
+      compressible: 2.0.18
+      http-errors: 1.8.1
+      koa-is-json: 1.0.0
+    dev: true
+
   /koa-convert@2.0.0:
     resolution: {integrity: sha512-asOvN6bFlSnxewce2e/DK3p4tltyfC4VM7ZwuTuepI7dEQVcvpyFuBcEARu1+Hxg8DIwytce2n7jrZtRlPrARA==}
     engines: {node: '>= 10'}
     dependencies:
       co: 4.6.0
       koa-compose: 4.1.0
+    dev: true
+
+  /koa-is-json@1.0.0:
+    resolution: {integrity: sha512-+97CtHAlWDx0ndt0J8y3P12EWLwTLMXIfMnYDev3wOTwH/RpBGMlfn4bDXlMEg1u73K6XRE9BbUp+5ZAYoRYWw==}
     dev: true
 
   /koa@2.15.2(supports-color@9.4.0):
