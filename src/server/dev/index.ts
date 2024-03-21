@@ -42,6 +42,9 @@ export function dev(compiler: Compiler, options: Options = {}): Middleware & Add
   const context = setup(compiler, options);
 
   return Object.assign<Middleware, AdditionalMethods>(middleware(context), {
+    get logger() {
+      return context.logger;
+    },
     ready(callback) {
       ready(context, callback);
     },

@@ -150,8 +150,10 @@ const compiler = webpack({
 const port = 8000;
 const app = new Koa();
 const fs = createMemfs();
-const server = dev(compiler, { index: false, outputFileSystem: fs });
-const logger = compiler.getInfrastructureLogger('webpack-dev-middleware');
+const server = dev(compiler, {
+  index: false,
+  outputFileSystem: fs
+});
 
 app.use(async (ctx, next) => {
   ctx.set({
@@ -178,6 +180,6 @@ app.on('error', error => {
 
 app.listen(port, () => {
   server.ready(() => {
-    logger.info(`server run at: \u001B[36mhttp://127.0.0.1:${port}\u001B[0m`);
+    server.logger.info(`server run at: \u001B[36mhttp://127.0.0.1:${port}\u001B[0m`);
   });
 });

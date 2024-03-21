@@ -42,6 +42,7 @@ export interface Context {
 }
 
 export interface AdditionalMethods {
+  logger: Context['logger'];
   ready(callback: Callback): void;
   invalidate(callback: Callback): void;
   close(callback: (error?: Error | null) => void): void;
