@@ -47,7 +47,6 @@ export default function rollup(esnext) {
         }
       },
       external: [
-        // External dependencies
         'fs',
         'ws',
         'etag',
@@ -58,7 +57,8 @@ export default function rollup(esnext) {
         'destroy',
         'webpack',
         'koa-compose',
-        'range-parser'
+        'range-parser',
+        'supports-color'
       ]
     },
     {

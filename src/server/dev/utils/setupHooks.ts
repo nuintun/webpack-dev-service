@@ -3,6 +3,7 @@
  */
 
 import { StatsOptions } from 'webpack';
+import supportsColor from 'supports-color';
 import { Context, InitialContext, Options } from '/server/dev/interface';
 import { isBoolean, isMultiCompilerMode, isString, PLUGIN_NAME } from './common';
 
@@ -16,8 +17,7 @@ function normalizeStatsOptions(statsOptions: Options['stats']): StatsOptions {
   }
 
   if (statsOptions.colors == null) {
-    // TODO 自动颜色 supports-color
-    statsOptions.colors = true;
+    statsOptions.colors = supportsColor.stdout !== false;
   }
 
   return statsOptions;

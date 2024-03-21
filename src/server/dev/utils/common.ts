@@ -7,7 +7,7 @@ import { isAbsolute, relative } from 'path';
 import { Compiler, MultiCompiler } from 'webpack';
 import { OutputFileSystem } from '/server/dev/interface';
 
-const { toString } = String.prototype;
+const { toString } = Object.prototype;
 
 export const PLUGIN_NAME = 'webpack-dev-service';
 
