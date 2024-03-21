@@ -32,8 +32,6 @@ function createMemfs() {
   const volume = new memfs.Volume();
   const fs = memfs.createFsFromVolume(volume);
 
-  fs.join = path.join.bind(path);
-
   return fs;
 }
 
@@ -180,7 +178,7 @@ app.on('error', error => {
 });
 
 app.listen(port, () => {
-  server.waitUntilValid(() => {
+  server.ready(() => {
     logger.info(`server run at: \u001B[36mhttp://127.0.0.1:${port}\u001B[0m`);
   });
 });

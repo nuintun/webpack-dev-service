@@ -5,12 +5,16 @@
 import { Compilation, MultiStats, Stats } from 'webpack';
 import { Context, Options } from '/server/dev/interface';
 
+function isSingleStatsMode(stats: Stats | MultiStats): stats is Stats {
+  return !('stats' in stats);
+}
+
 function getStats(stats: Stats | MultiStats | null): Stats[] {
-  if (!stats) {
+  if (stats == null) {
     return [];
   }
 
-  if (stats instanceof Stats) {
+  if (isSingleStatsMode(stats)) {
     return [stats];
   }
 

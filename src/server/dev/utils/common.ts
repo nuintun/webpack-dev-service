@@ -30,7 +30,7 @@ export function getCompilers(compiler: Compiler | MultiCompiler): Compiler[] {
 }
 
 export function isSingleCompilerMode(compiler: Compiler | MultiCompiler): compiler is Compiler {
-  return compiler instanceof Compiler;
+  return !('compilers' in compiler);
 }
 
 const CHARS = Array.from('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz');

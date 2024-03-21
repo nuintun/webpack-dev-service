@@ -46,7 +46,20 @@ export default function rollup(esnext) {
           warn(error);
         }
       },
-      external: ['ws', 'tslib', 'webpack', 'koa-compose', 'webpack-dev-middleware']
+      external: [
+        // External dependencies
+        'fs',
+        'ws',
+        'etag',
+        'path',
+        'memfs',
+        'tslib',
+        'stream',
+        'destroy',
+        'webpack',
+        'koa-compose',
+        'range-parser'
+      ]
     },
     {
       input: ['src/client/main.ts', 'src/client/index.ts'],

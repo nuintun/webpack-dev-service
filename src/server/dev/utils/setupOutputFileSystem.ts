@@ -6,8 +6,6 @@ import { createFsFromVolume, Volume } from 'memfs';
 import { getCompilers, isSingleCompilerMode } from './common';
 import { InitialContext, OutputFileSystem } from '/server/dev/interface';
 
-const { hasOwnProperty } = Object.prototype;
-
 type IOutputFileSystem = Optional<OutputFileSystem, 'createReadStream'>;
 
 function createMemfs(): OutputFileSystem {
@@ -32,7 +30,7 @@ function getOutputFileSystem({ options, compiler }: InitialContext): IOutputFile
   const { compilers } = compiler;
 
   for (const compiler of compilers) {
-    if (hasOwnProperty.call(compiler, 'devServer')) {
+    if ('devServer' in compiler) {
       return compiler.outputFileSystem || createMemfs();
     }
   }
