@@ -13,7 +13,7 @@ type IOutputFileSystem = Optional<OutputFileSystem, 'createReadStream'>;
 function createMemfs(): OutputFileSystem {
   const volume = new Volume();
 
-  return createFsFromVolume(volume) as OutputFileSystem;
+  return createFsFromVolume(volume) as unknown as OutputFileSystem;
 }
 
 function getOutputFileSystem({ options, compiler }: InitialContext): IOutputFileSystem {

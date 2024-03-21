@@ -49,18 +49,18 @@ devDependencies:
   '@swc/helpers':
     specifier: ^0.5.7
     version: 0.5.7
+  '@types/destroy':
+    specifier: ^1.0.3
+    version: 1.0.3
+  '@types/etag':
+    specifier: ^1.8.3
+    version: 1.8.3
   '@types/koa-compose':
     specifier: ^3.2.8
     version: 3.2.8
-  '@types/mime-types':
-    specifier: ^2.1.4
-    version: 2.1.4
   '@types/node':
     specifier: ^20.11.30
     version: 20.11.30
-  '@types/on-finished':
-    specifier: ^2.3.4
-    version: 2.3.4
   '@types/range-parser':
     specifier: ^1.2.7
     version: 1.2.7
@@ -499,6 +499,12 @@ packages:
       '@types/keygrip': 1.0.6
       '@types/node': 20.11.30
 
+  /@types/destroy@1.0.3:
+    resolution: {integrity: sha512-nRcH61sRUBct1KM6dV4kjNzgLBrM6eSafsBfoGo/tOeKkTPbYsqi5uJqh8Rq7M9+stYh0wW+Tg56XFcsCPrjhw==}
+    dependencies:
+      '@types/node': 20.11.30
+    dev: true
+
   /@types/eslint-scope@3.7.7:
     resolution: {integrity: sha512-MzMFlSLBqNF2gcHWO0G1vP/YQyfvrxZ0bF+u7mzUdZ1/xK4A4sru+nraZz5i3iEIk1l1uyicaDVTB4QbbEkAYg==}
     dependencies:
@@ -515,6 +521,12 @@ packages:
 
   /@types/estree@1.0.5:
     resolution: {integrity: sha512-/kYRxGDLWzHOB7q+wtSUQlFrtcdUccpfy+X+9iMBpHK8QLLhx2wIPYuS5DYtR9Wa/YlZAbIovy7qVdB1Aq6Lyw==}
+    dev: true
+
+  /@types/etag@1.8.3:
+    resolution: {integrity: sha512-QYHv9Yeh1ZYSMPQOoxY4XC4F1r+xRUiAriB303F4G6uBsT3KKX60DjiogvVv+2VISVDuJhcIzMdbjT+Bm938QQ==}
+    dependencies:
+      '@types/node': 20.11.30
     dev: true
 
   /@types/express-serve-static-core@4.17.43:
@@ -567,10 +579,6 @@ packages:
       '@types/koa-compose': 3.2.8
       '@types/node': 20.11.30
 
-  /@types/mime-types@2.1.4:
-    resolution: {integrity: sha512-lfU4b34HOri+kAY5UheuFMWPDOI+OPceBSHZKp69gEyTL/mmJ4cnU6Y/rlme3UL3GyOn6Y42hyIEw0/q8sWx5w==}
-    dev: true
-
   /@types/mime@1.3.5:
     resolution: {integrity: sha512-/pyBZWSLD2n0dcHE3hq8s8ZvcETHtEuF+3E7XVt0Ig2nvsVQXdghHVcEkIWjy9A0wKfTn97a/PSDYohKIlnP/w==}
 
@@ -581,12 +589,6 @@ packages:
     resolution: {integrity: sha512-dHM6ZxwlmuZaRmUPfv1p+KrdD1Dci04FbdEm/9wEMouFqxYoFl5aMkt0VMAUtYRQDyYvD41WJLukhq/ha3YuTw==}
     dependencies:
       undici-types: 5.26.5
-
-  /@types/on-finished@2.3.4:
-    resolution: {integrity: sha512-Ld4UQD3udYcKPaAWlI1EYXKhefkZcTlpqOLkQRmN3u5Ml/tUypMivUHbNH8LweP4H4FlhGGO+uBjJI1Y1dkE1g==}
-    dependencies:
-      '@types/node': 20.11.30
-    dev: true
 
   /@types/prop-types@15.7.11:
     resolution: {integrity: sha512-ga8y9v9uyeiLdpKddhxYQkxNDrfvuPrlFb0N1qnZZByvcElJaXthF1UhvCh9TLWJBEHeNtdnbysW7Y6Uq8CVng==}

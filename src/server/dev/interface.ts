@@ -10,16 +10,21 @@ type IOutputFileSystem = NonNullable<Compiler['outputFileSystem']>;
 export type Callback = (stats: Stats | MultiStats | null) => void;
 
 export interface OutputFileSystem extends IOutputFileSystem {
-  createReadStream: Omit<typeof createReadStream, 'close'>;
+  createReadStream: typeof createReadStream;
 }
 
-export interface Options {
-  methods?: string[];
+export interface FilesOptions {
+  etag?: boolean;
+  fs: OutputFileSystem;
+  cacheControl?: string;
+  acceptRanges?: boolean;
+  lastModified?: boolean;
+}
+
+export interface Options extends Omit<FilesOptions, 'fs'> {
   index?: string | boolean;
-  mimeTypeDefault?: string;
   serverSideRender?: boolean;
   stats?: Configuration['stats'];
-  mimeTypes?: Record<string, string>;
   outputFileSystem?: OutputFileSystem;
   writeToDisk?: boolean | ((targetPath: string) => boolean);
   publicPath?: NonNullable<Configuration['output']>['publicPath'];
