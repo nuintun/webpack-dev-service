@@ -2,13 +2,13 @@
  * @module setupWatching
  */
 
-import { isSingleCompilerMode } from './common';
+import { isMultiCompilerMode } from './common';
 import { Context, InitialContext } from '/server/dev/interface';
 
 function getWatching({ compiler, logger }: InitialContext): Context['watching'] {
-  const isSingle = isSingleCompilerMode(compiler);
+  const isMulti = isMultiCompilerMode(compiler);
 
-  if (isSingle && compiler.watching) {
+  if (!isMulti && compiler.watching) {
     return compiler.watching;
   }
 
@@ -21,7 +21,7 @@ function getWatching({ compiler, logger }: InitialContext): Context['watching'] 
     }
   };
 
-  if (isSingle) {
+  if (!isMulti) {
     const { watchOptions } = compiler.options;
 
     return compiler.watch(watchOptions, errorHandler);

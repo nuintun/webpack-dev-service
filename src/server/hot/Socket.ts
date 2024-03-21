@@ -1,5 +1,5 @@
 /**
- * @module HotSocket
+ * @module Socket
  */
 
 import { Context } from 'koa';
@@ -13,9 +13,10 @@ export interface Options {
 }
 
 const WEBSOCKET_RE = /^websocket$/i;
+const { toString } = Object.prototype;
 
 function isObject(value: unknown): value is object {
-  return Object.prototype.toString.call(value) === '[object Object]';
+  return toString.call(value) === '[object Object]';
 }
 
 function resolveStatsOptions(compiler: Compiler): StatsOptions {
@@ -87,7 +88,7 @@ function hasProblems<T>(problems: ArrayLike<T> | undefined): boolean {
   return !!problems && problems.length > 0;
 }
 
-export class HotSocket {
+export class Socket {
   private stats!: StatsCompilation;
 
   private readonly compiler: Compiler;

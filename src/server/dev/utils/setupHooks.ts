@@ -4,7 +4,7 @@
 
 import { StatsOptions } from 'webpack';
 import { Context, InitialContext, Options } from '/server/dev/interface';
-import { isBoolean, isSingleCompilerMode, isString, PLUGIN_NAME } from './common';
+import { isBoolean, isMultiCompilerMode, isString, PLUGIN_NAME } from './common';
 
 function normalizeStatsOptions(statsOptions: Options['stats']): StatsOptions {
   if (statsOptions == null) {
@@ -28,7 +28,7 @@ function getStatsOptions(context: InitialContext): StatsOptions | { children: St
   const { stats } = context.options;
 
   if (stats != null) {
-    if (isSingleCompilerMode(compiler)) {
+    if (!isMultiCompilerMode(compiler)) {
       return normalizeStatsOptions(stats);
     }
 
@@ -37,7 +37,7 @@ function getStatsOptions(context: InitialContext): StatsOptions | { children: St
     };
   }
 
-  if (isSingleCompilerMode(compiler)) {
+  if (!isMultiCompilerMode(compiler)) {
     return normalizeStatsOptions(compiler.options.stats);
   }
 

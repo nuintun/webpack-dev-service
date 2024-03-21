@@ -5,17 +5,26 @@
 import Files from './Files';
 import { Middleware } from 'koa';
 import { Context } from './interface';
-import { getPaths } from './utils/getPaths';
+import { decodeURI } from './utils/common';
+import { getPathsAsync } from './utils/getPaths';
 
 interface FilesInstance {
   files: Files;
   publicPath: string;
 }
 
+const cache = new WeakMap<Context['compiler'], FilesInstance[]>();
+
 async function getFilesInstances(context: Context): Promise<FilesInstance[]> {
+  const cached = cache.get(context.compiler);
+
+  if (cached != null) {
+    return cached;
+  }
+
   const { options } = context;
-  const paths = await getPaths(context);
   const instances: FilesInstance[] = [];
+  const paths = await getPathsAsync(context);
 
   for (const { outputPath, publicPath } of paths) {
     instances.push({
@@ -33,28 +42,36 @@ async function getFilesInstances(context: Context): Promise<FilesInstance[]> {
   return instances;
 }
 
-export function middleware(ctx: Context): Middleware {
-  return async (context, next) => {
-    let found = false;
+export function middleware(context: Context): Middleware {
+  return async (ctx, next) => {
+    const path = decodeURI(ctx.path);
 
-    const { path } = context;
-    const instances = await getFilesInstances(ctx);
+    // Path -1 or null byte(s)
+    if (path === -1 || path.includes('\0')) {
+      return ctx.throw(400);
+    }
+
+    ctx.path = path;
+
+    let respond = false;
+
+    const instances = await getFilesInstances(context);
 
     for (const { files, publicPath } of instances) {
       if (path.startsWith(publicPath)) {
-        context.path = path.slice(publicPath.length);
+        ctx.path = path.slice(publicPath.length);
 
-        found = await files.response(context);
+        respond = await files.response(ctx);
 
-        if (found) {
+        if (respond) {
           return;
         } else {
-          context.path = path;
+          ctx.path = path;
         }
       }
     }
 
-    if (!found) {
+    if (!respond) {
       await next();
     }
   };

@@ -5,7 +5,7 @@
 import WebSocket from 'ws';
 import { Middleware } from 'koa';
 import { Compiler } from 'webpack';
-import { HotSocket, Options } from './HotSocket';
+import { Options, Socket } from './Socket';
 
 export { Options };
 
@@ -15,7 +15,7 @@ export interface AdditionalMethods {
 }
 
 export function hot(compiler: Compiler, options: Options = {}): Middleware & AdditionalMethods {
-  const socket = new HotSocket(compiler, options);
+  const socket = new Socket(compiler, options);
 
   return Object.assign<Middleware, AdditionalMethods>(
     async (context, next) => {

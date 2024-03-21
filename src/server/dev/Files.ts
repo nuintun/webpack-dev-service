@@ -2,16 +2,6 @@
  * @module Files
  */
 
-import {
-  decodeURI,
-  fstat,
-  generateRangeBoundary,
-  hasTrailingSlash,
-  isETag,
-  isETagFresh,
-  isOutRoot,
-  unixify
-} from './utils/common';
 import etag from 'etag';
 import { Stats } from 'fs';
 import destroy from 'destroy';
@@ -19,7 +9,10 @@ import { Context } from 'koa';
 import { PassThrough } from 'stream';
 import parseRange from 'range-parser';
 import { FilesOptions } from './interface';
+import { generate } from './utils/boundary';
 import { extname, join, resolve } from 'path';
+import { isETag, isETagFresh } from './utils/http';
+import { fstat, hasTrailingSlash, isOutRoot, isString, unixify } from './utils/common';
 
 interface Range {
   start: number;
@@ -166,7 +159,7 @@ export default class Files {
             contentLength = 0;
 
             // Range boundary
-            const boundary = `<${generateRangeBoundary()}>`;
+            const boundary = `<${generate()}>`;
             const suffix = `\r\n--${boundary}--\r\n`;
             const contentType = `Content-Type: ${context.type}`;
 
@@ -221,7 +214,6 @@ export default class Files {
    */
   private setupHeaders(context: Context, path: string, stats: Stats): void {
     const { options } = this;
-    const { toString } = Object.prototype;
     const { acceptRanges, cacheControl, lastModified } = options;
 
     // Set status
@@ -242,16 +234,16 @@ export default class Files {
       context.set('Accept-Ranges', 'bytes');
     }
 
+    // Cache-Control
+    if (cacheControl && isString(cacheControl)) {
+      // Set Cache-Control
+      context.set('Cache-Control', cacheControl);
+    }
+
     // Last-Modified
     if (lastModified !== false) {
       // Set mtime utc string
       context.set('Last-Modified', stats.mtime.toUTCString());
-    }
-
-    // Cache-Control
-    if (cacheControl && toString.call(cacheControl) === '[object String]') {
-      // Set Cache-Control
-      context.set('Cache-Control', cacheControl);
     }
   }
 
@@ -356,13 +348,7 @@ export default class Files {
     }
 
     // Get path of file
-    const pathname = decodeURI(context.path);
-    const path = pathname === -1 ? pathname : unixify(join(root, pathname));
-
-    // Path -1 or null byte(s)
-    if (path === -1 || path.includes('\0')) {
-      return context.throw(400);
-    }
+    const path = unixify(join(root, context.path));
 
     // Malicious path (403)
     if (isOutRoot(path, root)) {

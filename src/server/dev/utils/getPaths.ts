@@ -6,8 +6,15 @@ import { ready } from './ready';
 import { Compilation, MultiStats, Stats } from 'webpack';
 import { Context, Options } from '/server/dev/interface';
 
-function isSingleStatsMode(stats: Stats | MultiStats): stats is Stats {
-  return !('stats' in stats);
+interface Path {
+  outputPath: string;
+  publicPath: string;
+}
+
+const cache = new WeakMap<Context['compiler'], Path[]>();
+
+function isMultiStatsMode(stats: Stats | MultiStats): stats is MultiStats {
+  return 'stats' in stats;
 }
 
 function getStats(stats: Stats | MultiStats | null): Stats[] {
@@ -15,11 +22,11 @@ function getStats(stats: Stats | MultiStats | null): Stats[] {
     return [];
   }
 
-  if (isSingleStatsMode(stats)) {
-    return [stats];
+  if (isMultiStatsMode(stats)) {
+    return stats.stats;
   }
 
-  return stats.stats;
+  return [stats];
 }
 
 function getOutputPath(compilation: Compilation): string {
@@ -38,27 +45,31 @@ function getPublicPath({ publicPath }: Options, compilation: Compilation): strin
   return compilation.getPath(publicPath != null ? publicPath : '');
 }
 
-interface Path {
-  outputPath: string;
-  publicPath: string;
-}
-
-export function getPaths(context: Context): Promise<Path[]> {
+export function getPathsAsync(context: Context): Promise<Path[]> {
   return new Promise(resolve => {
-    ready(context, stats => {
-      const { options } = context;
-      const publicPaths: Path[] = [];
-      const childStats = getStats(stats);
+    const { compiler } = context;
+    const paths = cache.get(compiler);
 
-      for (const { compilation } of childStats) {
-        // The `output.path` is always present and always absolute
-        const outputPath = getOutputPath(compilation);
-        const publicPath = getPublicPath(options, compilation);
+    if (paths != null) {
+      resolve(paths);
+    } else {
+      ready(context, stats => {
+        const paths: Path[] = [];
+        const { options } = context;
+        const childStats = getStats(stats);
 
-        publicPaths.push({ outputPath, publicPath });
-      }
+        for (const { compilation } of childStats) {
+          // The `output.path` is always present and always absolute
+          const outputPath = getOutputPath(compilation);
+          const publicPath = getPublicPath(options, compilation);
 
-      resolve(publicPaths);
-    });
+          paths.push({ outputPath, publicPath });
+        }
+
+        cache.set(compiler, paths);
+
+        resolve(paths);
+      });
+    }
   });
 }

@@ -3,7 +3,7 @@
  */
 
 import { createFsFromVolume, Volume } from 'memfs';
-import { getCompilers, isSingleCompilerMode } from './common';
+import { getCompilers, isMultiCompilerMode } from './common';
 import { InitialContext, OutputFileSystem } from '/server/dev/interface';
 
 type IOutputFileSystem = Optional<OutputFileSystem, 'createReadStream'>;
@@ -23,7 +23,7 @@ function getOutputFileSystem({ options, compiler }: InitialContext): IOutputFile
     return createMemfs();
   }
 
-  if (isSingleCompilerMode(compiler)) {
+  if (!isMultiCompilerMode(compiler)) {
     return compiler.outputFileSystem || createMemfs();
   }
 
