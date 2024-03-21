@@ -2,19 +2,16 @@
  * @module interface
  */
 
-// import { createReadStream, lstat, readFileSync, statSync } from 'fs';
+import { createReadStream } from 'fs';
 import { Compiler, Configuration, MultiCompiler, MultiStats, Stats, Watching } from 'webpack';
 
-// export interface OutputFileSystem extends NonNullable<Compiler['outputFileSystem']> {
-//   lstat?: typeof lstat;
-//   statSync?: typeof statSync;
-//   readFileSync?: typeof readFileSync;
-//   createReadStream?: typeof createReadStream;
-// }
+type IOutputFileSystem = NonNullable<Compiler['outputFileSystem']>;
 
-export type Callback = (stats?: Stats | MultiStats) => void;
+export type Callback = (stats: Stats | MultiStats | null) => void;
 
-export type OutputFileSystem = NonNullable<Compiler['outputFileSystem']>;
+export interface OutputFileSystem extends IOutputFileSystem {
+  createReadStream: Omit<typeof createReadStream, 'close'>;
+}
 
 export interface Options {
   methods?: string[];
@@ -31,10 +28,18 @@ export interface Options {
 export interface Context {
   state: boolean;
   options: Options;
-  watching: Watching;
   callbacks: Callback[];
-  stats?: Stats | MultiStats;
+  stats: Stats | MultiStats | null;
   compiler: Compiler | MultiCompiler;
   outputFileSystem: OutputFileSystem;
   logger: ReturnType<Compiler['getInfrastructureLogger']>;
+  watching: Watching | ReturnType<MultiCompiler['watch']>;
 }
+
+export interface AdditionalMethods {
+  ready(callback: Callback): void;
+  invalidate(callback: Callback): void;
+  close(callback: (error?: Error | null) => void): void;
+}
+
+export type InitialContext = Optional<Context, 'watching' | 'outputFileSystem'>;

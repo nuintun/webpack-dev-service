@@ -5,8 +5,8 @@
 import { dirname } from 'path';
 import { Compiler } from 'webpack';
 import { mkdir, writeFile } from 'fs';
-import { Context, Options } from '/server/interface';
-import { getCompilers, isFunction, MIDDLEWARE_NAME } from './common';
+import { InitialContext, Options } from '/server/dev/interface';
+import { getCompilers, isFunction, PLUGIN_NAME } from './common';
 
 const assetEmitted = Symbol('assetEmitted');
 
@@ -18,15 +18,17 @@ function isAllowWrite(targetPath: string, filter?: Options['writeToDisk']): bool
   return filter && isFunction(filter) ? filter(targetPath) : true;
 }
 
-export function setupWriteToDisk(context: Context): void {
+export function setupWriteToDisk(context: InitialContext): void {
   const { logger, options } = context;
   const { writeToDisk: filter } = options;
   const compilers = getCompilers(context.compiler);
 
   for (const compiler of compilers) {
-    compiler.hooks.emit.tap(MIDDLEWARE_NAME, () => {
+    const { hooks } = compiler;
+
+    hooks.emit.tap(PLUGIN_NAME, () => {
       if (!compiler[assetEmitted]) {
-        compiler.hooks.assetEmitted.tapAsync(MIDDLEWARE_NAME, (_file, { targetPath, content }, callback) => {
+        hooks.assetEmitted.tapAsync(PLUGIN_NAME, (_file, { targetPath, content }, callback) => {
           if (!isAllowWrite(targetPath, filter)) {
             return callback();
           }

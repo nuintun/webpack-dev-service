@@ -2,10 +2,10 @@
  * @module getPaths
  */
 
-import { Context, Options } from '/server/interface';
 import { Compilation, MultiStats, Stats } from 'webpack';
+import { Context, Options } from '/server/dev/interface';
 
-function getStats(stats?: Stats | MultiStats): Stats[] {
+function getStats(stats: Stats | MultiStats | null): Stats[] {
   if (!stats) {
     return [];
   }
