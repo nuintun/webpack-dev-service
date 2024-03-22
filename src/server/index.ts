@@ -3,16 +3,16 @@
  */
 
 import { Middleware } from 'koa';
-import compose from 'koa-compose';
 import { Compiler } from 'webpack';
+import { compose } from './dev/utils/compose';
 import { AdditionalMethods as DevMethods, dev, Options as DevOptions } from './dev';
 import { AdditionalMethods as HotMethods, hot, Options as HotOptions } from './hot';
 
 type DisableHotOptions = DevOptions & { hot: false };
 type EnableHotOptions = DevOptions & { hot?: HotOptions };
 
-export type DisableHotMiddleware = Middleware & DevMethods;
 export type Options = EnableHotOptions | DisableHotOptions;
+export type DisableHotMiddleware = Middleware & DevMethods;
 export type EnableHotMiddleware = DisableHotMiddleware & HotMethods;
 
 /**
@@ -36,13 +36,14 @@ export default function server(compiler: Compiler, options: DisableHotOptions): 
  */
 export default function server(compiler: Compiler, options: EnableHotOptions): EnableHotMiddleware;
 export default function server(compiler: Compiler, options: Options = {}): EnableHotMiddleware | DisableHotMiddleware {
-  const { hot: hotOptions, ...devOptions } = options;
+  const devMiddleware = dev(compiler, options);
 
-  const devMiddleware = dev(compiler, devOptions);
+  if (options.hot === false) {
+    return devMiddleware;
+  }
 
-  if (hotOptions === false) return devMiddleware;
+  const hotMiddleware = hot(compiler, options.hot);
+  const middleware = compose(devMiddleware, hotMiddleware);
 
-  const hotMiddleware = hot(compiler, hotOptions);
-
-  return Object.assign(compose([devMiddleware, hotMiddleware]), devMiddleware, hotMiddleware);
+  return Object.assign(middleware, devMiddleware, hotMiddleware);
 }

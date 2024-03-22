@@ -45,7 +45,7 @@ function getPublicPath({ publicPath }: Options, compilation: Compilation): strin
   return compilation.getPath(publicPath != null ? publicPath : '');
 }
 
-export function getPathsAsync(context: Context): Promise<Path[]> {
+export function getPaths(context: Context, name: string): Promise<Path[]> {
   return new Promise(resolve => {
     const { compiler } = context;
     const paths = cache.get(compiler);
@@ -53,23 +53,27 @@ export function getPathsAsync(context: Context): Promise<Path[]> {
     if (paths != null) {
       resolve(paths);
     } else {
-      ready(context, stats => {
-        const paths: Path[] = [];
-        const { options } = context;
-        const childStats = getStats(stats);
+      ready(
+        context,
+        stats => {
+          const paths: Path[] = [];
+          const { options } = context;
+          const childStats = getStats(stats);
 
-        for (const { compilation } of childStats) {
-          // The `output.path` is always present and always absolute
-          const outputPath = getOutputPath(compilation);
-          const publicPath = getPublicPath(options, compilation);
+          for (const { compilation } of childStats) {
+            // The `output.path` is always present and always absolute
+            const outputPath = getOutputPath(compilation);
+            const publicPath = getPublicPath(options, compilation);
 
-          paths.push({ outputPath, publicPath });
-        }
+            paths.push({ outputPath, publicPath });
+          }
 
-        cache.set(compiler, paths);
+          cache.set(compiler, paths);
 
-        resolve(paths);
-      });
+          resolve(paths);
+        },
+        name
+      );
     }
   });
 }

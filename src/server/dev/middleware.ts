@@ -5,9 +5,8 @@
 import Files from './Files';
 import { Middleware } from 'koa';
 import { Context } from './interface';
-import { whenReady } from './utils/ready';
 import { decodeURI } from './utils/common';
-import { getPathsAsync } from './utils/getPaths';
+import { getPaths } from './utils/getPaths';
 
 interface FilesInstance {
   files: Files;
@@ -16,7 +15,7 @@ interface FilesInstance {
 
 const cache = new WeakMap<Context['compiler'], FilesInstance[]>();
 
-async function getFilesInstances(context: Context): Promise<FilesInstance[]> {
+async function getFilesInstances(context: Context, name: string): Promise<FilesInstance[]> {
   const cached = cache.get(context.compiler);
 
   if (cached != null) {
@@ -25,7 +24,7 @@ async function getFilesInstances(context: Context): Promise<FilesInstance[]> {
 
   const { options } = context;
   const instances: FilesInstance[] = [];
-  const paths = await getPathsAsync(context);
+  const paths = await getPaths(context, name);
 
   for (const { outputPath, publicPath } of paths) {
     instances.push({
@@ -57,28 +56,24 @@ export function middleware(context: Context): Middleware {
 
     let respond = false;
 
-    const instances = await getFilesInstances(context);
+    const instances = await getFilesInstances(context, path);
 
     for (const { files, publicPath } of instances) {
       if (path.startsWith(publicPath)) {
         ctx.path = path.slice(publicPath.length);
 
-        if (await whenReady(context)) {
-          respond = await files.response(ctx);
+        respond = await files.response(ctx);
 
-          if (respond) {
-            return;
-          } else {
-            ctx.path = path;
-          }
+        if (respond) {
+          return;
+        } else {
+          ctx.path = path;
         }
       }
     }
 
     if (!respond) {
-      if (await whenReady(context)) {
-        await next();
-      }
+      await next();
     }
   };
 }

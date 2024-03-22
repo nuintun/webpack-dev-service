@@ -17,7 +17,9 @@ function normalizeStatsOptions(statsOptions: Options['stats']): StatsOptions {
   }
 
   if (statsOptions.colors == null) {
-    statsOptions.colors = supportsColor.stdout !== false;
+    const { stdout, stderr } = supportsColor;
+
+    statsOptions.colors = stdout !== false && stderr !== false;
   }
 
   return statsOptions;

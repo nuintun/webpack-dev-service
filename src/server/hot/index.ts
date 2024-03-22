@@ -18,8 +18,8 @@ export function hot(compiler: Compiler, options: Options = {}): Middleware & Add
   const socket = new Socket(compiler, options);
 
   return Object.assign<Middleware, AdditionalMethods>(
-    async (context, next) => {
-      if (!socket.upgrade(context)) {
+    async (ctx, next) => {
+      if (!socket.upgrade(ctx)) {
         await next();
       }
     },
