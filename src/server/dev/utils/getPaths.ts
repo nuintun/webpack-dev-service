@@ -2,6 +2,7 @@
  * @module getPaths
  */
 
+import { URL } from 'url';
 import { ready } from './ready';
 import { Context } from '/server/dev/interface';
 import { Compilation, MultiStats, Stats } from 'webpack';
@@ -13,8 +14,21 @@ interface Path {
 
 const cache = new WeakMap<Context['compiler'], Path[]>();
 
-function isMultiStatsMode(stats: Stats | MultiStats): stats is MultiStats {
-  return 'stats' in stats;
+function getOutputPath(compilation: Compilation): string {
+  const { path } = compilation.outputOptions;
+
+  return compilation.getPath(path != null ? path : '');
+}
+
+function getPublicPath(compilation: Compilation): string {
+  const { publicPath } = compilation.outputOptions;
+  const path = compilation.getPath(publicPath != null ? publicPath : '');
+
+  try {
+    return new URL(path).pathname;
+  } catch {
+    return path;
+  }
 }
 
 function getStats(stats: Stats | MultiStats | null): Stats[] {
@@ -29,16 +43,8 @@ function getStats(stats: Stats | MultiStats | null): Stats[] {
   return [stats];
 }
 
-function getOutputPath(compilation: Compilation): string {
-  const { path } = compilation.outputOptions;
-
-  return compilation.getPath(path != null ? path : '');
-}
-
-function getPublicPath(compilation: Compilation): string {
-  const publicPath = compilation.outputOptions.publicPath;
-
-  return compilation.getPath(publicPath != null ? publicPath : '');
+function isMultiStatsMode(stats: Stats | MultiStats): stats is MultiStats {
+  return 'stats' in stats;
 }
 
 export function getPaths(context: Context, name: string): Promise<Path[]> {

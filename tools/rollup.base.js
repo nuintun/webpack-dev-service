@@ -49,6 +49,7 @@ export default function rollup(esnext) {
       external: [
         'fs',
         'ws',
+        'url',
         'etag',
         'path',
         'memfs',

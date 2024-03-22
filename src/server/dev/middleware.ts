@@ -52,8 +52,6 @@ export function middleware(context: Context): Middleware {
       return ctx.throw(400);
     }
 
-    ctx.path = path;
-
     let respond = false;
 
     const instances = await getFilesInstances(context, path);
