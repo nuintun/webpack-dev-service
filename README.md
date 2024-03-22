@@ -169,7 +169,6 @@ const port = 8000;
 const app = new Koa();
 const fs = createMemfs();
 const server = dev(compiler, {
-  index: false,
   outputFileSystem: fs,
   headers: {
     'Cache-Control': 'no-store',
