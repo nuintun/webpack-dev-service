@@ -30,7 +30,6 @@ export interface Options extends Omit<FilesOptions, 'fs'> {
   stats?: Configuration['stats'];
   outputFileSystem?: OutputFileSystem;
   writeToDisk?: boolean | ((targetPath: string) => boolean);
-  publicPath?: NonNullable<Configuration['output']>['publicPath'];
 }
 
 export interface Context {

@@ -3,8 +3,8 @@
  */
 
 import { ready } from './ready';
+import { Context } from '/server/dev/interface';
 import { Compilation, MultiStats, Stats } from 'webpack';
-import { Context, Options } from '/server/dev/interface';
 
 interface Path {
   outputPath: string;
@@ -35,12 +35,8 @@ function getOutputPath(compilation: Compilation): string {
   return compilation.getPath(path != null ? path : '');
 }
 
-function getPublicPath({ publicPath }: Options, compilation: Compilation): string {
-  if (publicPath != null) {
-    return compilation.getPath(publicPath);
-  }
-
-  publicPath = compilation.outputOptions.publicPath;
+function getPublicPath(compilation: Compilation): string {
+  const publicPath = compilation.outputOptions.publicPath;
 
   return compilation.getPath(publicPath != null ? publicPath : '');
 }
@@ -57,13 +53,12 @@ export function getPaths(context: Context, name: string): Promise<Path[]> {
         context,
         stats => {
           const paths: Path[] = [];
-          const { options } = context;
           const childStats = getStats(stats);
 
           for (const { compilation } of childStats) {
             // The `output.path` is always present and always absolute
             const outputPath = getOutputPath(compilation);
-            const publicPath = getPublicPath(options, compilation);
+            const publicPath = getPublicPath(compilation);
 
             paths.push({ outputPath, publicPath });
           }
