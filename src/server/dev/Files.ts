@@ -12,7 +12,7 @@ import { FilesOptions } from './interface';
 import { generate } from './utils/boundary';
 import { extname, join, resolve } from 'path';
 import { isETag, isETagFresh } from './utils/http';
-import { fstat, hasTrailingSlash, isOutRoot, isString, unixify } from './utils/common';
+import { fstat, hasTrailingSlash, isFunction, isOutRoot, isString, unixify } from './utils/common';
 
 interface Range {
   start: number;
@@ -222,7 +222,16 @@ export default class Files {
    */
   private setupHeaders(context: Context, path: string, stats: Stats): void {
     const { options } = this;
-    const { acceptRanges, cacheControl, lastModified } = options;
+    const { headers, cacheControl } = options;
+
+    // Set headers.
+    if (headers) {
+      if (isFunction(headers)) {
+        context.set(headers(path, stats));
+      } else {
+        context.set(headers);
+      }
+    }
 
     // Set status.
     context.status = 200;
@@ -231,13 +240,17 @@ export default class Files {
     context.type = extname(path);
 
     // ETag.
-    if (options.etag !== false) {
+    if (options.etag === false) {
+      context.remove('ETag');
+    } else {
       // Set ETag.
       context.set('ETag', etag(stats));
     }
 
     // Accept-Ranges.
-    if (acceptRanges !== false) {
+    if (options.acceptRanges === false) {
+      context.remove('Accept-Ranges');
+    } else {
       // Set Accept-Ranges.
       context.set('Accept-Ranges', 'bytes');
     }
@@ -249,7 +262,9 @@ export default class Files {
     }
 
     // Last-Modified.
-    if (lastModified !== false) {
+    if (options.lastModified === false) {
+      context.remove('Last-Modified');
+    } else {
       // Set mtime utc string.
       context.set('Last-Modified', stats.mtime.toUTCString());
     }

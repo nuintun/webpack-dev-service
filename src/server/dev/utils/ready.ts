@@ -5,7 +5,7 @@
 import { ParameterizedContext } from 'koa';
 import { Callback, Context } from '/server/dev/interface';
 
-export function isReady(context: Context): Promise<boolean> {
+export function whenReady(context: Context): Promise<boolean> {
   return new Promise(resolve => {
     ready(context, () => {
       resolve(true);

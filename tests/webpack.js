@@ -153,22 +153,21 @@ const app = new Koa();
 const fs = createMemfs();
 const server = dev(compiler, {
   index: false,
-  outputFileSystem: fs
-});
-
-app.use(compress({ br: false }));
-
-app.use(async (ctx, next) => {
-  ctx.set({
+  outputFileSystem: fs,
+  headers: {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': '*',
     'Access-Control-Allow-Headers': '*',
     'X-Content-Type-Options': 'nosniff',
     'Access-Control-Allow-Credentials': 'true'
-  });
-
-  await next();
+  }
 });
+
+app.use(
+  compress({
+    br: false
+  })
+);
 
 app.use(server);
 

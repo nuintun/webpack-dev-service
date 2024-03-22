@@ -2,16 +2,20 @@
  * @module interface
  */
 
-import { createReadStream } from 'fs';
+import { createReadStream, Stats as FileStats } from 'fs';
 import { Compiler, Configuration, MultiCompiler, MultiStats, Stats, Watching } from 'webpack';
 
 type IOutputFileSystem = NonNullable<Compiler['outputFileSystem']>;
 
-export type Callback = (stats: Stats | MultiStats | null) => void;
+interface HeaderFunction {
+  (path: string, stats: FileStats): Record<string, string | string[]>;
+}
 
 export interface OutputFileSystem extends IOutputFileSystem {
   createReadStream: typeof createReadStream;
 }
+
+export type Callback = (stats: Stats | MultiStats | null) => void;
 
 export interface FilesOptions {
   etag?: boolean;
@@ -19,6 +23,7 @@ export interface FilesOptions {
   cacheControl?: string;
   acceptRanges?: boolean;
   lastModified?: boolean;
+  headers?: HeaderFunction | Record<string, string | string[]>;
 }
 
 export interface Options extends Omit<FilesOptions, 'fs'> {
@@ -40,6 +45,7 @@ export interface Context {
 }
 
 export interface AdditionalMethods {
+  isReady(): boolean;
   logger: Context['logger'];
   ready(callback: Callback): void;
   invalidate(callback: Callback): void;

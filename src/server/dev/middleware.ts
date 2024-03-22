@@ -5,7 +5,7 @@
 import Files from './Files';
 import { Middleware } from 'koa';
 import { Context } from './interface';
-import { isReady } from './utils/ready';
+import { whenReady } from './utils/ready';
 import { decodeURI } from './utils/common';
 import { getPathsAsync } from './utils/getPaths';
 
@@ -32,6 +32,7 @@ async function getFilesInstances(context: Context): Promise<FilesInstance[]> {
       publicPath,
       files: new Files(outputPath, {
         etag: options.etag,
+        headers: options.headers,
         fs: context.outputFileSystem,
         acceptRanges: options.acceptRanges,
         cacheControl: options.cacheControl,
@@ -62,18 +63,20 @@ export function middleware(context: Context): Middleware {
       if (path.startsWith(publicPath)) {
         ctx.path = path.slice(publicPath.length);
 
-        respond = await files.response(ctx);
+        if (await whenReady(context)) {
+          respond = await files.response(ctx);
 
-        if (respond) {
-          return;
-        } else {
-          ctx.path = path;
+          if (respond) {
+            return;
+          } else {
+            ctx.path = path;
+          }
         }
       }
     }
 
     if (!respond) {
-      if (await isReady(context)) {
+      if (await whenReady(context)) {
         await next();
       }
     }
