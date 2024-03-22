@@ -13,8 +13,8 @@ export const PLUGIN_NAME = 'webpack-dev-service';
 
 /**
  * @function unixify
- * @description Convert path to unix style
- * @param path The path to convert
+ * @description Convert path to unix style.
+ * @param path The path to convert.
  */
 export function unixify(path: string): string {
   return path.replace(/\\/g, '/');
@@ -22,21 +22,21 @@ export function unixify(path: string): string {
 
 /**
  * @function decodeURI
- * @description Decode URI component
- * @param URI The URI to decode
+ * @description Decode URI component.
+ * @param URI The URI to decode.
  */
 export function decodeURI(URI: string): string | -1 {
   try {
     return decodeURIComponent(URI);
-  } catch (error) {
+  } catch {
     return -1;
   }
 }
 
 /**
  * @function hasTrailingSlash
- * @description Check if path has trailing slash
- * @param path The path to check
+ * @description Check if path has trailing slash.
+ * @param path The path to check.
  */
 export function hasTrailingSlash(path: string): boolean {
   return /\/$/.test(path);
@@ -56,9 +56,9 @@ export function isFunction(value: unknown): value is Function {
 
 /**
  * @function isOutRoot
- * @description Check if path is out of root
- * @param path The path to check
- * @param root The root path
+ * @description Check if path is out of root.
+ * @param path The path to check.
+ * @param root The root path.
  */
 export function isOutRoot(path: string, root: string): boolean {
   path = relative(root, path);
@@ -76,8 +76,8 @@ export function getCompilers(compiler: Compiler | MultiCompiler): Compiler[] {
 
 /**
  * @function fstat
- * @description Get file stats
- * @param path The file path
+ * @description Get file stats.
+ * @param path The file path.
  */
 export function fstat(fs: OutputFileSystem, path: string): Promise<Stats | undefined> {
   return new Promise((resolve, reject): void => {

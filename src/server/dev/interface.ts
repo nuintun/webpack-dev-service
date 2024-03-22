@@ -22,8 +22,6 @@ export interface FilesOptions {
 }
 
 export interface Options extends Omit<FilesOptions, 'fs'> {
-  index?: string | boolean;
-  serverSideRender?: boolean;
   stats?: Configuration['stats'];
   outputFileSystem?: OutputFileSystem;
   writeToDisk?: boolean | ((targetPath: string) => boolean);

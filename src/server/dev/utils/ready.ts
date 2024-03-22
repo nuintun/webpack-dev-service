@@ -5,6 +5,14 @@
 import { ParameterizedContext } from 'koa';
 import { Callback, Context } from '/server/dev/interface';
 
+export function isReady(context: Context): Promise<boolean> {
+  return new Promise(resolve => {
+    ready(context, () => {
+      resolve(true);
+    });
+  });
+}
+
 export function ready(context: Context, callback: Callback, request?: ParameterizedContext['request']): void {
   if (context.state) {
     callback(context.stats);

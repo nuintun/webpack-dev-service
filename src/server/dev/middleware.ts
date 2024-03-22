@@ -5,6 +5,7 @@
 import Files from './Files';
 import { Middleware } from 'koa';
 import { Context } from './interface';
+import { isReady } from './utils/ready';
 import { decodeURI } from './utils/common';
 import { getPathsAsync } from './utils/getPaths';
 
@@ -72,7 +73,9 @@ export function middleware(context: Context): Middleware {
     }
 
     if (!respond) {
-      await next();
+      if (await isReady(context)) {
+        await next();
+      }
     }
   };
 }

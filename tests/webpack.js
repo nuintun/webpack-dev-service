@@ -7,6 +7,7 @@ import Koa from 'koa';
 import path from 'path';
 import memfs from 'memfs';
 import webpack from 'webpack';
+import compress from 'koa-compress';
 import dev from 'webpack-dev-service';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
@@ -24,7 +25,7 @@ const html = {
   filename: entryHTML,
   templateParameters: { lang: 'en' },
   template: path.resolve('index.ejs'),
-  favicon: path.resolve('src/logo.svg'),
+  favicon: path.resolve('src/images/favicon.ico'),
   meta: { 'theme-color': '#4285f4', viewport: 'width=device-width,initial-scale=1.0' }
 };
 
@@ -128,7 +129,7 @@ const compiler = webpack({
             ]
           },
           {
-            test: /\.svg$/i,
+            test: /\.(svg|mp4)$/i,
             type: 'asset/resource',
             exclude: /[\\/]node_modules[\\/]/
           }
@@ -154,6 +155,8 @@ const server = dev(compiler, {
   index: false,
   outputFileSystem: fs
 });
+
+app.use(compress({ br: false }));
 
 app.use(async (ctx, next) => {
   ctx.set({

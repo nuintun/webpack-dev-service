@@ -3,16 +3,20 @@
  */
 
 import { createFsFromVolume, Volume } from 'memfs';
-import { getCompilers, isMultiCompilerMode } from './common';
 import { InitialContext, OutputFileSystem } from '/server/dev/interface';
-
-type IOutputFileSystem = Optional<OutputFileSystem, 'createReadStream'>;
+import { getCompilers, isFunction, isMultiCompilerMode } from './common';
 
 function createMemfs(): OutputFileSystem {
   const volume = new Volume();
 
   return createFsFromVolume(volume) as unknown as OutputFileSystem;
 }
+
+function hasReadStream(fs: IOutputFileSystem): fs is OutputFileSystem {
+  return isFunction(fs.createReadStream);
+}
+
+type IOutputFileSystem = Optional<OutputFileSystem, 'createReadStream'>;
 
 function getOutputFileSystem({ options, compiler }: InitialContext): IOutputFileSystem {
   if (options.outputFileSystem) {
@@ -48,15 +52,11 @@ function getOutputFileSystem({ options, compiler }: InitialContext): IOutputFile
   return createMemfs();
 }
 
-function supportReadStream(outputFileSystem: IOutputFileSystem): outputFileSystem is OutputFileSystem {
-  return typeof outputFileSystem.createReadStream === 'function';
-}
-
 export function setupOutputFileSystem(context: InitialContext): void {
   const compilers = getCompilers(context.compiler);
   const outputFileSystem = getOutputFileSystem(context);
 
-  if (!supportReadStream(outputFileSystem)) {
+  if (!hasReadStream(outputFileSystem)) {
     throw new Error('Compiler outputFileSystem must support createReadStream');
   }
 

@@ -18,16 +18,16 @@ const CHARS = [
 
 /**
  * @function generate
- * @description Generate a boundary
+ * @description Generate a boundary.
  */
 export function generate(): string {
   let boundary = '';
 
-  // Create boundary
+  // Create boundary.
   for (let i = 0; i < 38; i++) {
     boundary += CHARS[Math.floor(Math.random() * 62)];
   }
 
-  // Return boundary
+  // Return boundary.
   return boundary;
 }
