@@ -5,7 +5,7 @@
 import Files from './Files';
 import { Middleware } from 'koa';
 import { Context } from './interface';
-import { decodeURI } from './utils/common';
+import { decodeURI } from './utils/http';
 import { getPaths } from './utils/getPaths';
 
 interface FilesInstance {
@@ -34,7 +34,6 @@ async function getFilesInstances(context: Context, name: string): Promise<FilesI
         headers: options.headers,
         fs: context.outputFileSystem,
         acceptRanges: options.acceptRanges,
-        cacheControl: options.cacheControl,
         lastModified: options.lastModified
       })
     });

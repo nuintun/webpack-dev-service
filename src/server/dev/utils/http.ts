@@ -3,6 +3,19 @@
  */
 
 /**
+ * @function decodeURI
+ * @description Decode URI component.
+ * @param URI The URI to decode.
+ */
+export function decodeURI(URI: string): string | -1 {
+  try {
+    return decodeURIComponent(URI);
+  } catch {
+    return -1;
+  }
+}
+
+/**
  * @function parseTokens
  * @description Parse HTTP tokens.
  * @param value The tokens value string.

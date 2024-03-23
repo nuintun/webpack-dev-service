@@ -15,8 +15,43 @@ export interface Options {
 const WEBSOCKET_RE = /^websocket$/i;
 const { toString } = Object.prototype;
 
+function normalize(path: string) {
+  const segments: string[] = [];
+  const parts = path.split(/[\\/]+/);
+
+  for (const segment of parts) {
+    switch (segment) {
+      case '.':
+        break;
+      case '..':
+        segments.pop();
+        break;
+      default:
+        segments.push(segment);
+        break;
+    }
+  }
+
+  const pathname = segments.join('/');
+
+  return pathname.startsWith('/') ? pathname : `/${pathname}`;
+}
+
 function isObject(value: unknown): value is object {
   return toString.call(value) === '[object Object]';
+}
+
+function resolveOptions(options: Options): Required<Options> {
+  const settings = {
+    hmr: true,
+    path: '/hot',
+    progress: true,
+    ...options
+  };
+
+  settings.path = normalize(settings.path);
+
+  return settings;
 }
 
 function resolveStatsOptions(compiler: Compiler): StatsOptions {
@@ -41,41 +76,6 @@ function resolveStatsOptions(compiler: Compiler): StatsOptions {
   }
 
   return options;
-}
-
-function normalize(path: string) {
-  const segments: string[] = [];
-  const parts = path.split(/[\\/]+/);
-
-  for (const segment of parts) {
-    switch (segment) {
-      case '.':
-        break;
-      case '..':
-        segments.pop();
-        break;
-      default:
-        segments.push(segment);
-        break;
-    }
-  }
-
-  const pathname = segments.join('/');
-
-  return pathname.startsWith('/') ? pathname : `/${pathname}`;
-}
-
-function resolveOptions(options: Options): Required<Options> {
-  const settings = {
-    hmr: true,
-    path: '/hot',
-    progress: true,
-    ...options
-  };
-
-  settings.path = normalize(settings.path);
-
-  return settings;
 }
 
 function isUpgradable(context: Context, detector: RegExp): boolean {

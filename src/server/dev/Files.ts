@@ -8,11 +8,12 @@ import destroy from 'destroy';
 import { Context } from 'koa';
 import { PassThrough } from 'stream';
 import parseRange from 'range-parser';
-import { FilesOptions } from './interface';
-import { generate } from './utils/boundary';
+import { generate } from './utils/hash';
+import { isFunction } from './utils/common';
 import { extname, join, resolve } from 'path';
 import { isETag, isETagFresh } from './utils/http';
-import { fstat, hasTrailingSlash, isFunction, isOutRoot, isString, unixify } from './utils/common';
+import { FilesOptions, OutputFileSystem } from './interface';
+import { hasTrailingSlash, isOutRoot, unixify } from './utils/path';
 
 interface Range {
   start: number;
@@ -22,6 +23,19 @@ interface Range {
 }
 
 type Ranges = Range[] | -1 | -2;
+
+/**
+ * @function fstat
+ * @description Get file stats.
+ * @param path The file path.
+ */
+function fstat(fs: OutputFileSystem, path: string): Promise<Stats | undefined> {
+  return new Promise((resolve, reject): void => {
+    fs.stat(path, (error, stats): void => {
+      error ? reject(error) : resolve(stats);
+    });
+  });
+}
 
 /**
  * @class Files
@@ -222,7 +236,7 @@ export default class Files {
    */
   private setupHeaders(context: Context, path: string, stats: Stats): void {
     const { options } = this;
-    const { headers, cacheControl } = options;
+    const { headers } = options;
 
     // Set headers.
     if (headers) {
@@ -253,12 +267,6 @@ export default class Files {
     } else {
       // Set Accept-Ranges.
       context.set('Accept-Ranges', 'bytes');
-    }
-
-    // Cache-Control.
-    if (cacheControl && isString(cacheControl)) {
-      // Set Cache-Control.
-      context.set('Cache-Control', cacheControl);
     }
 
     // Last-Modified.

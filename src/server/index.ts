@@ -4,7 +4,7 @@
 
 import { Middleware } from 'koa';
 import { Compiler } from 'webpack';
-import { compose } from './dev/utils/compose';
+import { compose } from './compose';
 import { AdditionalMethods as DevMethods, dev, Options as DevOptions } from './dev';
 import { AdditionalMethods as HotMethods, hot, Options as HotOptions } from './hot';
 

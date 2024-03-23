@@ -1,9 +1,11 @@
 /**
- * @module boundary
+ * @module hash
  */
 
+import { getRandomValues } from 'crypto';
+
 // prettier-ignore
-const CHARS = [
+const CHARS: string[] = [
   // 0-9
   '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
   // A-M
@@ -18,16 +20,18 @@ const CHARS = [
 
 /**
  * @function generate
- * @description Generate a boundary.
+ * @description Generate a hash.
  */
-export function generate(): string {
-  let boundary = '';
+export function generate(length: number = 32): string {
+  let hash = '';
 
-  // Create boundary.
-  for (let i = 0; i < 38; i++) {
-    boundary += CHARS[Math.floor(Math.random() * 62)];
+  const randomValues = getRandomValues(new Uint8Array(length));
+
+  // Create hash.
+  for (const value of randomValues) {
+    hash += CHARS[value % 62];
   }
 
-  // Return boundary.
-  return boundary;
+  // Return hash.
+  return hash;
 }

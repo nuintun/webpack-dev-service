@@ -15,6 +15,7 @@ interface Path {
 const cache = new WeakMap<Context['compiler'], Path[]>();
 
 function getOutputPath(compilation: Compilation): string {
+  // The `output.path` is always present and always absolute
   const { path } = compilation.outputOptions;
 
   return compilation.getPath(path != null ? path : '');
@@ -62,11 +63,10 @@ export function getPaths(context: Context, name: string): Promise<Path[]> {
           const childStats = getStats(stats);
 
           for (const { compilation } of childStats) {
-            // The `output.path` is always present and always absolute
-            const outputPath = getOutputPath(compilation);
-            const publicPath = getPublicPath(compilation);
-
-            paths.push({ outputPath, publicPath });
+            paths.push({
+              outputPath: getOutputPath(compilation),
+              publicPath: getPublicPath(compilation)
+            });
           }
 
           cache.set(compiler, paths);

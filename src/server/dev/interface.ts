@@ -20,7 +20,6 @@ export type Callback = (stats: Stats | MultiStats | null) => void;
 export interface FilesOptions {
   etag?: boolean;
   fs: OutputFileSystem;
-  cacheControl?: string;
   acceptRanges?: boolean;
   lastModified?: boolean;
   headers?: HeaderFunction | Record<string, string | string[]>;
