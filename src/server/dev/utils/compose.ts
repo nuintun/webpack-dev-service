@@ -41,16 +41,14 @@ async function dispatch<C>(
 
   const { length } = middlewares;
 
-  if (index <= length) {
-    if (index < length) {
-      const middleware = middlewares[index];
+  if (index < length) {
+    const middleware = middlewares[index];
 
-      await middleware(context, () => {
-        return dispatch(middlewares, index + 1, stack, context, next);
-      });
-    } else if (next) {
-      await next();
-    }
+    await middleware(context, () => {
+      return dispatch(middlewares, index + 1, stack, context, next);
+    });
+  } else if (next) {
+    await next();
   }
 }
 
