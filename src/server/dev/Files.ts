@@ -241,7 +241,11 @@ export default class Files {
     // Set headers.
     if (headers) {
       if (isFunction(headers)) {
-        context.set(headers(path, stats));
+        const fields = headers(path, stats);
+
+        if (fields) {
+          context.set(fields);
+        }
       } else {
         context.set(headers);
       }

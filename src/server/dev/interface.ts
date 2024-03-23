@@ -7,28 +7,28 @@ import { Compiler, Configuration, MultiCompiler, MultiStats, Stats, Watching } f
 
 type IOutputFileSystem = NonNullable<Compiler['outputFileSystem']>;
 
+interface Headers {
+  [key: string]: string | string[];
+}
+
 interface HeaderFunction {
-  (path: string, stats: FileStats): Record<string, string | string[]>;
+  (path: string, stats: FileStats): Headers | void;
 }
 
 export interface OutputFileSystem extends IOutputFileSystem {
   createReadStream: typeof createReadStream;
 }
 
-export type Callback = (stats: Stats | MultiStats | null) => void;
-
 export interface FilesOptions {
   etag?: boolean;
   fs: OutputFileSystem;
   acceptRanges?: boolean;
   lastModified?: boolean;
-  headers?: HeaderFunction | Record<string, string | string[]>;
+  headers?: Headers | HeaderFunction;
 }
 
-export interface Options extends Omit<FilesOptions, 'fs'> {
-  stats?: Configuration['stats'];
-  outputFileSystem?: OutputFileSystem;
-  writeToDisk?: boolean | ((targetPath: string) => boolean);
+export interface Callback {
+  (stats: Stats | MultiStats | null): void;
 }
 
 export interface Context {
@@ -40,6 +40,12 @@ export interface Context {
   outputFileSystem: OutputFileSystem;
   logger: ReturnType<Compiler['getInfrastructureLogger']>;
   watching: Watching | ReturnType<MultiCompiler['watch']>;
+}
+
+export interface Options extends Omit<FilesOptions, 'fs'> {
+  stats?: Configuration['stats'];
+  outputFileSystem?: OutputFileSystem;
+  writeToDisk?: boolean | ((targetPath: string) => boolean);
 }
 
 export interface AdditionalMethods {
