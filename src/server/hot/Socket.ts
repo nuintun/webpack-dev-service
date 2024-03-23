@@ -70,7 +70,7 @@ function resolveStatsOptions(compiler: Compiler): StatsOptions {
   if (isObject(stats)) {
     const { warningsFilter } = stats;
 
-    if (warningsFilter !== undefined) {
+    if (warningsFilter != null) {
       options.warningsFilter = warningsFilter;
     }
   }
