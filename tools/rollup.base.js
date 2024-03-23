@@ -54,6 +54,7 @@ export default function rollup(esnext) {
         'path',
         'memfs',
         'tslib',
+        'crypto',
         'stream',
         'destroy',
         'webpack',
