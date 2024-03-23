@@ -154,6 +154,7 @@ const fs = createMemfs();
 const server = dev(compiler, {
   outputFileSystem: fs,
   headers: {
+    'Cache-Control': 'no-cache',
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': '*',
     'Access-Control-Allow-Headers': '*',
