@@ -156,8 +156,8 @@ const server = dev(compiler, {
   headers: {
     'Cache-Control': 'no-cache',
     'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': '*',
     'Access-Control-Allow-Headers': '*',
+    'Access-Control-Allow-Methods': '*',
     'X-Content-Type-Options': 'nosniff',
     'Access-Control-Allow-Credentials': 'true'
   }
