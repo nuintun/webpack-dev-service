@@ -55,8 +55,8 @@ export function setupHooks(context: InitialContext): void {
     }
 
     // We are now in invalid state.
-    context.stats = null;
     context.state = false;
+    context.stats = undefined;
   }
 
   function done(stats: NonNullable<Context['stats']>): void {

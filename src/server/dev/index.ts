@@ -19,7 +19,6 @@ function setup(compiler: Compiler | MultiCompiler, options: Options): Context {
   const context: InitialContext = {
     options,
     compiler,
-    stats: null,
     state: false,
     callbacks: [],
     logger: compiler.getInfrastructureLogger(PLUGIN_NAME)

@@ -28,14 +28,14 @@ export interface FilesOptions {
 }
 
 export interface Callback {
-  (stats: Stats | MultiStats | null): void;
+  (stats: Stats | MultiStats): void;
 }
 
 export interface Context {
   state: boolean;
   options: Options;
   callbacks: Callback[];
-  stats: Stats | MultiStats | null;
+  stats: Stats | MultiStats;
   compiler: Compiler | MultiCompiler;
   outputFileSystem: OutputFileSystem;
   logger: ReturnType<Compiler['getInfrastructureLogger']>;
@@ -56,4 +56,4 @@ export interface AdditionalMethods {
   close(callback: (error?: Error | null) => void): void;
 }
 
-export type InitialContext = Optional<Context, 'watching' | 'outputFileSystem'>;
+export type InitialContext = Optional<Context, 'stats' | 'watching' | 'outputFileSystem'>;
