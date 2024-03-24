@@ -46,7 +46,7 @@ export function middleware(context: Context): Middleware {
   return async (ctx, next) => {
     const path = decodeURI(ctx.path);
 
-    // Path -1 or null byte(s)
+    // Path -1 or null byte(s).
     if (path === -1 || path.includes('\0')) {
       return ctx.throw(400);
     }

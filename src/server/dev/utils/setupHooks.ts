@@ -54,7 +54,7 @@ export function setupHooks(context: InitialContext): void {
       context.logger.log('Compilation starting...');
     }
 
-    // We are now in invalid state
+    // We are now in invalid state.
     context.stats = null;
     context.state = false;
   }
@@ -64,11 +64,11 @@ export function setupHooks(context: InitialContext): void {
     context.state = true;
     context.stats = stats;
 
-    // Do the stuff in nextTick, because bundle may be invalidated if a change happened while compiling
+    // Do the stuff in nextTick, because bundle may be invalidated if a change happened while compiling.
     process.nextTick(() => {
       const { state } = context;
 
-      // Check if still in valid state
+      // Check if still in valid state.
       if (state) {
         const { logger, callbacks } = context;
 
@@ -83,7 +83,7 @@ export function setupHooks(context: InitialContext): void {
         const statsOptions = getStatsOptions(context);
         const printedStats = stats.toString(statsOptions as StatsOptions);
 
-        // Avoid extra empty line when `stats: 'none'`
+        // Avoid extra empty line when `stats: 'none'`.
         if (printedStats) {
           console.log(printedStats);
         }

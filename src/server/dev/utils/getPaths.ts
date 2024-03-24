@@ -15,7 +15,7 @@ interface Path {
 const cache = new WeakMap<Context['compiler'], Path[]>();
 
 function getOutputPath(compilation: Compilation): string {
-  // The `output.path` is always present and always absolute
+  // The `output.path` is always present and always absolute.
   const { path } = compilation.outputOptions;
 
   return compilation.getPath(path != null ? path : '');

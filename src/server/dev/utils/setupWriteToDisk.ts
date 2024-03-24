@@ -57,7 +57,7 @@ export function setupWriteToDisk(context: InitialContext): void {
           });
         });
 
-        // Set asset emitted to true
+        // Set asset emitted to true.
         compiler[assetEmitted] = true;
       }
     });
