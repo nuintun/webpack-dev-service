@@ -35,9 +35,9 @@ export function normalize(path: string): string {
 export function resolveOptions(options: Options): Required<Options> {
   const settings = {
     hmr: true,
-    live: true,
     wss: false,
     path: '/hot',
+    reload: true,
     overlay: true,
     progress: true,
     ...options

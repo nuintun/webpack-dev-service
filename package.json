@@ -22,8 +22,8 @@
       "types": "./types/client/main.d.ts"
     },
     "./client?*": {
-      "import": "./client/esm/main.js",
-      "require": "./client/cjs/main.cjs",
+      "import": "./client/esm/main.js?*",
+      "require": "./client/cjs/main.cjs?*",
       "types": "./types/client/main.d.ts"
     },
     "./events": {

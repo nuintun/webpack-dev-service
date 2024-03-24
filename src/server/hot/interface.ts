@@ -5,10 +5,10 @@
 import { Compiler, WebpackPluginInstance } from 'webpack';
 
 export interface Options {
-  wss?: boolean;
   hmr?: boolean;
   path?: string;
-  live?: boolean;
+  wss?: boolean;
+  reload?: boolean;
   overlay?: boolean;
   progress?: boolean;
 }

@@ -72,11 +72,11 @@ export class Socket {
       ({ name, context }) => {
         const params = new URLSearchParams();
 
-        params.set('name', name ?? 'webpack');
-        params.set('path', options.path ?? '/hot');
+        params.set('name', name || 'webpack');
+        params.set('path', options.path || '/hot');
         params.set('wss', options.wss === true ? 'true' : 'false');
         params.set('hmr', options.hmr !== false ? 'true' : 'false');
-        params.set('live', options.live !== false ? 'true' : 'false');
+        params.set('reload', options.reload !== false ? 'true' : 'false');
         params.set('overlay', options.overlay !== false ? 'true' : 'false');
         params.set('progress', options.progress !== false ? 'true' : 'false');
 

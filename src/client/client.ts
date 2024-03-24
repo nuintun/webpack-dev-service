@@ -13,8 +13,8 @@ export interface Options {
   readonly hmr: boolean;
   readonly name: string;
   readonly path: string;
-  readonly live: boolean;
   readonly origin: string;
+  readonly reload: boolean;
   readonly overlay: boolean;
   readonly progress: boolean;
 }
@@ -28,16 +28,15 @@ export default function createClient(options: Options): void {
   const progress = new Progress();
   const overlay = new Overlay(options.name);
 
-  const fallback = (error?: Error): void => {
-    if (options.live) {
+  const fallback = (): void => {
+    if (options.reload) {
       self.location.reload();
-    } else if (error) {
-      console.error(error);
+    } else {
       console.warn('Use fallback update but you turn off live reload, please reload by yourself.');
     }
   };
 
-  const applyUpdateAsync = () => {
+  const applyUpdateAsync = (): void => {
     updateTimer = self.setTimeout(() => {
       applyUpdate(options.hmr, fallback);
     }, UPDATE_DELAY);

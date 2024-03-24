@@ -52,8 +52,8 @@ const resolveOptions = (): Options => {
     origin: resolveOrigin(params),
     hmr: params.get('hmr') !== 'false',
     path: params.get('path') || '/hot',
-    live: params.get('live') !== 'false',
     name: params.get('name') || 'webpack',
+    reload: params.get('reload') !== 'false',
     overlay: params.get('overlay') !== 'false',
     progress: params.get('progress') !== 'false'
   };
