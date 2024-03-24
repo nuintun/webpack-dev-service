@@ -85,7 +85,7 @@ export function setupHooks(context: InitialContext): void {
 
         // Avoid extra empty line when `stats: 'none'`
         if (printedStats) {
-          logger.log(printedStats);
+          console.log(printedStats);
         }
       }
     });
