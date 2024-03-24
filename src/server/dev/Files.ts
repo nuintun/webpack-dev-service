@@ -29,10 +29,10 @@ type Ranges = Range[] | -1 | -2;
  * @description Get file stats.
  * @param path The file path.
  */
-function fstat(fs: OutputFileSystem, path: string): Promise<Stats | undefined> {
-  return new Promise((resolve, reject): void => {
+function fstat(fs: OutputFileSystem, path: string): Promise<Stats | null> {
+  return new Promise((resolve): void => {
     fs.stat(path, (error, stats): void => {
-      error ? reject(error) : resolve(stats);
+      resolve(error != null ? null : stats);
     });
   });
 }
@@ -93,10 +93,10 @@ export default class Files {
     // If-Unmodified-Since.
     const unmodifiedSince = Date.parse(request.get('If-Unmodified-Since'));
 
-    if (!isNaN(unmodifiedSince)) {
+    if (!Number.isNaN(unmodifiedSince)) {
       const lastModified = Date.parse(response.get('Last-Modified'));
 
-      return isNaN(lastModified) || lastModified > unmodifiedSince;
+      return Number.isNaN(lastModified) || lastModified > unmodifiedSince;
     }
 
     return false;
@@ -239,11 +239,11 @@ export default class Files {
     const { headers } = options;
 
     // Set headers.
-    if (headers) {
+    if (headers != null) {
       if (isFunction(headers)) {
         const fields = headers(path, stats);
 
-        if (fields) {
+        if (fields != null) {
           context.set(fields);
         }
       } else {
@@ -301,7 +301,7 @@ export default class Files {
       const file = fs.createReadStream(path, range);
 
       // File read stream open.
-      if (prefix) {
+      if (prefix != null) {
         file.once('open', () => {
           // Write prefix boundary.
           stream.write(prefix);
@@ -309,7 +309,7 @@ export default class Files {
       }
 
       // File read stream end.
-      if (suffix) {
+      if (suffix != null) {
         file.once('end', () => {
           // Push suffix boundary.
           stream.write(suffix);
@@ -397,32 +397,18 @@ export default class Files {
       return false;
     }
 
-    // Get file system.
-    const { fs } = this.options;
-
     // File stats.
-    let stats: Stats | undefined;
+    const stats = await fstat(this.options.fs, path);
 
-    // Get file stats.
-    try {
-      stats = await fstat(fs, path);
-    } catch {
-      // 404 | 500.
-      return false;
-    }
-
-    // File not exist (404 | 500).
-    if (!stats) {
-      return false;
-    }
-
-    // Is directory (403).
-    if (stats.isDirectory()) {
-      return false;
-    }
-
-    // Not a directory but has trailing slash (404).
-    if (hasTrailingSlash(path)) {
+    // Check file stats.
+    if (
+      // File not exist (404 | 500).
+      stats == null ||
+      // Is directory (403).
+      stats.isDirectory() ||
+      // Not a directory but has trailing slash (404).
+      hasTrailingSlash(path)
+    ) {
       return false;
     }
 
