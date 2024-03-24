@@ -2,7 +2,7 @@
  * @module interface
  */
 
-import { Compiler, MultiCompiler, Stats, MultiStats, Configuration } from 'webpack';
+import { Compiler, Configuration, MultiCompiler, MultiStats, Stats } from 'webpack';
 
 export type IStats = Stats | MultiStats;
 export type ICompiler = Compiler | MultiCompiler;

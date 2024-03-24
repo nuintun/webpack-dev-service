@@ -4,7 +4,7 @@
 
 import { StatsOptions } from 'webpack';
 import supportsColor from 'supports-color';
-import { IStatsOptions } from '/server/interface';
+import { IStats, IStatsOptions } from '/server/interface';
 import { Context, InitialContext } from '/server/dev/interface';
 import { isBoolean, isMultiCompilerMode, isString, PLUGIN_NAME } from '/server/utils';
 
@@ -50,6 +50,18 @@ function getStatsOptions(context: InitialContext): StatsOptions {
 }
 
 export function setupHooks(context: InitialContext): void {
+  const statsOptions = getStatsOptions(context);
+  const {
+    onDone = (stats: IStats, statsOptions: StatsOptions) => {
+      const printedStats = stats.toString(statsOptions);
+
+      // Avoid extra empty line when `stats: 'none'`.
+      if (printedStats) {
+        console.log(printedStats);
+      }
+    }
+  } = context.options;
+
   function invalid(): void {
     if (context.state) {
       context.logger.log('Compilation starting...');
@@ -59,8 +71,6 @@ export function setupHooks(context: InitialContext): void {
     context.state = false;
     context.stats = undefined;
   }
-
-  const statsOptions = getStatsOptions(context);
 
   function done(stats: NonNullable<Context['stats']>): void {
     // We are now on valid state
@@ -83,12 +93,7 @@ export function setupHooks(context: InitialContext): void {
           callback(stats);
         }
 
-        const printedStats = stats.toString(statsOptions);
-
-        // Avoid extra empty line when `stats: 'none'`.
-        if (printedStats) {
-          console.log(printedStats);
-        }
+        onDone(stats, statsOptions);
       }
     });
   }

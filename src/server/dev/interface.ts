@@ -3,7 +3,7 @@
  */
 
 import { createReadStream, Stats as FileStats } from 'fs';
-import { Compiler, MultiCompiler, Watching } from 'webpack';
+import { Compiler, MultiCompiler, StatsOptions, Watching } from 'webpack';
 import { ICompiler, ILogger, IStats, IStatsOptions } from '/server/interface';
 
 interface Headers {
@@ -47,6 +47,7 @@ export interface Options extends Omit<FilesOptions, 'fs'> {
   stats?: IStatsOptions;
   outputFileSystem?: OutputFileSystem;
   writeToDisk?: boolean | ((targetPath: string) => boolean);
+  onDone?(stats: IStats, statsOptions: Readonly<StatsOptions>): void;
 }
 
 export interface AdditionalMethods {

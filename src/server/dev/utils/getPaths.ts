@@ -4,6 +4,7 @@
 
 import { URL } from 'url';
 import { ready } from './ready';
+import { IStats } from '/server/interface';
 import { Context } from '/server/dev/interface';
 import { Compilation, MultiStats, Stats } from 'webpack';
 
@@ -32,7 +33,7 @@ function getPublicPath(compilation: Compilation): string {
   }
 }
 
-function getStats(stats: Stats | MultiStats | null): Stats[] {
+function getStats(stats: IStats | null): Stats[] {
   if (stats == null) {
     return [];
   }
@@ -44,7 +45,7 @@ function getStats(stats: Stats | MultiStats | null): Stats[] {
   return [stats];
 }
 
-function isMultiStatsMode(stats: Stats | MultiStats): stats is MultiStats {
+function isMultiStatsMode(stats: IStats): stats is MultiStats {
   return 'stats' in stats;
 }
 
