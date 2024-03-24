@@ -32,6 +32,22 @@
       "types": "./types/client/index.d.ts"
     }
   },
+  "typesVersions": {
+    "*": {
+      ".": [
+        "./types/server/index.d.ts"
+      ],
+      "client": [
+        "./types/client/main.d.ts"
+      ],
+      "client?*": [
+        "./types/client/main.d.ts"
+      ],
+      "events": [
+        "./types/client/index.d.ts"
+      ]
+    }
+  },
   "files": [
     "types",
     "server",
