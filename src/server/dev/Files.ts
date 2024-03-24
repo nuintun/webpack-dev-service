@@ -29,7 +29,7 @@ type Ranges = Range[] | -1 | -2;
  * @description Get file stats.
  * @param path The file path.
  */
-function fstat(fs: OutputFileSystem, path: string): Promise<Stats | null> {
+function fstat(fs: OutputFileSystem, path: string): Promise<Stats | null | undefined> {
   return new Promise((resolve): void => {
     fs.stat(path, (error, stats): void => {
       resolve(error != null ? null : stats);

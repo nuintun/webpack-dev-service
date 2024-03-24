@@ -2,10 +2,8 @@
  * @module interface
  */
 
-import { createReadStream, stat, Stats as FileStats } from 'fs';
+import { createReadStream, Stats as FileStats } from 'fs';
 import { Compiler, Configuration, MultiCompiler, MultiStats, Stats, Watching } from 'webpack';
-
-type IOutputFileSystem = NonNullable<Compiler['outputFileSystem']>;
 
 interface Headers {
   [key: string]: string | string[];
@@ -15,8 +13,9 @@ interface HeaderFunction {
   (path: string, stats: FileStats): Headers | void;
 }
 
+type IOutputFileSystem = NonNullable<Compiler['outputFileSystem']>;
+
 export interface OutputFileSystem extends IOutputFileSystem {
-  stat: typeof stat;
   createReadStream: typeof createReadStream;
 }
 
