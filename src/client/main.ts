@@ -19,7 +19,7 @@ const getCurrentScript = (): HTMLScriptElement | void => {
 };
 
 const resolveProtocol = (params: URLSearchParams, protocol: string): WebSocketProtocol => {
-  switch (params.get('tls')) {
+  switch (params.get('wss')) {
     case 'true':
       return 'wss:';
     case 'false':
@@ -31,54 +31,32 @@ const resolveProtocol = (params: URLSearchParams, protocol: string): WebSocketPr
 
 const resolveOrigin = (params: URLSearchParams): string => {
   const { location } = self;
+  const script = getCurrentScript();
 
-  let host = params.get('host');
-  let protocol: WebSocketProtocol;
+  if (script) {
+    const url = new URL(script.src, location.href);
+    const protocol = resolveProtocol(params, url.protocol);
 
-  if (host) {
-    protocol = resolveProtocol(params, location.protocol);
-  } else {
-    const script = getCurrentScript();
-
-    if (script) {
-      const { src } = script;
-      const url = new URL(src, location.href);
-
-      host = url.host;
-      protocol = resolveProtocol(params, url.protocol);
-    } else {
-      host = location.host;
-      protocol = resolveProtocol(params, location.protocol);
-    }
+    return `${protocol}//${url.host}`;
   }
 
-  return `${protocol}//${host}`;
+  const protocol = resolveProtocol(params, location.protocol);
+
+  return `${protocol}//${location.host}`;
 };
 
 const resolveOptions = (): Options => {
   const params = new URLSearchParams(__resourceQuery);
 
-  const origin = resolveOrigin(params);
-  const hmr = params.get('hmr') !== 'false';
-  const live = params.get('live') !== 'false';
-  const overlay = params.get('overlay') !== 'false';
-  const progress = params.get('progress') !== 'false';
-
-  try {
-    const options = __WDS_HOT_OPTIONS__;
-
-    return {
-      live,
-      origin,
-      overlay,
-      name: options.name,
-      path: options.path,
-      hmr: options.hmr === false ? false : hmr,
-      progress: options.progress === false ? false : progress
-    };
-  } catch {
-    throw new Error('Imported the hot client but the hot server is not enabled.');
-  }
+  return {
+    origin: resolveOrigin(params),
+    hmr: params.get('hmr') !== 'false',
+    path: params.get('path') || '/hot',
+    live: params.get('live') !== 'false',
+    name: params.get('name') || 'webpack',
+    overlay: params.get('overlay') !== 'false',
+    progress: params.get('progress') !== 'false'
+  };
 };
 
 createClient(resolveOptions());

@@ -44,12 +44,7 @@ const compiler = webpack({
   name: 'react',
   mode: 'development',
   context: path.resolve('src'),
-  entry: [
-    // Entry file
-    path.resolve('src/index.tsx'),
-    // Hot client
-    'webpack-dev-service/client'
-  ],
+  entry: path.resolve('src/index.tsx'),
   output: {
     publicPath: '/public/',
     filename: `js/[name].js`,

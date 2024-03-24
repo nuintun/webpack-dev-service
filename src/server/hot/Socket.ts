@@ -3,16 +3,12 @@
  */
 
 import { Context } from 'koa';
-import { Options } from './interface';
 import WebSocket, { WebSocketServer } from 'ws';
+import webpack, { StatsCompilation } from 'webpack';
+import { Options, PluginFactory } from './interface';
 import { getCompilers, PLUGIN_NAME } from '/server/utils';
 import { ICompiler, ILogger, IStats } from '/server/interface';
-import webpack, { StatsCompilation, WebpackPluginInstance } from 'webpack';
 import { getStatsOptions, hasProblems, isUpgradable, resolveOptions, WEBSOCKET_RE } from './utils';
-
-interface Plugin {
-  (name?: string): WebpackPluginInstance;
-}
 
 export class Socket {
   private stats!: StatsCompilation;
@@ -66,33 +62,33 @@ export class Socket {
   setupPlugins(): void {
     const { options, compiler } = this;
     const compilers = getCompilers(compiler);
-    const plugins: Plugin[] = [
-      name => {
-        console.log({
-          ...options,
-          name: name || PLUGIN_NAME
-        });
-        return new webpack.DefinePlugin({
-          __WDS_HOT_OPTIONS__: JSON.stringify({
-            ...options,
-            name: name || PLUGIN_NAME
-          })
-        });
-      },
+    const plugins: PluginFactory[] = [
       () => {
         return new webpack.NoEmitOnErrorsPlugin();
+      },
+      () => {
+        return new webpack.HotModuleReplacementPlugin();
+      },
+      ({ name, context }) => {
+        const params = new URLSearchParams();
+
+        params.set('name', name ?? 'webpack');
+        params.set('path', options.path ?? '/hot');
+        params.set('wss', options.wss === true ? 'true' : 'false');
+        params.set('hmr', options.hmr !== false ? 'true' : 'false');
+        params.set('live', options.live !== false ? 'true' : 'false');
+        params.set('overlay', options.overlay !== false ? 'true' : 'false');
+        params.set('progress', options.progress !== false ? 'true' : 'false');
+
+        return new webpack.EntryPlugin(context, `webpack-dev-service/client?${params}`, {
+          runtime: `${PLUGIN_NAME}/client`
+        });
       }
     ];
 
-    if (options.hmr) {
-      plugins.push(() => {
-        return new webpack.HotModuleReplacementPlugin();
-      });
-    }
-
     for (const compiler of compilers) {
       for (const plugin of plugins) {
-        plugin(compiler.name).apply(compiler);
+        plugin(compiler).apply(compiler);
       }
     }
 

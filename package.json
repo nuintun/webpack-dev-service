@@ -22,8 +22,8 @@
       "types": "./types/client/main.d.ts"
     },
     "./client?*": {
-      "import": "./client/esm/main.js?*",
-      "require": "./client/cjs/main.cjs?*",
+      "import": "./client/esm/main.js",
+      "require": "./client/cjs/main.cjs",
       "types": "./types/client/main.d.ts"
     },
     "./events": {
@@ -32,27 +32,14 @@
       "types": "./types/client/index.d.ts"
     }
   },
-  "typesVersions": {
-    "*": {
-      "client": [
-        "./types/client/main.d.ts"
-      ],
-      "client?*": [
-        "./types/client/main.d.ts"
-      ],
-      "events": [
-        "./types/client/index.d.ts"
-      ]
-    }
-  },
   "files": [
     "types",
     "server",
-    "client",
-    "index.d.ts",
-    "client.d.ts",
-    "global.d.ts"
+    "client"
   ],
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/nuintun/webpack-dev-service.git"
@@ -126,6 +113,6 @@
     "webpack": "^5.91.0"
   },
   "peerDependencies": {
-    "webpack": "^5.0.0"
+    "webpack": "^5.20.0"
   }
 }
