@@ -30,8 +30,8 @@ type Ranges = Range[] | -1 | -2;
  * @param path The file path.
  */
 function fstat(fs: OutputFileSystem, path: string): Promise<Stats | null | undefined> {
-  return new Promise((resolve): void => {
-    fs.stat(path, (error, stats): void => {
+  return new Promise(resolve => {
+    fs.stat(path, (error, stats) => {
       resolve(error != null ? null : stats);
     });
   });
