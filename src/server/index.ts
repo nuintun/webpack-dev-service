@@ -3,8 +3,8 @@
  */
 
 import { Middleware } from 'koa';
-import { Compiler } from 'webpack';
 import { compose } from './compose';
+import { ICompiler } from './interface';
 import { AdditionalMethods as DevMethods, dev, Options as DevOptions } from './dev';
 import { AdditionalMethods as HotMethods, hot, Options as HotOptions } from './hot';
 
@@ -20,22 +20,22 @@ export type EnableHotMiddleware = DisableHotMiddleware & HotMethods;
  * @description Create koa dev server middleware.
  * @param compiler The webpack compiler instance.
  */
-export default function server(compiler: Compiler): EnableHotMiddleware;
+export default function server(compiler: ICompiler): EnableHotMiddleware;
 /**
  * @function server
  * @description Create koa dev server middleware.
  * @param compiler The webpack compiler instance.
  * @param options Options.
  */
-export default function server(compiler: Compiler, options: DisableHotOptions): DisableHotMiddleware;
+export default function server(compiler: ICompiler, options: DisableHotOptions): DisableHotMiddleware;
 /**
  * @function server
  * @description Create koa dev server middleware.
  * @param compiler The webpack compiler instance.
  * @param options Options.
  */
-export default function server(compiler: Compiler, options: EnableHotOptions): EnableHotMiddleware;
-export default function server(compiler: Compiler, options: Options = {}): EnableHotMiddleware | DisableHotMiddleware {
+export default function server(compiler: ICompiler, options: EnableHotOptions): EnableHotMiddleware;
+export default function server(compiler: ICompiler, options: Options = {}): EnableHotMiddleware | DisableHotMiddleware {
   const devMiddleware = dev(compiler, options);
 
   if (options.hot === false) {

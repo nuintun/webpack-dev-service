@@ -3,104 +3,29 @@
  */
 
 import { Context } from 'koa';
+import { Options } from './interface';
 import WebSocket, { WebSocketServer } from 'ws';
-import webpack, { Compiler, StatsCompilation, StatsOptions } from 'webpack';
+import { getCompilers, PLUGIN_NAME } from '/server/utils';
+import { ICompiler, ILogger, IStats } from '/server/interface';
+import webpack, { StatsCompilation, WebpackPluginInstance } from 'webpack';
+import { getStatsOptions, hasProblems, isUpgradable, resolveOptions, WEBSOCKET_RE } from './utils';
 
-export interface Options {
-  hmr?: boolean;
-  path?: string;
-  progress?: boolean;
-}
-
-const WEBSOCKET_RE = /^websocket$/i;
-const { toString } = Object.prototype;
-
-function normalize(path: string) {
-  const segments: string[] = [];
-  const parts = path.split(/[\\/]+/);
-
-  for (const segment of parts) {
-    switch (segment) {
-      case '.':
-        break;
-      case '..':
-        segments.pop();
-        break;
-      default:
-        segments.push(segment);
-        break;
-    }
-  }
-
-  const pathname = segments.join('/');
-
-  return pathname.startsWith('/') ? pathname : `/${pathname}`;
-}
-
-function isObject(value: unknown): value is object {
-  return toString.call(value) === '[object Object]';
-}
-
-function resolveOptions(options: Options): Required<Options> {
-  const settings = {
-    hmr: true,
-    path: '/hot',
-    progress: true,
-    ...options
-  };
-
-  settings.path = normalize(settings.path);
-
-  return settings;
-}
-
-function resolveStatsOptions(compiler: Compiler): StatsOptions {
-  const options: StatsOptions = {
-    all: false,
-    hash: true,
-    colors: true,
-    errors: true,
-    assets: false,
-    builtAt: true,
-    warnings: true,
-    errorDetails: false
-  };
-  const { stats } = compiler.options;
-
-  if (isObject(stats)) {
-    const { warningsFilter } = stats;
-
-    if (warningsFilter != null) {
-      options.warningsFilter = warningsFilter;
-    }
-  }
-
-  return options;
-}
-
-function isUpgradable(context: Context, detector: RegExp): boolean {
-  const { upgrade } = context.headers;
-
-  return !!upgrade && detector.test(upgrade.trim());
-}
-
-function hasProblems<T>(problems: ArrayLike<T> | undefined): boolean {
-  return !!problems && problems.length > 0;
+interface Plugin {
+  (name?: string): WebpackPluginInstance;
 }
 
 export class Socket {
   private stats!: StatsCompilation;
 
-  private readonly compiler: Compiler;
+  private readonly logger: ILogger;
+  private readonly compiler: ICompiler;
   private readonly server: WebSocketServer;
   private readonly options: Required<Options>;
-  private readonly name: string = 'webpack-hot-middleware';
-  private readonly logger: ReturnType<Compiler['getInfrastructureLogger']>;
 
-  constructor(compiler: Compiler, options: Options) {
+  constructor(compiler: ICompiler, options: Options) {
     this.compiler = compiler;
     this.options = resolveOptions(options);
-    this.logger = compiler.getInfrastructureLogger(this.name);
+    this.logger = compiler.getInfrastructureLogger(PLUGIN_NAME);
     this.server = new WebSocketServer({ path: this.options.path, noServer: true });
 
     this.setupWss();
@@ -125,67 +50,75 @@ export class Socket {
   setupHooks(): void {
     const { compiler } = this;
     const { hooks } = compiler;
-    const statsOptions = resolveStatsOptions(compiler);
+    const statsOptions = getStatsOptions(compiler);
 
-    hooks.done.tapAsync(this.name, (stats, next) => {
-      next();
-
+    hooks.done.tap(PLUGIN_NAME, (stats: IStats) => {
       this.stats = stats.toJson(statsOptions);
 
       this.broadcastStats(this.clients(), this.stats);
     });
 
-    hooks.invalid.tap(this.name, (path, builtAt) => {
+    hooks.invalid.tap(PLUGIN_NAME, (path, builtAt) => {
       this.broadcast(this.clients(), 'invalid', { path, builtAt });
     });
   }
 
   setupPlugins(): void {
     const { options, compiler } = this;
-
-    const plugins = [
-      new webpack.NoEmitOnErrorsPlugin(),
-      new webpack.DefinePlugin({
-        __WDS_HOT_OPTIONS__: JSON.stringify({
+    const compilers = getCompilers(compiler);
+    const plugins: Plugin[] = [
+      name => {
+        console.log({
           ...options,
-          name: compiler.name
-        })
-      })
+          name: name || PLUGIN_NAME
+        });
+        return new webpack.DefinePlugin({
+          __WDS_HOT_OPTIONS__: JSON.stringify({
+            ...options,
+            name: name || PLUGIN_NAME
+          })
+        });
+      },
+      () => {
+        return new webpack.NoEmitOnErrorsPlugin();
+      }
     ];
 
     if (options.hmr) {
-      plugins.push(new webpack.HotModuleReplacementPlugin());
+      plugins.push(() => {
+        return new webpack.HotModuleReplacementPlugin();
+      });
+    }
+
+    for (const compiler of compilers) {
+      for (const plugin of plugins) {
+        plugin(compiler.name).apply(compiler);
+      }
     }
 
     if (options.progress) {
       let value = 0;
 
-      plugins.push(
-        new webpack.ProgressPlugin((percentage, status, message) => {
-          const nextValue = Math.floor(percentage * 100);
+      new webpack.ProgressPlugin((percentage, status, message) => {
+        const nextValue = Math.floor(percentage * 100);
 
-          if (nextValue > value || nextValue === 0) {
-            value = nextValue;
+        if (nextValue > value || nextValue === 0) {
+          value = nextValue;
 
-            switch (value) {
-              case 0:
-                status = 'start';
-                message = 'end idle';
-                break;
-              case 100:
-                status = 'finish';
-                message = 'begin idle';
-                break;
-            }
-
-            this.broadcast(this.clients(), 'progress', { status, message, value });
+          switch (value) {
+            case 0:
+              status = 'start';
+              message = 'end idle';
+              break;
+            case 100:
+              status = 'finish';
+              message = 'begin idle';
+              break;
           }
-        })
-      );
-    }
 
-    for (const plugin of plugins) {
-      plugin.apply(compiler);
+          this.broadcast(this.clients(), 'progress', { status, message, value });
+        }
+      }).apply(compiler);
     }
   }
 

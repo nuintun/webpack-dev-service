@@ -3,7 +3,8 @@
  */
 
 import { createReadStream, Stats as FileStats } from 'fs';
-import { Compiler, Configuration, MultiCompiler, MultiStats, Stats, Watching } from 'webpack';
+import { Compiler, MultiCompiler, Watching } from 'webpack';
+import { ICompiler, ILogger, IStats, IStatsOptions } from '/server/interface';
 
 interface Headers {
   [key: string]: string | string[];
@@ -28,29 +29,29 @@ export interface FilesOptions {
 }
 
 export interface Callback {
-  (stats: Stats | MultiStats): void;
+  (stats: IStats): void;
 }
 
 export interface Context {
+  stats: IStats;
   state: boolean;
+  logger: ILogger;
   options: Options;
+  compiler: ICompiler;
   callbacks: Callback[];
-  stats: Stats | MultiStats;
-  compiler: Compiler | MultiCompiler;
   outputFileSystem: OutputFileSystem;
-  logger: ReturnType<Compiler['getInfrastructureLogger']>;
   watching: Watching | ReturnType<MultiCompiler['watch']>;
 }
 
 export interface Options extends Omit<FilesOptions, 'fs'> {
-  stats?: Configuration['stats'];
+  stats?: IStatsOptions;
   outputFileSystem?: OutputFileSystem;
   writeToDisk?: boolean | ((targetPath: string) => boolean);
 }
 
 export interface AdditionalMethods {
+  logger: ILogger;
   isReady(): boolean;
-  logger: Context['logger'];
   ready(callback: Callback): void;
   invalidate(callback: Callback): void;
   close(callback: (error?: Error | null) => void): void;

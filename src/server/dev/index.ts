@@ -5,9 +5,9 @@
 import { Middleware } from 'koa';
 import { ready } from './utils/ready';
 import { middleware } from './middleware';
-import { PLUGIN_NAME } from './utils/common';
+import { PLUGIN_NAME } from '/server/utils';
+import { ICompiler } from '/server/interface';
 import { setupHooks } from './utils/setupHooks';
-import { Compiler, MultiCompiler } from 'webpack';
 import { setupWatching } from './utils/setupWatching';
 import { setupWriteToDisk } from './utils/setupWriteToDisk';
 import { setupOutputFileSystem } from './utils/setupOutputFileSystem';
@@ -15,7 +15,7 @@ import { AdditionalMethods, Context, InitialContext, Options } from './interface
 
 export { AdditionalMethods, Options };
 
-function setup(compiler: Compiler | MultiCompiler, options: Options): Context {
+function setup(compiler: ICompiler, options: Options): Context {
   const context: InitialContext = {
     options,
     compiler,
@@ -37,7 +37,7 @@ function setup(compiler: Compiler | MultiCompiler, options: Options): Context {
   return context as Context;
 }
 
-export function dev(compiler: Compiler, options: Options = {}): Middleware & AdditionalMethods {
+export function dev(compiler: ICompiler, options: Options = {}): Middleware & AdditionalMethods {
   const context = setup(compiler, options);
 
   return Object.assign<Middleware, AdditionalMethods>(middleware(context), {

@@ -4,8 +4,9 @@
 
 import WebSocket from 'ws';
 import { Middleware } from 'koa';
-import { Compiler } from 'webpack';
-import { Options, Socket } from './Socket';
+import { Socket } from './Socket';
+import { Options } from './interface';
+import { ICompiler } from '/server/interface';
 
 export { Options };
 
@@ -14,7 +15,7 @@ export interface AdditionalMethods {
   broadcast<T>(clients: Set<WebSocket> | WebSocket[], action: string, payload: T): void;
 }
 
-export function hot(compiler: Compiler, options: Options = {}): Middleware & AdditionalMethods {
+export function hot(compiler: ICompiler, options: Options = {}): Middleware & AdditionalMethods {
   const socket = new Socket(compiler, options);
 
   return Object.assign<Middleware, AdditionalMethods>(

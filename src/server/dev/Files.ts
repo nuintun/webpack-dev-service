@@ -9,7 +9,7 @@ import { Context } from 'koa';
 import { PassThrough } from 'stream';
 import parseRange from 'range-parser';
 import { generate } from './utils/hash';
-import { isFunction } from './utils/common';
+import { isFunction } from '/server/utils';
 import { extname, join, resolve } from 'path';
 import { isETag, isETagFresh } from './utils/http';
 import { FilesOptions, OutputFileSystem } from './interface';

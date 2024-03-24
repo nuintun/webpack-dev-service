@@ -4,10 +4,11 @@
 
 import { StatsOptions } from 'webpack';
 import supportsColor from 'supports-color';
-import { Context, InitialContext, Options } from '/server/dev/interface';
-import { isBoolean, isMultiCompilerMode, isString, PLUGIN_NAME } from './common';
+import { IStatsOptions } from '/server/interface';
+import { Context, InitialContext } from '/server/dev/interface';
+import { isBoolean, isMultiCompilerMode, isString, PLUGIN_NAME } from '/server/utils';
 
-function normalizeStatsOptions(statsOptions: Options['stats']): StatsOptions {
+function normalizeStatsOptions(statsOptions?: IStatsOptions): StatsOptions {
   if (statsOptions == null) {
     return { preset: 'normal' };
   } else if (isString(statsOptions)) {
@@ -25,7 +26,7 @@ function normalizeStatsOptions(statsOptions: Options['stats']): StatsOptions {
   return statsOptions;
 }
 
-function getStatsOptions(context: InitialContext): StatsOptions | { children: StatsOptions[] } {
+function getStatsOptions(context: InitialContext): StatsOptions {
   const { compiler } = context;
   const { stats } = context.options;
 
@@ -36,7 +37,7 @@ function getStatsOptions(context: InitialContext): StatsOptions | { children: St
 
     return {
       children: compiler.compilers.map(() => normalizeStatsOptions(stats))
-    };
+    } as unknown as StatsOptions;
   }
 
   if (!isMultiCompilerMode(compiler)) {
@@ -45,7 +46,7 @@ function getStatsOptions(context: InitialContext): StatsOptions | { children: St
 
   return {
     children: compiler.compilers.map(({ options }) => normalizeStatsOptions(options.stats))
-  };
+  } as unknown as StatsOptions;
 }
 
 export function setupHooks(context: InitialContext): void {
@@ -58,6 +59,8 @@ export function setupHooks(context: InitialContext): void {
     context.state = false;
     context.stats = undefined;
   }
+
+  const statsOptions = getStatsOptions(context);
 
   function done(stats: NonNullable<Context['stats']>): void {
     // We are now on valid state
@@ -80,8 +83,7 @@ export function setupHooks(context: InitialContext): void {
           callback(stats);
         }
 
-        const statsOptions = getStatsOptions(context);
-        const printedStats = stats.toString(statsOptions as StatsOptions);
+        const printedStats = stats.toString(statsOptions);
 
         // Avoid extra empty line when `stats: 'none'`.
         if (printedStats) {

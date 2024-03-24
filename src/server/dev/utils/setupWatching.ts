@@ -2,7 +2,7 @@
  * @module setupWatching
  */
 
-import { isMultiCompilerMode } from './common';
+import { isMultiCompilerMode } from '/server/utils';
 import { Context, InitialContext } from '/server/dev/interface';
 
 function getWatching({ compiler, logger }: InitialContext): Context['watching'] {

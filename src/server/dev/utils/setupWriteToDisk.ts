@@ -6,7 +6,7 @@ import { dirname } from 'path';
 import { Compiler } from 'webpack';
 import { mkdir, writeFile } from 'fs';
 import { InitialContext, Options } from '/server/dev/interface';
-import { getCompilers, isFunction, PLUGIN_NAME } from './common';
+import { getCompilers, isFunction, PLUGIN_NAME } from '/server/utils';
 
 const assetEmitted = Symbol('assetEmitted');
 
