@@ -145,13 +145,13 @@ const compiler = webpack({
     ]
   },
   plugins: [
-    new webpack.ProgressPlugin(progress),
     new HtmlWebpackPlugin(html),
     new MiniCssExtractPlugin({
       ignoreOrder: true,
       filename: 'css/[name].css',
       chunkFilename: 'css/[name].css'
-    })
+    }),
+    new webpack.ProgressPlugin(progress)
   ]
 });
 
@@ -159,7 +159,7 @@ const port = 8000;
 const app = new Koa();
 const fs = createMemfs();
 const server = dev(compiler, {
-  outputFileSystem: fs,
+  fs,
   headers: {
     'Cache-Control': 'no-cache',
     'Access-Control-Allow-Origin': '*',
