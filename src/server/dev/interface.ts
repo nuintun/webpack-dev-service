@@ -21,10 +21,10 @@ export interface OutputFileSystem extends IOutputFileSystem {
 }
 
 export interface FilesOptions {
-  etag?: boolean;
   fs: OutputFileSystem;
   acceptRanges?: boolean;
   lastModified?: boolean;
+  etag?: boolean | { weak: boolean };
   headers?: Headers | HeaderFunction;
 }
 
@@ -55,11 +55,11 @@ export interface Options extends Omit<FilesOptions, 'fs'> {
 }
 
 export interface Expose {
-  logger: ILogger;
-  isReady(): boolean;
-  ready(callback: Callback): void;
-  close(callback: ErrorCallback): void;
-  invalidate(callback: ErrorCallback): void;
+  readonly state: boolean;
+  readonly logger: ILogger;
+  readonly ready: (callback: Callback) => void;
+  readonly close: (callback: ErrorCallback) => void;
+  readonly invalidate: (callback: ErrorCallback) => void;
 }
 
 export type InitialContext = Optional<Context, 'fs' | 'stats' | 'watching'>;

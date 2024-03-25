@@ -2,18 +2,12 @@
  * @module index
  */
 
-import WebSocket from 'ws';
 import { Middleware } from 'koa';
 import { Socket } from './Socket';
-import { Options } from './interface';
+import { Expose, Options } from './interface';
 import { ICompiler } from '/server/interface';
 
-export { Options };
-
-export interface Expose {
-  clients(): Set<WebSocket>;
-  broadcast<T>(clients: Set<WebSocket> | WebSocket[], action: string, payload: T): void;
-}
+export { Expose, Options };
 
 export function hot(compiler: ICompiler, options: Options = {}): Middleware & Expose {
   const socket = new Socket(compiler, options);

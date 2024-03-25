@@ -41,7 +41,7 @@ export function dev(compiler: ICompiler, options: Options = {}): Middleware & Ex
   const context = setup(compiler, options);
 
   return Object.assign<Middleware, Expose>(middleware(context), {
-    isReady() {
+    get state() {
       return context.state;
     },
     get logger() {

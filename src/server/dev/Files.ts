@@ -9,9 +9,9 @@ import { Context } from 'koa';
 import { PassThrough } from 'stream';
 import parseRange from 'range-parser';
 import { generate } from './utils/hash';
-import { isFunction } from '/server/utils';
 import { extname, join, resolve } from 'path';
 import { isETag, isETagFresh } from './utils/http';
+import { isBoolean, isFunction } from '/server/utils';
 import { FilesOptions, OutputFileSystem } from './interface';
 import { hasTrailingSlash, isOutRoot, unixify } from './utils/path';
 
@@ -236,7 +236,7 @@ export default class Files {
    */
   private setupHeaders(context: Context, path: string, stats: Stats): void {
     const { options } = this;
-    const { headers } = options;
+    const { headers, etag: etagOptions } = options;
 
     // Set headers.
     if (headers) {
@@ -258,11 +258,15 @@ export default class Files {
     context.type = extname(path);
 
     // ETag.
-    if (options.etag === false) {
+    if (etagOptions === false) {
       context.remove('ETag');
     } else {
       // Set ETag.
-      context.set('ETag', etag(stats));
+      if (isBoolean(etagOptions)) {
+        context.set('ETag', etag(stats));
+      } else {
+        context.set('ETag', etag(stats, etagOptions));
+      }
     }
 
     // Accept-Ranges.
