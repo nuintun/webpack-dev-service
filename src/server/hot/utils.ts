@@ -4,7 +4,7 @@
 
 import { Context } from 'koa';
 import { Options } from './interface';
-import { StatsOptions } from 'webpack';
+import { StatsCompilation, StatsOptions } from 'webpack';
 import { ICompiler, IStatsOptions } from '/server/interface';
 import { isMultiCompilerMode, isObject } from '/server/utils';
 
@@ -32,7 +32,7 @@ export function normalize(path: string): string {
   return pathname.startsWith('/') ? pathname : `/${pathname}`;
 }
 
-export function resolveOptions(options: Options): Required<Options> {
+export function getOptions(options: Options): Required<Options> {
   const settings = {
     hmr: true,
     wss: false,
@@ -86,4 +86,20 @@ export function getStatsOptions(compiler: ICompiler): StatsOptions {
   }
 
   return normalizeStatsOptions(compiler.options.stats);
+}
+
+export function getTimestamp({ builtAt, children = [] }: StatsCompilation): number {
+  if (builtAt != null) {
+    return builtAt;
+  }
+
+  let timestamp = -1;
+
+  for (const { builtAt = timestamp } of children) {
+    if (builtAt > timestamp) {
+      timestamp = builtAt;
+    }
+  }
+
+  return timestamp < 0 ? Date.now() : timestamp;
 }

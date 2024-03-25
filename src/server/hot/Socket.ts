@@ -8,9 +8,10 @@ import webpack, { StatsCompilation } from 'webpack';
 import { Options, PluginFactory } from './interface';
 import { getCompilers, PLUGIN_NAME } from '/server/utils';
 import { ICompiler, ILogger, IStats } from '/server/interface';
-import { getStatsOptions, hasIssues, isUpgradable, resolveOptions, WEBSOCKET_RE } from './utils';
+import { getOptions, getStatsOptions, getTimestamp, hasIssues, isUpgradable, WEBSOCKET_RE } from './utils';
 
 export class Socket {
+  private state: boolean = false;
   private stats?: StatsCompilation;
 
   private readonly logger: ILogger;
@@ -20,7 +21,7 @@ export class Socket {
 
   constructor(compiler: ICompiler, options: Options) {
     this.compiler = compiler;
-    this.options = resolveOptions(options);
+    this.options = getOptions(options);
     this.logger = compiler.getInfrastructureLogger(PLUGIN_NAME);
     this.server = new WebSocketServer({ path: this.options.path, noServer: true });
 
@@ -49,13 +50,35 @@ export class Socket {
     const statsOptions = getStatsOptions(compiler);
 
     hooks.done.tap(PLUGIN_NAME, (stats: IStats) => {
-      this.stats = stats.toJson(statsOptions);
+      // Set state to true.
+      this.state = true;
 
-      this.broadcastStats(this.clients(), this.stats);
+      // Get json stats.
+      const jsonStats = stats.toJson(statsOptions);
+
+      // Hack builtAt.
+      if (jsonStats.builtAt == null) {
+        jsonStats.builtAt = getTimestamp(jsonStats);
+      }
+
+      // Cache stats.
+      this.stats = jsonStats;
+
+      // Do the stuff in nextTick, because bundle may be invalidated if a change happened while compiling.
+      process.nextTick(() => {
+        // Broadcast stats.
+        if (this.state) {
+          this.broadcastStats(this.clients(), jsonStats);
+        }
+      });
     });
 
-    hooks.invalid.tap(PLUGIN_NAME, (path, builtAt) => {
-      this.broadcast(this.clients(), 'invalid', { path, builtAt });
+    hooks.invalid.tap(PLUGIN_NAME, (path, timestamp) => {
+      // Set state to false.
+      this.state = false;
+
+      // Broadcast invalid.
+      this.broadcast(this.clients(), 'invalid', { path, timestamp });
     });
   }
 
@@ -152,14 +175,14 @@ export class Socket {
 
   broadcastStats(clients: Set<WebSocket> | WebSocket[], stats: StatsCompilation) {
     if ((clients as Set<WebSocket>).size > 0 || (clients as WebSocket[]).length > 0) {
-      const { hash, builtAt, errors, warnings } = stats;
+      const { hash, errors, warnings, builtAt: timestamp } = stats;
 
-      this.broadcast(clients, 'hash', { hash });
+      this.broadcast(clients, 'hash', { hash, timestamp });
 
       if (hasIssues(errors) || hasIssues(warnings)) {
-        this.broadcast(clients, 'issues', { errors, warnings, builtAt });
+        this.broadcast(clients, 'issues', { errors, warnings, timestamp });
       } else {
-        this.broadcast(clients, 'ok', { builtAt });
+        this.broadcast(clients, 'ok', { timestamp });
       }
     }
   }

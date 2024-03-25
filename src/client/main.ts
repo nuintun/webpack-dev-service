@@ -18,7 +18,7 @@ const getCurrentScript = (): HTMLScriptElement | void => {
   }
 };
 
-const resolveProtocol = (params: URLSearchParams, protocol: string): WebSocketProtocol => {
+const getProtocol = (params: URLSearchParams, protocol: string): WebSocketProtocol => {
   switch (params.get('wss')) {
     case 'true':
       return 'wss:';
@@ -29,27 +29,27 @@ const resolveProtocol = (params: URLSearchParams, protocol: string): WebSocketPr
   }
 };
 
-const resolveOrigin = (params: URLSearchParams): string => {
+const getOrigin = (params: URLSearchParams): string => {
   const { location } = self;
   const script = getCurrentScript();
 
   if (script) {
     const url = new URL(script.src, location.href);
-    const protocol = resolveProtocol(params, url.protocol);
+    const protocol = getProtocol(params, url.protocol);
 
     return `${protocol}//${url.host}`;
   }
 
-  const protocol = resolveProtocol(params, location.protocol);
+  const protocol = getProtocol(params, location.protocol);
 
   return `${protocol}//${location.host}`;
 };
 
-const resolveOptions = (): Options => {
+const getOptions = (): Options => {
   const params = new URLSearchParams(__resourceQuery);
 
   return {
-    origin: resolveOrigin(params),
+    origin: getOrigin(params),
     hmr: params.get('hmr') !== 'false',
     path: params.get('path') || '/hot',
     name: params.get('name') || 'webpack',
@@ -59,4 +59,4 @@ const resolveOptions = (): Options => {
   };
 };
 
-createClient(resolveOptions());
+createClient(getOptions());

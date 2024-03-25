@@ -8,7 +8,7 @@ export interface Invalid {
   action: 'invalid';
   payload: {
     path: string;
-    builtAt: number;
+    timestamp: number;
   };
 }
 
@@ -25,13 +25,14 @@ export interface Hash {
   action: 'hash';
   payload: {
     hash: string;
+    timestamp: number;
   };
 }
 
 export interface Issues {
   action: 'issues';
   payload: {
-    builtAt: number;
+    timestamp: number;
     errors: StatsError[];
     warnings: StatsError[];
   };
@@ -40,6 +41,6 @@ export interface Issues {
 export interface OK {
   action: 'ok';
   payload: {
-    builtAt: number;
+    timestamp: number;
   };
 }
