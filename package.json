@@ -129,6 +129,6 @@
     "webpack": "^5.91.0"
   },
   "peerDependencies": {
-    "webpack": "^5.20.0"
+    "webpack": ">=5.20.0"
   }
 }
