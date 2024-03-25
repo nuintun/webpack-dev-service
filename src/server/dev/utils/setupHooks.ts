@@ -58,13 +58,11 @@ export function setupHooks(context: InitialContext): void {
   const statsOptions = getStatsOptions(context);
 
   const invalid = (): void => {
-    if (context.state) {
-      context.logger.log('Compilation starting...');
-    }
-
     // We are now in invalid state.
     context.state = false;
     context.stats = undefined;
+
+    context.logger.log('compilation starting...');
   };
 
   const {
@@ -73,7 +71,7 @@ export function setupHooks(context: InitialContext): void {
 
       // Avoid extra empty line when `stats: 'none'`.
       if (printedStats) {
-        console.log(printedStats);
+        context.logger.info(printedStats);
       }
     }
   } = context.options;
@@ -91,8 +89,6 @@ export function setupHooks(context: InitialContext): void {
       if (state) {
         const { logger, callbacks } = context;
 
-        logger.log('Compilation finished');
-
         context.callbacks = [];
 
         for (const callback of callbacks) {
@@ -100,6 +96,8 @@ export function setupHooks(context: InitialContext): void {
         }
 
         onDone(stats, statsOptions);
+
+        logger.log('compilation finished');
       }
     });
   };

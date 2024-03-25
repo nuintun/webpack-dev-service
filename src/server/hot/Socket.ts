@@ -22,8 +22,11 @@ export class Socket {
   constructor(compiler: ICompiler, options: Options) {
     this.compiler = compiler;
     this.options = getOptions(options);
+    this.server = new WebSocketServer({
+      noServer: true,
+      path: this.options.path
+    });
     this.logger = compiler.getInfrastructureLogger(PLUGIN_NAME);
-    this.server = new WebSocketServer({ path: this.options.path, noServer: true });
 
     this.setupWss();
     this.setupHooks();
@@ -34,7 +37,7 @@ export class Socket {
     const { server, logger } = this;
 
     server.on('error', error => {
-      logger.error(error.message);
+      logger.error(error);
     });
 
     server.on('connection', client => {
@@ -165,7 +168,7 @@ export class Socket {
     return false;
   }
 
-  broadcast<T>(clients: Set<WebSocket> | WebSocket[], action: string, payload: T) {
+  broadcast<T>(clients: Set<WebSocket> | WebSocket[], action: string, payload: T): void {
     for (const client of clients) {
       if (client.readyState === WebSocket.OPEN) {
         client.send(JSON.stringify({ action, payload }));
@@ -173,7 +176,7 @@ export class Socket {
     }
   }
 
-  broadcastStats(clients: Set<WebSocket> | WebSocket[], stats: StatsCompilation) {
+  broadcastStats(clients: Set<WebSocket> | WebSocket[], stats: StatsCompilation): void {
     if ((clients as Set<WebSocket>).size > 0 || (clients as WebSocket[]).length > 0) {
       const { hash, errors, warnings, builtAt: timestamp } = stats;
 

@@ -26,6 +26,12 @@ body {
   width: 512px;
 }
 
+@media screen and (max-width: 512px) {
+  .video {
+    width: 100%;
+  }
+}
+
 @media (prefers-reduced-motion: no-preference) {
   @keyframes logo-spin {
     from {

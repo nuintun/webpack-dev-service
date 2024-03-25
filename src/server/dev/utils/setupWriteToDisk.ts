@@ -8,10 +8,8 @@ import { mkdir, writeFile } from 'fs';
 import { InitialContext, Options } from '/server/dev/interface';
 import { getCompilers, isFunction, PLUGIN_NAME } from '/server/utils';
 
-// const assetEmitted = Symbol('assetEmitted');
-
 function getCompilerName({ options: { name } }: Compiler): string {
-  return name ? `Compiler "${name}": ` : '';
+  return name ? `compiler "${name}": ` : '';
 }
 
 function isAllowWrite(targetPath: string, filter?: Options['writeToDisk']): boolean {
@@ -34,19 +32,19 @@ export function setupWriteToDisk(context: InitialContext): void {
 
       return mkdir(dir, { recursive: true }, error => {
         if (error) {
-          logger.error(`${name}Unable to write "${dir}" directory to disk:\n${error}`);
+          logger.error(`${name}unable to write "${dir}" directory to disk:\n${error}`);
 
           return callback(error);
         }
 
         writeFile(targetPath, content, error => {
           if (error) {
-            logger.error(`${name}Unable to write "${targetPath}" asset to disk:\n${error}`);
+            logger.error(`${name}unable to write "${targetPath}" asset to disk:\n${error}`);
 
             return callback(error);
           }
 
-          logger.log(`${name}Asset written to disk: "${targetPath}"`);
+          logger.log(`${name}asset written to disk: "${targetPath}"`);
 
           return callback();
         });
