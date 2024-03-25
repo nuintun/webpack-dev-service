@@ -54,8 +54,8 @@ export function isUpgradable(context: Context, detector: RegExp): boolean {
   return !!upgrade && detector.test(upgrade.trim());
 }
 
-export function hasProblems<T>(problems: ArrayLike<T> | undefined): boolean {
-  return !!problems && problems.length > 0;
+export function hasIssues<T>(issues: ArrayLike<T> | undefined): boolean {
+  return Array.isArray(issues) && issues.length > 0;
 }
 
 function normalizeStatsOptions(statsOptions?: IStatsOptions): StatsOptions {
@@ -77,11 +77,13 @@ function normalizeStatsOptions(statsOptions?: IStatsOptions): StatsOptions {
 }
 
 export function getStatsOptions(compiler: ICompiler): StatsOptions {
-  if (!isMultiCompilerMode(compiler)) {
-    return normalizeStatsOptions(compiler.options.stats);
+  if (isMultiCompilerMode(compiler)) {
+    return {
+      children: compiler.compilers.map(({ options }) => {
+        return normalizeStatsOptions(options.stats);
+      })
+    } as unknown as StatsOptions;
   }
 
-  return {
-    children: compiler.compilers.map(({ options }) => normalizeStatsOptions(options.stats))
-  } as unknown as StatsOptions;
+  return normalizeStatsOptions(compiler.options.stats);
 }

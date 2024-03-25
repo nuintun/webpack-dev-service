@@ -12,24 +12,24 @@ type Listeners = {
 interface Messages {
   ok: Message.OK['payload'];
   hash: Message.Hash['payload'];
+  issues: Message.Issues['payload'];
   invalid: Message.Invalid['payload'];
-  problems: Message.Problems['payload'];
   progress: Message.Progress['payload'];
 }
 
 interface Events {
-  ok: (message: Messages['ok'], options: Options) => void;
-  hash: (message: Messages['hash'], options: Options) => void;
-  invalid: (message: Messages['invalid'], options: Options) => void;
-  problems: (message: Messages['problems'], options: Options) => void;
-  progress: (message: Messages['progress'], options: Options) => void;
+  ok(message: Messages['ok'], options: Options): void;
+  hash(message: Messages['hash'], options: Options): void;
+  issues(message: Messages['issues'], options: Options): void;
+  invalid(message: Messages['invalid'], options: Options): void;
+  progress(message: Messages['progress'], options: Options): void;
 }
 
 const events: Listeners = {
   ok: [],
   hash: [],
+  issues: [],
   invalid: [],
-  problems: [],
   progress: []
 };
 

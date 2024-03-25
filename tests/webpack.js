@@ -40,108 +40,110 @@ function httpError(error) {
   return /^(EOF|EPIPE|ECANCELED|ECONNRESET|ECONNABORTED)$/i.test(error.code);
 }
 
-const compiler = webpack({
-  name: 'react',
-  mode: 'development',
-  context: path.resolve('src'),
-  entry: path.resolve('src/index.tsx'),
-  output: {
-    publicPath: '/public/',
-    filename: `js/[name].js`,
-    hashFunction: 'xxhash64',
-    path: path.resolve('public'),
-    chunkFilename: `js/[name].js`,
-    assetModuleFilename: `[path][name][ext]`
-  },
-  devtool: 'eval-cheap-module-source-map',
-  resolve: {
-    fallback: { url: false },
-    extensions: ['.ts', '.tsx', '.js', '.jsx']
-  },
-  watchOptions: {
-    aggregateTimeout: 256
-  },
-  stats: {
-    colors: true,
-    chunks: false,
-    children: false,
-    entrypoints: false,
-    runtimeModules: false,
-    dependentModules: false
-  },
-  module: {
-    strictExportPresence: true,
-    rules: [
-      {
-        oneOf: [
-          {
-            test: /\.[jt]sx?$/i,
-            exclude: /[\\/]node_modules[\\/]/,
-            use: [
-              {
-                loader: 'swc-loader',
-                options: {
-                  jsc: {
-                    externalHelpers: true,
-                    parser: {
-                      tsx: true,
-                      syntax: 'typescript'
-                    },
-                    transform: {
-                      react: {
-                        runtime: 'automatic'
+const compiler = webpack([
+  {
+    name: 'react',
+    mode: 'development',
+    context: path.resolve('src'),
+    entry: path.resolve('src/index.tsx'),
+    output: {
+      publicPath: '/public/',
+      filename: `js/[name].js`,
+      hashFunction: 'xxhash64',
+      path: path.resolve('public'),
+      chunkFilename: `js/[name].js`,
+      assetModuleFilename: `[path][name][ext]`
+    },
+    devtool: 'eval-cheap-module-source-map',
+    resolve: {
+      fallback: { url: false },
+      extensions: ['.ts', '.tsx', '.js', '.jsx']
+    },
+    watchOptions: {
+      aggregateTimeout: 256
+    },
+    stats: {
+      colors: true,
+      chunks: false,
+      children: false,
+      entrypoints: false,
+      runtimeModules: false,
+      dependentModules: false
+    },
+    module: {
+      strictExportPresence: true,
+      rules: [
+        {
+          oneOf: [
+            {
+              test: /\.[jt]sx?$/i,
+              exclude: /[\\/]node_modules[\\/]/,
+              use: [
+                {
+                  loader: 'swc-loader',
+                  options: {
+                    jsc: {
+                      externalHelpers: true,
+                      parser: {
+                        tsx: true,
+                        syntax: 'typescript'
+                      },
+                      transform: {
+                        react: {
+                          runtime: 'automatic'
+                        }
+                      },
+                      experimental: {
+                        cacheRoot: path.resolve('../node_modules/.cache/swc')
                       }
                     },
-                    experimental: {
-                      cacheRoot: path.resolve('../node_modules/.cache/swc')
+                    env: {
+                      targets: ['defaults', 'not IE >= 0']
                     }
-                  },
-                  env: {
-                    targets: ['defaults', 'not IE >= 0']
                   }
                 }
-              }
-            ]
-          },
-          {
-            test: /\.css$/i,
-            exclude: /[\\/]node_modules[\\/]/,
-            use: [
-              {
-                loader: MiniCssExtractPlugin.loader
-              },
-              {
-                loader: 'css-loader',
-                options: {
-                  esModule: true,
-                  modules: {
-                    auto: true,
-                    localIdentName: '[local]-[hash:8]',
-                    exportLocalsConvention: 'camelCaseOnly'
+              ]
+            },
+            {
+              test: /\.css$/i,
+              exclude: /[\\/]node_modules[\\/]/,
+              use: [
+                {
+                  loader: MiniCssExtractPlugin.loader
+                },
+                {
+                  loader: 'css-loader',
+                  options: {
+                    esModule: true,
+                    modules: {
+                      auto: true,
+                      localIdentName: '[local]-[hash:8]',
+                      exportLocalsConvention: 'camelCaseOnly'
+                    }
                   }
                 }
-              }
-            ]
-          },
-          {
-            test: /\.(svg|mp4)$/i,
-            type: 'asset/resource',
-            exclude: /[\\/]node_modules[\\/]/
-          }
-        ]
-      }
+              ]
+            },
+            {
+              test: /\.(svg|mp4)$/i,
+              type: 'asset/resource',
+              exclude: /[\\/]node_modules[\\/]/
+            }
+          ]
+        }
+      ]
+    },
+    plugins: [
+      new webpack.ProgressPlugin(progress),
+      new HtmlWebpackPlugin(html),
+      new MiniCssExtractPlugin({
+        ignoreOrder: true,
+        filename: 'css/[name].css',
+        chunkFilename: 'css/[name].css'
+      })
     ]
-  },
-  plugins: [
-    new webpack.ProgressPlugin(progress),
-    new HtmlWebpackPlugin(html),
-    new MiniCssExtractPlugin({
-      ignoreOrder: true,
-      filename: 'css/[name].css',
-      chunkFilename: 'css/[name].css'
-    })
-  ]
-});
+  }
+]);
 
 const port = 8000;
 const app = new Koa();

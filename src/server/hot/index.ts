@@ -10,15 +10,15 @@ import { ICompiler } from '/server/interface';
 
 export { Options };
 
-export interface AdditionalMethods {
+export interface Expose {
   clients(): Set<WebSocket>;
   broadcast<T>(clients: Set<WebSocket> | WebSocket[], action: string, payload: T): void;
 }
 
-export function hot(compiler: ICompiler, options: Options = {}): Middleware & AdditionalMethods {
+export function hot(compiler: ICompiler, options: Options = {}): Middleware & Expose {
   const socket = new Socket(compiler, options);
 
-  return Object.assign<Middleware, AdditionalMethods>(
+  return Object.assign<Middleware, Expose>(
     async (ctx, next) => {
       if (!socket.upgrade(ctx)) {
         await next();

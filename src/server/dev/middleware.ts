@@ -18,7 +18,7 @@ const cache = new WeakMap<Context['compiler'], FilesInstance[]>();
 async function getFilesInstances(context: Context, name: string): Promise<FilesInstance[]> {
   const cached = cache.get(context.compiler);
 
-  if (cached != null) {
+  if (cached) {
     return cached;
   }
 

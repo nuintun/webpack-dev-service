@@ -28,8 +28,8 @@ export interface Hash {
   };
 }
 
-export interface Problems {
-  action: 'problems';
+export interface Issues {
+  action: 'issues';
   payload: {
     builtAt: number;
     errors: StatsError[];

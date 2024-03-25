@@ -11,9 +11,9 @@ import { setupHooks } from './utils/setupHooks';
 import { setupWatching } from './utils/setupWatching';
 import { setupWriteToDisk } from './utils/setupWriteToDisk';
 import { setupOutputFileSystem } from './utils/setupOutputFileSystem';
-import { AdditionalMethods, Context, InitialContext, Options } from './interface';
+import { Context, Expose, InitialContext, Options } from './interface';
 
-export { AdditionalMethods, Options };
+export { Expose, Options };
 
 function setup(compiler: ICompiler, options: Options): Context {
   const context: InitialContext = {
@@ -37,10 +37,10 @@ function setup(compiler: ICompiler, options: Options): Context {
   return context as Context;
 }
 
-export function dev(compiler: ICompiler, options: Options = {}): Middleware & AdditionalMethods {
+export function dev(compiler: ICompiler, options: Options = {}): Middleware & Expose {
   const context = setup(compiler, options);
 
-  return Object.assign<Middleware, AdditionalMethods>(middleware(context), {
+  return Object.assign<Middleware, Expose>(middleware(context), {
     isReady() {
       return context.state;
     },

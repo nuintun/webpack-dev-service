@@ -19,12 +19,12 @@ function getOutputPath(compilation: Compilation): string {
   // The `output.path` is always present and always absolute.
   const { path } = compilation.outputOptions;
 
-  return compilation.getPath(path != null ? path : '');
+  return compilation.getPath(path ? path : '');
 }
 
 function getPublicPath(compilation: Compilation): string {
   const { publicPath } = compilation.outputOptions;
-  const path = compilation.getPath(publicPath != null ? publicPath : '');
+  const path = compilation.getPath(publicPath ? publicPath : '');
 
   try {
     return new URL(path).pathname;
@@ -33,11 +33,7 @@ function getPublicPath(compilation: Compilation): string {
   }
 }
 
-function getStats(stats: IStats | null): Stats[] {
-  if (stats == null) {
-    return [];
-  }
-
+function getStats(stats: IStats): Stats[] {
   if (isMultiStatsMode(stats)) {
     return stats.stats;
   }
@@ -54,7 +50,7 @@ export function getPaths(context: Context, name: string): Promise<Path[]> {
     const { compiler } = context;
     const paths = cache.get(compiler);
 
-    if (paths != null) {
+    if (paths) {
       resolve(paths);
     } else {
       ready(

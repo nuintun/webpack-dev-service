@@ -32,7 +32,7 @@ type Ranges = Range[] | -1 | -2;
 function fstat(fs: OutputFileSystem, path: string): Promise<Stats | null | undefined> {
   return new Promise(resolve => {
     fs.stat(path, (error, stats) => {
-      resolve(error != null ? null : stats);
+      resolve(error ? null : stats);
     });
   });
 }
@@ -239,11 +239,11 @@ export default class Files {
     const { headers } = options;
 
     // Set headers.
-    if (headers != null) {
+    if (headers) {
       if (isFunction(headers)) {
         const fields = headers(path, stats);
 
-        if (fields != null) {
+        if (fields) {
           context.set(fields);
         }
       } else {
@@ -301,7 +301,7 @@ export default class Files {
       const file = fs.createReadStream(path, range);
 
       // File read stream open.
-      if (prefix != null) {
+      if (prefix) {
         file.once('open', () => {
           // Write prefix boundary.
           stream.write(prefix);
@@ -309,7 +309,7 @@ export default class Files {
       }
 
       // File read stream end.
-      if (suffix != null) {
+      if (suffix) {
         file.once('end', () => {
           // Push suffix boundary.
           stream.write(suffix);

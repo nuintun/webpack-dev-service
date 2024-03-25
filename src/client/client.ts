@@ -61,9 +61,9 @@ export default function createClient(options: Options): void {
     setHash(hash);
   };
 
-  const setProblems = (type: 'errors' | 'warnings', problems: StatsError[]): void => {
+  const setIssues = (type: 'errors' | 'warnings', issues: StatsError[]): void => {
     if (options.overlay) {
-      overlay.setProblems(type, problems);
+      overlay.setIssues(type, issues);
     }
 
     const maps: Record<string, [name: string, method: 'error' | 'warn']> = {
@@ -73,18 +73,18 @@ export default function createClient(options: Options): void {
     const [name, method] = maps[type];
     const debug = console[method];
 
-    for (const { moduleName, chunkName, message } of problems) {
+    for (const { moduleName, chunkName, message } of issues) {
       const filename = moduleName || chunkName || 'unknown';
 
       debug(`${name} in ${filename}\n${message}`);
     }
   };
 
-  const onProblems = ({ errors, warnings }: Message.Problems['payload']): void => {
+  const onIssues = ({ errors, warnings }: Message.Issues['payload']): void => {
     progress.hide();
 
-    setProblems('errors', errors);
-    setProblems('warnings', warnings);
+    setIssues('errors', errors);
+    setIssues('warnings', warnings);
 
     if (options.overlay) {
       overlay.show();
@@ -95,7 +95,7 @@ export default function createClient(options: Options): void {
     }
   };
 
-  const onSuccess = (): void => {
+  const onOk = (): void => {
     overlay.hide();
     progress.hide();
 
@@ -104,7 +104,7 @@ export default function createClient(options: Options): void {
 
   const parseMessage = (
     message: MessageEvent<string>
-  ): Message.Invalid | Message.Progress | Message.Hash | Message.Problems | Message.OK | null => {
+  ): Message.Invalid | Message.Progress | Message.Hash | Message.Issues | Message.OK | null => {
     try {
       return JSON.parse(message.data);
     } catch {
@@ -131,11 +131,11 @@ export default function createClient(options: Options): void {
           case 'hash':
             onHash(payload);
             break;
-          case 'problems':
-            onProblems(payload);
+          case 'issues':
+            onIssues(payload);
             break;
           case 'ok':
-            onSuccess();
+            onOk();
             break;
         }
 

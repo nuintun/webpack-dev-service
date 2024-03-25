@@ -30,27 +30,32 @@ function getStatsOptions(context: InitialContext): StatsOptions {
   const { compiler } = context;
   const { stats } = context.options;
 
-  if (stats != null) {
-    if (!isMultiCompilerMode(compiler)) {
-      return normalizeStatsOptions(stats);
+  if (stats) {
+    if (isMultiCompilerMode(compiler)) {
+      return {
+        children: compiler.compilers.map(() => {
+          return normalizeStatsOptions(stats);
+        })
+      } as unknown as StatsOptions;
     }
 
+    return normalizeStatsOptions(stats);
+  }
+
+  if (isMultiCompilerMode(compiler)) {
     return {
-      children: compiler.compilers.map(() => normalizeStatsOptions(stats))
+      children: compiler.compilers.map(({ options }) => {
+        return normalizeStatsOptions(options.stats);
+      })
     } as unknown as StatsOptions;
   }
 
-  if (!isMultiCompilerMode(compiler)) {
-    return normalizeStatsOptions(compiler.options.stats);
-  }
-
-  return {
-    children: compiler.compilers.map(({ options }) => normalizeStatsOptions(options.stats))
-  } as unknown as StatsOptions;
+  return normalizeStatsOptions(compiler.options.stats);
 }
 
 export function setupHooks(context: InitialContext): void {
   const statsOptions = getStatsOptions(context);
+
   const {
     onDone = (stats: IStats, statsOptions: StatsOptions) => {
       const printedStats = stats.toString(statsOptions);

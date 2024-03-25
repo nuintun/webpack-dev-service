@@ -90,7 +90,7 @@ const CSS = `
 .${OVERLAY}-warnings-title {
   color: #ffbd2e;
 }
-.${OVERLAY}-problems {
+.${OVERLAY}-issues {
   padding: 0 16px;
   overflow-y: auto;
   scrollbar-width: none;
@@ -99,7 +99,7 @@ const CSS = `
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
 }
-.${OVERLAY}-problems::-webkit-scrollbar {
+.${OVERLAY}-issues::-webkit-scrollbar {
   display: none;
 }
 .${OVERLAY}-errors,
@@ -162,7 +162,7 @@ const HTML = `
     <em class="${OVERLAY}-errors-title"></em>
     <em class="${OVERLAY}-warnings-title"></em>
   </div>
-  <aside class="${OVERLAY}-problems">
+  <aside class="${OVERLAY}-issues">
     <article class="${OVERLAY}-errors ${OVERLAY}-hidden"></article>
     <article class="${OVERLAY}-warnings ${OVERLAY}-hidden"></article>
   </aside>
@@ -202,8 +202,8 @@ export default class Overlay {
     });
   }
 
-  setProblems(type: 'errors' | 'warnings', problems: StatsError[]): void {
-    const count = problems.length;
+  setIssues(type: 'errors' | 'warnings', issues: StatsError[]): void {
+    const count = issues.length;
     const hidden = `${OVERLAY}-hidden`;
 
     const problemMaps: Record<string, [string, HTMLElement, HTMLElement]> = {
@@ -217,7 +217,7 @@ export default class Overlay {
 
       problemTitle.innerText = `${count} ${name}(s)`;
 
-      for (const { moduleName, chunkName, message } of problems) {
+      for (const { moduleName, chunkName, message } of issues) {
         const details = ansiToHTML(message);
         const filename = moduleName || chunkName || 'unknown';
 

@@ -8,10 +8,10 @@ import webpack, { StatsCompilation } from 'webpack';
 import { Options, PluginFactory } from './interface';
 import { getCompilers, PLUGIN_NAME } from '/server/utils';
 import { ICompiler, ILogger, IStats } from '/server/interface';
-import { getStatsOptions, hasProblems, isUpgradable, resolveOptions, WEBSOCKET_RE } from './utils';
+import { getStatsOptions, hasIssues, isUpgradable, resolveOptions, WEBSOCKET_RE } from './utils';
 
 export class Socket {
-  private stats!: StatsCompilation;
+  private stats?: StatsCompilation;
 
   private readonly logger: ILogger;
   private readonly compiler: ICompiler;
@@ -156,8 +156,8 @@ export class Socket {
 
       this.broadcast(clients, 'hash', { hash });
 
-      if (hasProblems(errors) || hasProblems(warnings)) {
-        this.broadcast(clients, 'problems', { errors, warnings, builtAt });
+      if (hasIssues(errors) || hasIssues(warnings)) {
+        this.broadcast(clients, 'issues', { errors, warnings, builtAt });
       } else {
         this.broadcast(clients, 'ok', { builtAt });
       }

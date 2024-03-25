@@ -50,7 +50,7 @@ export interface Options extends Omit<FilesOptions, 'fs'> {
   onDone?(stats: IStats, statsOptions: Readonly<StatsOptions>): void;
 }
 
-export interface AdditionalMethods {
+export interface Expose {
   logger: ILogger;
   isReady(): boolean;
   ready(callback: Callback): void;
