@@ -3,7 +3,7 @@
  */
 
 import { isMultiCompilerMode } from '/server/utils';
-import { Context, InitialContext } from '/server/dev/interface';
+import { Context, ErrorCallback, InitialContext } from '/server/dev/interface';
 
 function getWatching({ compiler, logger }: InitialContext): Context['watching'] {
   const isMulti = isMultiCompilerMode(compiler);
@@ -12,7 +12,7 @@ function getWatching({ compiler, logger }: InitialContext): Context['watching'] 
     return compiler.watching;
   }
 
-  const errorHandler = (error: Error | null) => {
+  const errorHandler: ErrorCallback = error => {
     if (error) {
       // For example - `writeToDisk` can throw an error and right now it is ends watching.
       // We can improve that and keep watching active, but it is require API on webpack side.

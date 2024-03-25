@@ -32,6 +32,10 @@ export interface Callback {
   (stats: IStats): void;
 }
 
+export interface ErrorCallback {
+  (error?: Error | null): void;
+}
+
 export interface Context {
   stats: IStats;
   state: boolean;
@@ -54,8 +58,8 @@ export interface Expose {
   logger: ILogger;
   isReady(): boolean;
   ready(callback: Callback): void;
-  invalidate(callback: Callback): void;
-  close(callback: (error?: Error | null) => void): void;
+  close(callback: ErrorCallback): void;
+  invalidate(callback: ErrorCallback): void;
 }
 
 export type InitialContext = Optional<Context, 'stats' | 'watching' | 'outputFileSystem'>;

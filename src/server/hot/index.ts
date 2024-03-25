@@ -17,20 +17,18 @@ export interface Expose {
 
 export function hot(compiler: ICompiler, options: Options = {}): Middleware & Expose {
   const socket = new Socket(compiler, options);
-
-  return Object.assign<Middleware, Expose>(
-    async (ctx, next) => {
-      if (!socket.upgrade(ctx)) {
-        await next();
-      }
-    },
-    {
-      clients() {
-        return socket.clients();
-      },
-      broadcast(clients, action, payload) {
-        socket.broadcast(clients, action, payload);
-      }
+  const middleware: Middleware = async (ctx, next) => {
+    if (!socket.upgrade(ctx)) {
+      await next();
     }
-  );
+  };
+
+  return Object.assign<Middleware, Expose>(middleware, {
+    clients() {
+      return socket.clients();
+    },
+    broadcast(clients, action, payload) {
+      socket.broadcast(clients, action, payload);
+    }
+  });
 }

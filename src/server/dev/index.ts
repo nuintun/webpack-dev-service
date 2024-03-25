@@ -50,13 +50,11 @@ export function dev(compiler: ICompiler, options: Options = {}): Middleware & Ex
     ready(callback) {
       ready(context, callback);
     },
-    invalidate(callback) {
-      ready(context, callback);
-
-      context.watching.invalidate();
-    },
     close(callback) {
       context.watching.close(callback);
+    },
+    invalidate(callback) {
+      context.watching.invalidate(callback);
     }
   });
 }

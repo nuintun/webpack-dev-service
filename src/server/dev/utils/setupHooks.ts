@@ -54,7 +54,18 @@ function getStatsOptions(context: InitialContext): StatsOptions {
 }
 
 export function setupHooks(context: InitialContext): void {
+  const { hooks } = context.compiler;
   const statsOptions = getStatsOptions(context);
+
+  const invalid = (): void => {
+    if (context.state) {
+      context.logger.log('Compilation starting...');
+    }
+
+    // We are now in invalid state.
+    context.state = false;
+    context.stats = undefined;
+  };
 
   const {
     onDone = (stats: IStats, statsOptions: StatsOptions) => {
@@ -67,17 +78,7 @@ export function setupHooks(context: InitialContext): void {
     }
   } = context.options;
 
-  function invalid(): void {
-    if (context.state) {
-      context.logger.log('Compilation starting...');
-    }
-
-    // We are now in invalid state.
-    context.state = false;
-    context.stats = undefined;
-  }
-
-  function done(stats: NonNullable<Context['stats']>): void {
+  const done = (stats: NonNullable<Context['stats']>): void => {
     // We are now on valid state
     context.state = true;
     context.stats = stats;
@@ -101,9 +102,7 @@ export function setupHooks(context: InitialContext): void {
         onDone(stats, statsOptions);
       }
     });
-  }
-
-  const { hooks } = context.compiler;
+  };
 
   hooks.done.tap(PLUGIN_NAME, done);
   hooks.invalid.tap(PLUGIN_NAME, invalid);

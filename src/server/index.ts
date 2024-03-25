@@ -42,8 +42,8 @@ export default function server(compiler: ICompiler, options: Options = {}): Enab
     return dev(compiler, options);
   }
 
-  // Because dev overwrite compiler,
-  // So hot must be called before dev.
+  // All plugins must be initialized before watching.
+  // Because dev will start watching, so call hot before dev.
   const hotMiddleware = hot(compiler, hotOptions);
   const devMiddleware = dev(compiler, options);
   const middleware = compose(devMiddleware, hotMiddleware);
