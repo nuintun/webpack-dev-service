@@ -130,13 +130,13 @@ const compiler = webpack({
     ]
   },
   plugins: [
-    new webpack.ProgressPlugin(progress),
     new HtmlWebpackPlugin(html),
     new MiniCssExtractPlugin({
       ignoreOrder: true,
       filename: 'css/[name].css',
       chunkFilename: 'css/[name].css'
-    })
+    }),
+    new webpack.ProgressPlugin(progress)
   ]
 });
 
