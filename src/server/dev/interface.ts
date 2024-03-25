@@ -42,14 +42,14 @@ export interface Context {
   logger: ILogger;
   options: Options;
   compiler: ICompiler;
+  fs: OutputFileSystem;
   callbacks: Callback[];
-  outputFileSystem: OutputFileSystem;
   watching: Watching | ReturnType<MultiCompiler['watch']>;
 }
 
 export interface Options extends Omit<FilesOptions, 'fs'> {
+  fs?: OutputFileSystem;
   stats?: IStatsOptions;
-  outputFileSystem?: OutputFileSystem;
   writeToDisk?: boolean | ((targetPath: string) => boolean);
   onDone?(stats: IStats, statsOptions: Readonly<StatsOptions>): void;
 }
@@ -62,4 +62,4 @@ export interface Expose {
   invalidate(callback: ErrorCallback): void;
 }
 
-export type InitialContext = Optional<Context, 'stats' | 'watching' | 'outputFileSystem'>;
+export type InitialContext = Optional<Context, 'fs' | 'stats' | 'watching'>;

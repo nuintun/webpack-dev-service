@@ -13,12 +13,12 @@ function createMemfs(): OutputFileSystem {
 }
 
 export function setupOutputFileSystem(context: InitialContext): void {
+  const { fs = createMemfs() } = context.options;
   const compilers = getCompilers(context.compiler);
-  const { outputFileSystem = createMemfs() } = context.options;
 
   for (const compiler of compilers) {
-    compiler.outputFileSystem = outputFileSystem;
+    compiler.outputFileSystem = fs;
   }
 
-  context.outputFileSystem = outputFileSystem;
+  context.fs = fs;
 }

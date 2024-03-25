@@ -30,9 +30,9 @@ async function getFilesInstances(context: Context, name: string): Promise<FilesI
     instances.push({
       publicPath,
       files: new Files(outputPath, {
+        fs: context.fs,
         etag: options.etag,
         headers: options.headers,
-        fs: context.outputFileSystem,
         acceptRanges: options.acceptRanges,
         lastModified: options.lastModified
       })
