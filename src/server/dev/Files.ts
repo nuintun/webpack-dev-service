@@ -9,9 +9,9 @@ import { Context } from 'koa';
 import { PassThrough } from 'stream';
 import parseRange from 'range-parser';
 import { generate } from './utils/hash';
+import { isFunction } from '/server/utils';
 import { extname, join, resolve } from 'path';
 import { isETag, isETagFresh } from './utils/http';
-import { isBoolean, isFunction } from '/server/utils';
 import { FilesOptions, OutputFileSystem } from './interface';
 import { hasTrailingSlash, isOutRoot, unixify } from './utils/path';
 
@@ -259,18 +259,16 @@ export default class Files {
 
     // ETag.
     if (etagOptions === false) {
+      // Remove ETag.
       context.remove('ETag');
     } else {
       // Set ETag.
-      if (isBoolean(etagOptions)) {
-        context.set('ETag', etag(stats));
-      } else {
-        context.set('ETag', etag(stats, etagOptions));
-      }
+      context.set('ETag', etag(stats, etagOptions));
     }
 
     // Accept-Ranges.
     if (options.acceptRanges === false) {
+      // Remove Accept-Ranges.
       context.remove('Accept-Ranges');
     } else {
       // Set Accept-Ranges.
@@ -279,6 +277,7 @@ export default class Files {
 
     // Last-Modified.
     if (options.lastModified === false) {
+      // Remove Last-Modified.
       context.remove('Last-Modified');
     } else {
       // Set mtime utc string.

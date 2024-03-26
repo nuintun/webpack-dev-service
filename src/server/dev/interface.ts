@@ -24,7 +24,7 @@ export interface FilesOptions {
   fs: OutputFileSystem;
   acceptRanges?: boolean;
   lastModified?: boolean;
-  etag?: boolean | { weak: boolean };
+  etag?: false | { weak: boolean };
   headers?: Headers | HeaderFunction;
 }
 
