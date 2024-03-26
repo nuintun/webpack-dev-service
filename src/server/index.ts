@@ -3,8 +3,11 @@
  */
 
 import { Middleware } from 'koa';
+import { schema } from './schema';
 import { compose } from './compose';
+import { PLUGIN_NAME } from './utils';
 import { ICompiler } from './interface';
+import { validate } from 'schema-utils';
 import { Expose as HotExpose, hot, Options as HotOptions } from './hot';
 import { dev, Expose as DevExpose, Options as DevOptions } from './dev';
 
@@ -36,6 +39,11 @@ export default function server(compiler: ICompiler, options: EnableHotOptions): 
  */
 export default function server(compiler: ICompiler, options: DisableHotOptions): DisableHotMiddleware;
 export default function server(compiler: ICompiler, options: Options = {}): EnableHotMiddleware | DisableHotMiddleware {
+  validate(schema, options, {
+    name: PLUGIN_NAME,
+    baseDataPath: 'options'
+  });
+
   const { hot: hotOptions } = options;
 
   if (hotOptions === false) {

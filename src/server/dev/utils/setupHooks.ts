@@ -62,6 +62,7 @@ export function setupHooks(context: InitialContext): void {
     context.state = false;
     context.stats = undefined;
 
+    // Log compilation starting.
     context.logger.log('compilation starting...');
   };
 
@@ -87,17 +88,21 @@ export function setupHooks(context: InitialContext): void {
 
       // Check if still in valid state.
       if (state) {
-        const { logger, callbacks } = context;
+        onDone(stats, statsOptions);
 
+        // Callbacks.
+        const { callbacks } = context;
+
+        // Clear callbacks.
         context.callbacks = [];
 
+        // Call callbacks.
         for (const callback of callbacks) {
           callback(stats);
         }
 
-        onDone(stats, statsOptions);
-
-        logger.log('compilation finished');
+        // Log compilation finished.
+        context.logger.log('compilation finished');
       }
     });
   };

@@ -60,6 +60,7 @@ export default function rollup(esnext) {
         'webpack',
         'koa-compose',
         'range-parser',
+        'schema-utils',
         'supports-color'
       ]
     },
