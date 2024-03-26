@@ -63,7 +63,6 @@ const compiler = webpack({
   output: {
     publicPath: '/public/',
     filename: `js/[name].js`,
-    hashFunction: 'xxhash64',
     path: path.resolve('public'),
     chunkFilename: `js/[name].js`,
     assetModuleFilename: `[path][name][ext]`
@@ -84,6 +83,15 @@ const compiler = webpack({
     runtimeModules: false,
     dependentModules: false
   },
+  plugins: [
+    new HtmlWebpackPlugin(html),
+    new MiniCssExtractPlugin({
+      ignoreOrder: true,
+      filename: 'css/[name].css',
+      chunkFilename: 'css/[name].css'
+    }),
+    new webpack.ProgressPlugin(progress)
+  ],
   module: {
     strictExportPresence: true,
     rules: [
@@ -143,16 +151,7 @@ const compiler = webpack({
         ]
       }
     ]
-  },
-  plugins: [
-    new HtmlWebpackPlugin(html),
-    new MiniCssExtractPlugin({
-      ignoreOrder: true,
-      filename: 'css/[name].css',
-      chunkFilename: 'css/[name].css'
-    }),
-    new webpack.ProgressPlugin(progress)
-  ]
+  }
 });
 
 const port = 8000;
