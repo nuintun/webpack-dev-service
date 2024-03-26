@@ -6,6 +6,10 @@ import { createReadStream, Stats as FileStats } from 'fs';
 import { Compiler, MultiCompiler, StatsOptions, Watching } from 'webpack';
 import { ICompiler, ILogger, IStats, IStatsOptions } from '/server/interface';
 
+interface IgnoreFunction {
+  (path: string): boolean;
+}
+
 interface Headers {
   [key: string]: string | string[];
 }
@@ -25,6 +29,7 @@ export interface FilesOptions {
   fs: OutputFileSystem;
   acceptRanges?: boolean;
   lastModified?: boolean;
+  ignore?: IgnoreFunction;
   headers?: Headers | HeaderFunction;
 }
 

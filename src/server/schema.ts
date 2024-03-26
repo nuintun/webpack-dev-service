@@ -48,6 +48,10 @@ export const schema: Schema = {
         }
       ]
     },
+    ignore: {
+      instanceof: 'Function',
+      description: 'Function that determines if a file should be ignored.'
+    },
     etag: {
       type: 'boolean',
       description: 'Enable or disable the ETag functionality for file serving.'
