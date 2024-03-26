@@ -69,6 +69,15 @@ const compiler = webpack({
     runtimeModules: false,
     dependentModules: false
   },
+  plugins: [
+    new HtmlWebpackPlugin(html),
+    new MiniCssExtractPlugin({
+      ignoreOrder: true,
+      filename: 'css/[name].css',
+      chunkFilename: 'css/[name].css'
+    }),
+    new webpack.ProgressPlugin(progress)
+  ],
   module: {
     strictExportPresence: true,
     rules: [
@@ -128,16 +137,7 @@ const compiler = webpack({
         ]
       }
     ]
-  },
-  plugins: [
-    new HtmlWebpackPlugin(html),
-    new MiniCssExtractPlugin({
-      ignoreOrder: true,
-      filename: 'css/[name].css',
-      chunkFilename: 'css/[name].css'
-    }),
-    new webpack.ProgressPlugin(progress)
-  ]
+  }
 });
 
 const port = 8000;

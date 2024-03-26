@@ -106,8 +106,10 @@ export class Socket {
         params.set('overlay', options.overlay !== false ? 'true' : 'false');
         params.set('progress', options.progress !== false ? 'true' : 'false');
 
+        // Auto add hot client to entry.
         return new webpack.EntryPlugin(context, `webpack-dev-service/client?${params}`, {
-          runtime: `${PLUGIN_NAME}/client`
+          // Don't create runtime.
+          runtime: false
         });
       }
     ];
