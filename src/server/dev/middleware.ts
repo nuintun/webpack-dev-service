@@ -32,6 +32,7 @@ async function getFilesInstances(context: Context, name: string): Promise<FilesI
       files: new Files(outputPath, {
         fs: context.fs,
         etag: options.etag,
+        ignore: options.ignore,
         headers: options.headers,
         acceptRanges: options.acceptRanges,
         lastModified: options.lastModified
