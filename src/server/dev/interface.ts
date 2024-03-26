@@ -21,10 +21,10 @@ export interface OutputFileSystem extends IOutputFileSystem {
 }
 
 export interface FilesOptions {
+  etag?: boolean;
   fs: OutputFileSystem;
   acceptRanges?: boolean;
   lastModified?: boolean;
-  etag?: false | { weak: boolean };
   headers?: Headers | HeaderFunction;
 }
 

@@ -1,5 +1,5 @@
 /**
- * @method ready
+ * @module ready
  */
 
 import { Callback, Context } from '/server/dev/interface';

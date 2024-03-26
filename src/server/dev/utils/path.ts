@@ -1,5 +1,5 @@
 /**
- * @method path
+ * @module path
  */
 
 import { isAbsolute, relative } from 'path';
