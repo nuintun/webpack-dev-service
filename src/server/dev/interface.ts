@@ -2,6 +2,7 @@
  * @module interface
  */
 
+import { Service } from './Service';
 import { StatsOptions } from 'webpack';
 import { createReadStream, Stats as FileStats } from 'fs';
 import { ICompiler, IFileSystem, ILogger, IStats, IStatsOptions, IWatching } from '/server/interface';
@@ -22,13 +23,20 @@ export interface FileSystem extends IFileSystem {
   createReadStream: typeof createReadStream;
 }
 
-export interface FilesOptions {
+export interface ServiceOptions {
   fs: FileSystem;
   etag?: boolean;
   acceptRanges?: boolean;
   lastModified?: boolean;
   ignore?: IgnoreFunction;
   headers?: Headers | HeaderFunction;
+}
+
+export interface Options extends Omit<ServiceOptions, 'fs'> {
+  fs?: FileSystem;
+  stats?: IStatsOptions;
+  writeToDisk?: boolean | ((targetPath: string) => boolean);
+  onCompilerDone?(stats: IStats, statsOptions: Readonly<StatsOptions>): void;
 }
 
 export interface Callback {
@@ -39,6 +47,16 @@ export interface ErrorCallback {
   (error?: Error | null): void;
 }
 
+export interface Expose {
+  readonly state: boolean;
+  readonly logger: ILogger;
+  readonly ready: (callback: Callback) => void;
+  readonly close: (callback: ErrorCallback) => void;
+  readonly invalidate: (callback: ErrorCallback) => void;
+}
+
+export type FileService = [publicPath: string, service: Service];
+
 export interface Context {
   fs: FileSystem;
   logger: ILogger;
@@ -47,21 +65,7 @@ export interface Context {
   watching: IWatching;
   stats: IStats | null;
   callbacks: Callback[];
+  services?: FileService[];
 }
 
 export type InitialContext = Optional<Context, 'fs' | 'watching'>;
-
-export interface Options extends Omit<FilesOptions, 'fs'> {
-  fs?: FileSystem;
-  stats?: IStatsOptions;
-  writeToDisk?: boolean | ((targetPath: string) => boolean);
-  onCompilerDone?(stats: IStats, statsOptions: Readonly<StatsOptions>): void;
-}
-
-export interface Expose {
-  readonly state: boolean;
-  readonly logger: ILogger;
-  readonly ready: (callback: Callback) => void;
-  readonly close: (callback: ErrorCallback) => void;
-  readonly invalidate: (callback: ErrorCallback) => void;
-}

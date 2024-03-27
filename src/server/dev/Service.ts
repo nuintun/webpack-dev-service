@@ -1,5 +1,5 @@
 /**
- * @module Files
+ * @module Service
  */
 
 import { Stats } from 'fs';
@@ -9,16 +9,18 @@ import { Context } from 'koa';
 import { PassThrough } from 'stream';
 import { isFunction } from '/server/utils';
 import { extname, join, resolve } from 'path';
-import { FilesOptions, FileSystem } from './interface';
+import { FileSystem, ServiceOptions } from './interface';
 import { hasTrailingSlash, isOutRoot, unixify } from './utils/path';
 import { isConditionalGET, isPreconditionFailure, parseRanges, Range } from './utils/http';
+
+type FileStats = Stats | null | undefined;
 
 /**
  * @function stat
  * @description Get file stats.
  * @param path The file path.
  */
-function stat(fs: FileSystem, path: string): Promise<Stats | null | undefined> {
+function stat(fs: FileSystem, path: string): Promise<FileStats> {
   return new Promise(resolve => {
     fs.stat(path, (error, stats) => {
       resolve(error ? null : stats);
@@ -27,19 +29,19 @@ function stat(fs: FileSystem, path: string): Promise<Stats | null | undefined> {
 }
 
 /**
- * @class Files
+ * @class Service
  */
-export default class Files {
+export class Service {
   private root: string;
-  private options: FilesOptions;
+  private options: ServiceOptions;
 
   /**
    * @constructor
-   * @description Create files service.
-   * @param root Files service root.
-   * @param options Files service options.
+   * @description Create file service.
+   * @param root File service root.
+   * @param options File service options.
    */
-  constructor(root: string, options: FilesOptions) {
+  constructor(root: string, options: ServiceOptions) {
     this.options = options;
     this.root = unixify(resolve(root));
   }

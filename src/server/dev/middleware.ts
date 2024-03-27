@@ -2,21 +2,16 @@
  * @module middleware
  */
 
-import Files from './Files';
 import { Middleware } from 'koa';
-import { Context } from './interface';
+import { Service } from './Service';
 import { ready } from './utils/ready';
 import { decodeURI } from './utils/http';
+import { IStats } from '/server/interface';
 import { getPaths } from './utils/getPaths';
-import { ICompiler, IStats } from '/server/interface';
+import { Context, FileService } from './interface';
 
-type FilesInstance = [publicPath: string, files: Files];
-
-type InstancesCache = WeakMap<ICompiler, FilesInstance[]>;
-
-function getFilesInstances(context: Context, stats: IStats, cache: InstancesCache): FilesInstance[] {
-  const { compiler } = context;
-  const cached = cache.get(compiler);
+function getFileServices(context: Context, stats: IStats): FileService[] {
+  const cached = context.services;
 
   // Cache hit.
   if (cached) {
@@ -25,14 +20,14 @@ function getFilesInstances(context: Context, stats: IStats, cache: InstancesCach
 
   const paths = getPaths(stats);
   const { fs, options } = context;
-  const instances: FilesInstance[] = [];
+  const services: FileService[] = [];
   const { etag, ignore, headers, acceptRanges, lastModified } = options;
 
-  // Get the files instances.
+  // Get the file services.
   for (const [outputPath, publicPath] of paths) {
-    instances.push([
+    services.push([
       publicPath,
-      new Files(outputPath, {
+      new Service(outputPath, {
         fs,
         etag,
         ignore,
@@ -43,35 +38,33 @@ function getFilesInstances(context: Context, stats: IStats, cache: InstancesCach
     ]);
   }
 
-  // Set cache.
-  cache.set(compiler, instances);
+  // Cache services.
+  context.services = services;
 
-  // Return instances.
-  return instances;
+  // Return services.
+  return services;
 }
 
-function getFilesInstancesAsync(path: string, context: Context, cache: InstancesCache): Promise<FilesInstance[]> {
+function getFileServicesAsync(context: Context, path: string): Promise<FileService[]> {
   return new Promise(resolve => {
     const { stats } = context;
 
     // If stats exists, resolve immediately.
     if (stats) {
-      resolve(getFilesInstances(context, stats, cache));
+      resolve(getFileServices(context, stats));
     } else {
       // Log waiting info.
       context.logger.info(`wait until bundle finished: ${path}`);
 
       // Otherwise, wait until bundle finished.
       ready(context, stats => {
-        resolve(getFilesInstances(context, stats, cache));
+        resolve(getFileServices(context, stats));
       });
     }
   });
 }
 
 export function middleware(context: Context): Middleware {
-  const cache: InstancesCache = new WeakMap();
-
   // Middleware.
   return async (ctx, next) => {
     const path = decodeURI(ctx.path);
@@ -84,15 +77,15 @@ export function middleware(context: Context): Middleware {
     // Is path respond.
     let respond = false;
 
-    // Get the files instances.
-    const instances = await getFilesInstancesAsync(path, context, cache);
+    // Get the file services.
+    const services = await getFileServicesAsync(context, path);
 
     // Try to respond.
-    for (const [publicPath, files] of instances) {
+    for (const [publicPath, service] of services) {
       if (path.startsWith(publicPath)) {
         ctx.path = path.slice(publicPath.length);
 
-        respond = await files.response(ctx);
+        respond = await service.response(ctx);
 
         if (respond) {
           return;
