@@ -3,8 +3,9 @@
  */
 
 import { StatsOptions } from 'webpack';
+import { FileSystem } from './utils/fs';
 import { Options as ServiceOptions, Service } from './Service';
-import { FileSystem, ICompiler, ILogger, IStats, IStatsOptions, IWatching } from '/server/interface';
+import { ICompiler, ILogger, IStats, IStatsOptions, IWatching } from '/server/interface';
 
 export interface Callback {
   (stats: IStats): void;

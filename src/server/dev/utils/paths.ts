@@ -1,5 +1,5 @@
 /**
- * @module getPaths
+ * @module paths
  */
 
 import { URL } from 'url';

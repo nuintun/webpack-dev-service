@@ -8,8 +8,8 @@ import destroy from 'destroy';
 import { Context } from 'koa';
 import { PassThrough } from 'stream';
 import { isFunction } from '/server/utils';
+import { FileSystem, stat } from './utils/fs';
 import { extname, join, resolve } from 'path';
-import { FileSystem } from '/server/interface';
 import { hasTrailingSlash, isOutRoot, unixify } from './utils/path';
 import { isConditionalGET, isPreconditionFailure, parseRanges, Range } from './utils/http';
 
@@ -34,19 +34,6 @@ export interface Options {
   lastModified?: boolean;
   ignore?: IgnoreFunction;
   headers?: Headers | HeaderFunction;
-}
-
-/**
- * @function stat
- * @description Get file stats.
- * @param path The file path.
- */
-function stat(fs: FileSystem, path: string): Promise<FileStats> {
-  return new Promise(resolve => {
-    fs.stat(path, (error, stats) => {
-      resolve(error ? null : stats);
-    });
-  });
 }
 
 /**

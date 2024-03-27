@@ -2,8 +2,8 @@
  * @module setupOutputFileSystem
  */
 
+import { FileSystem } from './fs';
 import { getCompilers } from '/server/utils';
-import { FileSystem } from '/server/interface';
 import { createFsFromVolume, Volume } from 'memfs';
 import { InitialContext } from '/server/dev/interface';
 

@@ -11,13 +11,12 @@ import { ICompiler, ILogger, IStats } from '/server/interface';
 import { getOptions, getStatsOptions, getTimestamp, hasIssues, isUpgradable, WEBSOCKET_RE } from './utils';
 
 export class Socket {
-  private state: boolean = false;
-  private stats?: StatsCompilation;
-
   private readonly logger: ILogger;
   private readonly compiler: ICompiler;
   private readonly server: WebSocketServer;
   private readonly options: Required<Options>;
+
+  private stats: StatsCompilation | null = null;
 
   constructor(compiler: ICompiler, options: Options) {
     this.compiler = compiler;
@@ -36,14 +35,20 @@ export class Socket {
   setupWss(): void {
     const { server, logger } = this;
 
-    server.on('error', error => {
-      logger.error(error);
-    });
-
     server.on('connection', client => {
       if (this.stats) {
         this.broadcastStats([client], this.stats);
       }
+
+      logger.log('client connected');
+    });
+
+    server.on('error', error => {
+      logger.error(error);
+    });
+
+    server.on('close', function () {
+      logger.log('client disconnected');
     });
   }
 
@@ -53,9 +58,6 @@ export class Socket {
     const statsOptions = getStatsOptions(compiler);
 
     hooks.done.tap(PLUGIN_NAME, (stats: IStats) => {
-      // Set state to true.
-      this.state = true;
-
       // Get json stats.
       const jsonStats = stats.toJson(statsOptions);
 
@@ -69,16 +71,18 @@ export class Socket {
 
       // Do the stuff in nextTick, because bundle may be invalidated if a change happened while compiling.
       process.nextTick(() => {
+        const { stats } = this;
+
         // Broadcast stats.
-        if (this.state) {
-          this.broadcastStats(this.clients(), jsonStats);
+        if (stats) {
+          this.broadcastStats(this.clients(), stats);
         }
       });
     });
 
     hooks.invalid.tap(PLUGIN_NAME, (path, timestamp) => {
-      // Set state to false.
-      this.state = false;
+      // Set stats to null.
+      this.stats = null;
 
       // Broadcast invalid.
       this.broadcast(this.clients(), 'invalid', { path, timestamp });

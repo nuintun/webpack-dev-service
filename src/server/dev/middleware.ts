@@ -6,8 +6,8 @@ import { Middleware } from 'koa';
 import { Service } from './Service';
 import { ready } from './utils/ready';
 import { decodeURI } from './utils/http';
+import { getPaths } from './utils/paths';
 import { IStats } from '/server/interface';
-import { getPaths } from './utils/getPaths';
 import { Context, FileService } from './interface';
 
 function getFileServices(context: Context, stats: IStats): FileService[] {
