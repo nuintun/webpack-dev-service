@@ -18,7 +18,7 @@ export class Socket {
 
   private stats: StatsCompilation | null = null;
 
-  constructor(compiler: ICompiler, options: Options) {
+  constructor(compiler: ICompiler, options?: Options) {
     this.compiler = compiler;
     this.options = getOptions(options);
     this.server = new WebSocketServer({
@@ -102,13 +102,13 @@ export class Socket {
       ({ name, context }) => {
         const params = new URLSearchParams();
 
+        params.set('path', options.path);
         params.set('name', name || 'webpack');
-        params.set('path', options.path || '/hot');
-        params.set('wss', options.wss === true ? 'true' : 'false');
-        params.set('hmr', options.hmr !== false ? 'true' : 'false');
-        params.set('reload', options.reload !== false ? 'true' : 'false');
-        params.set('overlay', options.overlay !== false ? 'true' : 'false');
-        params.set('progress', options.progress !== false ? 'true' : 'false');
+        params.set('hmr', options.hmr ? 'true' : 'false');
+        params.set('wss', options.wss ? 'true' : 'false');
+        params.set('reload', options.reload ? 'true' : 'false');
+        params.set('overlay', options.overlay ? 'true' : 'false');
+        params.set('progress', options.progress ? 'true' : 'false');
 
         // Auto add hot client to entry.
         return new webpack.EntryPlugin(context, `webpack-dev-service/client?${params}`, {

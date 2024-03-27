@@ -10,7 +10,7 @@ import { isMultiCompilerMode, isObject } from '/server/utils';
 
 export const WEBSOCKET_RE = /^websocket$/i;
 
-export function normalize(path: string): string {
+function normalize(path: string): string {
   const segments: string[] = [];
   const parts = path.split(/[\\/]+/);
 
@@ -32,7 +32,7 @@ export function normalize(path: string): string {
   return pathname.startsWith('/') ? pathname : `/${pathname}`;
 }
 
-export function getOptions(options: Options): Required<Options> {
+export function getOptions(options?: Options): Required<Options> {
   const settings = {
     hmr: true,
     wss: false,

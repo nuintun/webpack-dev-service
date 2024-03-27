@@ -9,7 +9,7 @@ import { ICompiler } from '/server/interface';
 
 export { Expose, Options };
 
-export function hot(compiler: ICompiler, options: Options = {}): Middleware & Expose {
+export function hot(compiler: ICompiler, options?: Options): Middleware & Expose {
   const socket = new Socket(compiler, options);
   const middleware: Middleware = async (ctx, next) => {
     if (!socket.upgrade(ctx)) {

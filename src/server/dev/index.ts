@@ -37,7 +37,7 @@ function setup(compiler: ICompiler, options: Options): Context {
   return context as Context;
 }
 
-export function dev(compiler: ICompiler, options: Options = {}): Middleware & Expose {
+export function dev(compiler: ICompiler, options: Options): Middleware & Expose {
   const context = setup(compiler, options);
 
   return Object.assign<Middleware, Expose>(middleware(context), {
