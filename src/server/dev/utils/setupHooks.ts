@@ -4,8 +4,8 @@
 
 import { StatsOptions } from 'webpack';
 import supportsColor from 'supports-color';
+import { InitialContext } from '/server/dev/interface';
 import { IStats, IStatsOptions } from '/server/interface';
-import { Context, InitialContext } from '/server/dev/interface';
 import { isBoolean, isMultiCompilerMode, isString, PLUGIN_NAME } from '/server/utils';
 
 function normalizeStatsOptions(statsOptions?: IStatsOptions): StatsOptions {
@@ -59,15 +59,14 @@ export function setupHooks(context: InitialContext): void {
 
   const invalid = (): void => {
     // We are now in invalid state.
-    context.state = false;
-    context.stats = undefined;
+    context.stats = null;
 
     // Log compilation starting.
     context.logger.log('compilation starting...');
   };
 
   const {
-    onDone = (stats: IStats, statsOptions: StatsOptions) => {
+    onCompilerDone = (stats: IStats, statsOptions: StatsOptions) => {
       const printedStats = stats.toString(statsOptions);
 
       // Avoid extra empty line when `stats: 'none'`.
@@ -77,18 +76,18 @@ export function setupHooks(context: InitialContext): void {
     }
   } = context.options;
 
-  const done = (stats: NonNullable<Context['stats']>): void => {
+  const done = (stats: IStats): void => {
     // We are now on valid state
-    context.state = true;
     context.stats = stats;
 
     // Do the stuff in nextTick, because bundle may be invalidated if a change happened while compiling.
     process.nextTick(() => {
-      const { state } = context;
+      const { stats } = context;
 
       // Check if still in valid state.
-      if (state) {
-        onDone(stats, statsOptions);
+      if (stats) {
+        // Call onCompilerDone.
+        onCompilerDone(stats, statsOptions);
 
         // Callbacks.
         const { callbacks } = context;

@@ -5,7 +5,9 @@
 import Files from './Files';
 import { Middleware } from 'koa';
 import { Context } from './interface';
+import { ready } from './utils/ready';
 import { decodeURI } from './utils/http';
+import { IStats } from '/server/interface';
 import { getPaths } from './utils/getPaths';
 
 interface FilesInstance {
@@ -13,29 +15,22 @@ interface FilesInstance {
   publicPath: string;
 }
 
-const cache = new WeakMap<Context['compiler'], FilesInstance[]>();
-
-async function getFilesInstances(context: Context, name: string): Promise<FilesInstance[]> {
-  const cached = cache.get(context.compiler);
-
-  if (cached) {
-    return cached;
-  }
-
-  const { options } = context;
+function getFilesInstances({ fs, options }: Context, stats: IStats): FilesInstance[] {
+  const paths = getPaths(stats);
   const instances: FilesInstance[] = [];
-  const paths = await getPaths(context, name);
+  const { etag, ignore, headers, acceptRanges, lastModified } = options;
 
+  // Get the files instances.
   for (const { outputPath, publicPath } of paths) {
     instances.push({
       publicPath,
       files: new Files(outputPath, {
-        fs: context.fs,
-        etag: options.etag,
-        ignore: options.ignore,
-        headers: options.headers,
-        acceptRanges: options.acceptRanges,
-        lastModified: options.lastModified
+        fs,
+        etag,
+        ignore,
+        headers,
+        acceptRanges,
+        lastModified
       })
     });
   }
@@ -43,7 +38,25 @@ async function getFilesInstances(context: Context, name: string): Promise<FilesI
   return instances;
 }
 
+function getFilesInstancesAsync(context: Context): Promise<FilesInstance[]> {
+  return new Promise(resolve => {
+    const { stats } = context;
+    // If stats exists, resolve immediately.
+    if (stats) {
+      resolve(getFilesInstances(context, stats));
+    } else {
+      // Otherwise, wait until bundle finished.
+      ready(context, stats => {
+        resolve(getFilesInstances(context, stats));
+      });
+    }
+  });
+}
+
 export function middleware(context: Context): Middleware {
+  let instances: FilesInstance[];
+
+  // Middleware.
   return async (ctx, next) => {
     const path = decodeURI(ctx.path);
 
@@ -52,10 +65,19 @@ export function middleware(context: Context): Middleware {
       return ctx.throw(400);
     }
 
+    // Instances not initialized.
+    if (!instances) {
+      // Log waiting info.
+      context.logger.info(`wait until bundle finished: ${path}`);
+
+      // Get the files instances.
+      instances = await getFilesInstancesAsync(context);
+    }
+
+    // Is path respond.
     let respond = false;
 
-    const instances = await getFilesInstances(context, path);
-
+    // Try to respond.
     for (const { files, publicPath } of instances) {
       if (path.startsWith(publicPath)) {
         ctx.path = path.slice(publicPath.length);
@@ -70,6 +92,7 @@ export function middleware(context: Context): Middleware {
       }
     }
 
+    // Not respond.
     if (!respond) {
       await next();
     }

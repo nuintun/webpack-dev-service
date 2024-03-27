@@ -2,9 +2,9 @@
  * @module interface
  */
 
+import { StatsOptions } from 'webpack';
 import { createReadStream, Stats as FileStats } from 'fs';
-import { Compiler, MultiCompiler, StatsOptions, Watching } from 'webpack';
-import { ICompiler, ILogger, IStats, IStatsOptions } from '/server/interface';
+import { ICompiler, IFileSystem, ILogger, IStats, IStatsOptions, IWatching } from '/server/interface';
 
 interface IgnoreFunction {
   (path: string): boolean;
@@ -18,15 +18,13 @@ interface HeaderFunction {
   (path: string, stats: FileStats): Headers | void;
 }
 
-type IOutputFileSystem = NonNullable<Compiler['outputFileSystem']>;
-
-export interface OutputFileSystem extends IOutputFileSystem {
+export interface FileSystem extends IFileSystem {
   createReadStream: typeof createReadStream;
 }
 
 export interface FilesOptions {
+  fs: FileSystem;
   etag?: boolean;
-  fs: OutputFileSystem;
   acceptRanges?: boolean;
   lastModified?: boolean;
   ignore?: IgnoreFunction;
@@ -42,21 +40,22 @@ export interface ErrorCallback {
 }
 
 export interface Context {
-  stats: IStats;
-  state: boolean;
+  fs: FileSystem;
   logger: ILogger;
   options: Options;
   compiler: ICompiler;
-  fs: OutputFileSystem;
+  watching: IWatching;
+  stats: IStats | null;
   callbacks: Callback[];
-  watching: Watching | ReturnType<MultiCompiler['watch']>;
 }
 
+export type InitialContext = Optional<Context, 'fs' | 'watching'>;
+
 export interface Options extends Omit<FilesOptions, 'fs'> {
-  fs?: OutputFileSystem;
+  fs?: FileSystem;
   stats?: IStatsOptions;
   writeToDisk?: boolean | ((targetPath: string) => boolean);
-  onDone?(stats: IStats, statsOptions: Readonly<StatsOptions>): void;
+  onCompilerDone?(stats: IStats, statsOptions: Readonly<StatsOptions>): void;
 }
 
 export interface Expose {
@@ -66,5 +65,3 @@ export interface Expose {
   readonly close: (callback: ErrorCallback) => void;
   readonly invalidate: (callback: ErrorCallback) => void;
 }
-
-export type InitialContext = Optional<Context, 'fs' | 'stats' | 'watching'>;

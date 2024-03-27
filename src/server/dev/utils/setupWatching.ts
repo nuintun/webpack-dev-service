@@ -2,10 +2,11 @@
  * @module setupWatching
  */
 
+import { IWatching } from '/server/interface';
 import { isMultiCompilerMode } from '/server/utils';
-import { Context, ErrorCallback, InitialContext } from '/server/dev/interface';
+import { ErrorCallback, InitialContext } from '/server/dev/interface';
 
-function getWatching({ compiler, logger }: InitialContext): Context['watching'] {
+function getWatching({ compiler, logger }: InitialContext): IWatching {
   const isMulti = isMultiCompilerMode(compiler);
 
   if (!isMulti && compiler.watching) {

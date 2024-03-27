@@ -3,9 +3,7 @@
  */
 
 import { URL } from 'url';
-import { ready } from './ready';
 import { IStats } from '/server/interface';
-import { Context } from '/server/dev/interface';
 import { Compilation, MultiStats, Stats } from 'webpack';
 
 interface Path {
@@ -13,12 +11,11 @@ interface Path {
   publicPath: string;
 }
 
-const cache = new WeakMap<Context['compiler'], Path[]>();
-
 function getOutputPath(compilation: Compilation): string {
   // The `output.path` is always present and always absolute.
   const { path } = compilation.outputOptions;
 
+  // Get the path.
   return compilation.getPath(path ? path : '');
 }
 
@@ -26,6 +23,7 @@ function getPublicPath(compilation: Compilation): string {
   const { publicPath } = compilation.outputOptions;
   const path = compilation.getPath(publicPath ? publicPath : '');
 
+  // Get the path.
   try {
     return new URL(path).pathname;
   } catch {
@@ -38,6 +36,7 @@ function getStats(stats: IStats): Stats[] {
     return stats.stats;
   }
 
+  // Return the stats.
   return [stats];
 }
 
@@ -45,33 +44,18 @@ function isMultiStatsMode(stats: IStats): stats is MultiStats {
   return 'stats' in stats;
 }
 
-export function getPaths(context: Context, name: string): Promise<Path[]> {
-  return new Promise(resolve => {
-    const { compiler } = context;
-    const paths = cache.get(compiler);
+export function getPaths(stats: IStats): Path[] {
+  const paths: Path[] = [];
+  const childStats = getStats(stats);
 
-    if (paths) {
-      resolve(paths);
-    } else {
-      ready(
-        context,
-        stats => {
-          const paths: Path[] = [];
-          const childStats = getStats(stats);
+  // Get the paths.
+  for (const { compilation } of childStats) {
+    paths.push({
+      outputPath: getOutputPath(compilation),
+      publicPath: getPublicPath(compilation)
+    });
+  }
 
-          for (const { compilation } of childStats) {
-            paths.push({
-              outputPath: getOutputPath(compilation),
-              publicPath: getPublicPath(compilation)
-            });
-          }
-
-          cache.set(compiler, paths);
-
-          resolve(paths);
-        },
-        name
-      );
-    }
-  });
+  // Return the paths.
+  return paths;
 }

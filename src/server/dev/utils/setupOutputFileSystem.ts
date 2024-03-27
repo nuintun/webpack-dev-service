@@ -4,12 +4,12 @@
 
 import { getCompilers } from '/server/utils';
 import { createFsFromVolume, Volume } from 'memfs';
-import { InitialContext, OutputFileSystem } from '/server/dev/interface';
+import { FileSystem, InitialContext } from '/server/dev/interface';
 
-function createMemfs(): OutputFileSystem {
+function createMemfs(): FileSystem {
   const volume = new Volume();
 
-  return createFsFromVolume(volume) as unknown as OutputFileSystem;
+  return createFsFromVolume(volume) as unknown as FileSystem;
 }
 
 export function setupOutputFileSystem(context: InitialContext): void {

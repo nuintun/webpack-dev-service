@@ -9,7 +9,7 @@ import { Context } from 'koa';
 import { PassThrough } from 'stream';
 import { isFunction } from '/server/utils';
 import { extname, join, resolve } from 'path';
-import { FilesOptions, OutputFileSystem } from './interface';
+import { FilesOptions, FileSystem } from './interface';
 import { hasTrailingSlash, isOutRoot, unixify } from './utils/path';
 import { isConditionalGET, isPreconditionFailure, parseRanges, Range } from './utils/http';
 
@@ -18,7 +18,7 @@ import { isConditionalGET, isPreconditionFailure, parseRanges, Range } from './u
  * @description Get file stats.
  * @param path The file path.
  */
-function stat(fs: OutputFileSystem, path: string): Promise<Stats | null | undefined> {
+function stat(fs: FileSystem, path: string): Promise<Stats | null | undefined> {
   return new Promise(resolve => {
     fs.stat(path, (error, stats) => {
       resolve(error ? null : stats);

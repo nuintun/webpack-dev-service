@@ -19,7 +19,7 @@ function setup(compiler: ICompiler, options: Options): Context {
   const context: InitialContext = {
     options,
     compiler,
-    state: false,
+    stats: null,
     callbacks: [],
     logger: compiler.getInfrastructureLogger(PLUGIN_NAME)
   };
@@ -42,7 +42,7 @@ export function dev(compiler: ICompiler, options: Options = {}): Middleware & Ex
 
   return Object.assign<Middleware, Expose>(middleware(context), {
     get state() {
-      return context.state;
+      return !!context.stats;
     },
     get logger() {
       return context.logger;
