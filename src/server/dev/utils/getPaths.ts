@@ -6,10 +6,7 @@ import { URL } from 'url';
 import { IStats } from '/server/interface';
 import { Compilation, MultiStats, Stats } from 'webpack';
 
-interface Path {
-  outputPath: string;
-  publicPath: string;
-}
+type Path = [outputPath: string, publicPath: string];
 
 function getOutputPath(compilation: Compilation): string {
   // The `output.path` is always present and always absolute.
@@ -50,10 +47,12 @@ export function getPaths(stats: IStats): Path[] {
 
   // Get the paths.
   for (const { compilation } of childStats) {
-    paths.push({
-      outputPath: getOutputPath(compilation),
-      publicPath: getPublicPath(compilation)
-    });
+    paths.push([
+      // Output path.
+      getOutputPath(compilation),
+      // Public path.
+      getPublicPath(compilation)
+    ]);
   }
 
   // Return the paths.

@@ -32,7 +32,7 @@ function getFilesInstances(context: Context, stats: IStats, cache: InstancesCach
   const { etag, ignore, headers, acceptRanges, lastModified } = options;
 
   // Get the files instances.
-  for (const { outputPath, publicPath } of paths) {
+  for (const [outputPath, publicPath] of paths) {
     instances.push({
       publicPath,
       files: new Files(outputPath, {
