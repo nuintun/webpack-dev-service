@@ -10,10 +10,7 @@ import { decodeURI } from './utils/http';
 import { getPaths } from './utils/getPaths';
 import { ICompiler, IStats } from '/server/interface';
 
-interface FilesInstance {
-  files: Files;
-  publicPath: string;
-}
+type FilesInstance = [publicPath: string, files: Files];
 
 type InstancesCache = WeakMap<ICompiler, FilesInstance[]>;
 
@@ -33,9 +30,9 @@ function getFilesInstances(context: Context, stats: IStats, cache: InstancesCach
 
   // Get the files instances.
   for (const [outputPath, publicPath] of paths) {
-    instances.push({
+    instances.push([
       publicPath,
-      files: new Files(outputPath, {
+      new Files(outputPath, {
         fs,
         etag,
         ignore,
@@ -43,7 +40,7 @@ function getFilesInstances(context: Context, stats: IStats, cache: InstancesCach
         acceptRanges,
         lastModified
       })
-    });
+    ]);
   }
 
   // Set cache.
@@ -91,7 +88,7 @@ export function middleware(context: Context): Middleware {
     const instances = await getFilesInstancesAsync(path, context, cache);
 
     // Try to respond.
-    for (const { files, publicPath } of instances) {
+    for (const [publicPath, files] of instances) {
       if (path.startsWith(publicPath)) {
         ctx.path = path.slice(publicPath.length);
 
