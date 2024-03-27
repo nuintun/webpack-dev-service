@@ -9,11 +9,32 @@ import { Context } from 'koa';
 import { PassThrough } from 'stream';
 import { isFunction } from '/server/utils';
 import { extname, join, resolve } from 'path';
-import { FileSystem, ServiceOptions } from './interface';
+import { FileSystem } from '/server/interface';
 import { hasTrailingSlash, isOutRoot, unixify } from './utils/path';
 import { isConditionalGET, isPreconditionFailure, parseRanges, Range } from './utils/http';
 
+interface IgnoreFunction {
+  (path: string): boolean;
+}
+
+interface Headers {
+  [key: string]: string | string[];
+}
+
 type FileStats = Stats | null | undefined;
+
+interface HeaderFunction {
+  (path: string, stats: FileStats): Headers | void;
+}
+
+export interface Options {
+  fs: FileSystem;
+  etag?: boolean;
+  acceptRanges?: boolean;
+  lastModified?: boolean;
+  ignore?: IgnoreFunction;
+  headers?: Headers | HeaderFunction;
+}
 
 /**
  * @function stat
@@ -33,7 +54,7 @@ function stat(fs: FileSystem, path: string): Promise<FileStats> {
  */
 export class Service {
   private root: string;
-  private options: ServiceOptions;
+  private options: Options;
 
   /**
    * @constructor
@@ -41,7 +62,7 @@ export class Service {
    * @param root File service root.
    * @param options File service options.
    */
-  constructor(root: string, options: ServiceOptions) {
+  constructor(root: string, options: Options) {
     this.options = options;
     this.root = unixify(resolve(root));
   }

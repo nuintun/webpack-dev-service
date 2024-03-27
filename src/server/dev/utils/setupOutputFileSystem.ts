@@ -3,8 +3,9 @@
  */
 
 import { getCompilers } from '/server/utils';
+import { FileSystem } from '/server/interface';
 import { createFsFromVolume, Volume } from 'memfs';
-import { FileSystem, InitialContext } from '/server/dev/interface';
+import { InitialContext } from '/server/dev/interface';
 
 function createMemfs(): FileSystem {
   const volume = new Volume();
