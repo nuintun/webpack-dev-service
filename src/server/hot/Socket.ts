@@ -10,7 +10,7 @@ import webpack, { StatsCompilation } from 'webpack';
 import { Options, PluginFactory } from './interface';
 import { getCompilers, PLUGIN_NAME } from '/server/utils';
 import { ICompiler, ILogger, IStats } from '/server/interface';
-import { getOptions, getStatsOptions, getTimestamp, hasIssues, isUpgradable, WEBSOCKET_RE } from './utils';
+import { getOptions, getStatsOptions, getTimestamp, hasIssues, isUpgradable } from './utils';
 
 function entrypoint(): string {
   const filename = import.meta.url;
@@ -50,19 +50,19 @@ export class Socket {
     const { server, logger } = this;
 
     server.on('connection', client => {
+      logger.log('client connected');
+
+      client.on('close', () => {
+        logger.log('client disconnected');
+      });
+
       if (this.stats) {
         this.broadcastStats([client], this.stats);
       }
-
-      logger.log('client connected');
     });
 
     server.on('error', error => {
       logger.error(error);
-    });
-
-    server.on('close', function () {
-      logger.log('client disconnected');
     });
   }
 
@@ -172,7 +172,7 @@ export class Socket {
     const { server } = this;
     const { req: request } = context;
 
-    if (isUpgradable(context, WEBSOCKET_RE) && server.shouldHandle(request)) {
+    if (isUpgradable(context) && server.shouldHandle(request)) {
       context.respond = false;
 
       const { socket } = context;
