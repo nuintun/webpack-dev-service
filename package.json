@@ -1,6 +1,6 @@
 {
   "name": "webpack-dev-service",
-  "version": "0.10.0",
+  "version": "0.10.1",
   "description": "A koa 2 middleware for webpack development and hot reloading.",
   "type": "module",
   "sideEffects": [
@@ -33,9 +33,9 @@
     }
   },
   "files": [
-    "types",
-    "server",
-    "client"
+    "cjs",
+    "esm",
+    "types"
   ],
   "engines": {
     "node": ">=18.0.0"
