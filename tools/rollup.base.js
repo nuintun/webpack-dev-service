@@ -59,7 +59,7 @@ export default function rollup(esnext) {
         entryFileNames: `[name].${esnext ? 'js' : 'cjs'}`,
         chunkFileNames: `[name].${esnext ? 'js' : 'cjs'}`
       },
-      plugins: [typescript(), treeShake(), metaURL(esnext), env(esnext)],
+      plugins: [env(esnext), metaURL(esnext), typescript(), treeShake()],
       onwarn(error, warn) {
         if (error.code !== 'CIRCULAR_DEPENDENCY') {
           warn(error);
@@ -97,7 +97,7 @@ export default function rollup(esnext) {
         entryFileNames: `[name].${esnext ? 'js' : 'cjs'}`,
         chunkFileNames: `[name].${esnext ? 'js' : 'cjs'}`
       },
-      plugins: [typescript(), treeShake(), webpackHot(esnext)],
+      plugins: [webpackHot(esnext), typescript(), treeShake()],
       onwarn(error, warn) {
         if (error.code !== 'CIRCULAR_DEPENDENCY') {
           warn(error);
