@@ -17,7 +17,7 @@ export default function metaURL(exnext) {
           return 'import.meta.url';
         }
 
-        return `require('url').pathToFileURL(__filename)`;
+        return `require.main.filename`;
       }
     }
   };

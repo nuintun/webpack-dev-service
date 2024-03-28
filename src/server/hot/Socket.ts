@@ -12,7 +12,17 @@ import { getCompilers, PLUGIN_NAME } from '/server/utils';
 import { ICompiler, ILogger, IStats } from '/server/interface';
 import { getOptions, getStatsOptions, getTimestamp, hasIssues, isUpgradable, WEBSOCKET_RE } from './utils';
 
-const client = resolve(dirname(fileURLToPath(import.meta.url)), __HOT_CLIENT__);
+function entrypoint(): string {
+  const filename = import.meta.url;
+
+  try {
+    return dirname(fileURLToPath(filename));
+  } catch {
+    return dirname(filename);
+  }
+}
+
+const client = resolve(entrypoint(), __HOT_CLIENT__);
 
 export class Socket {
   private readonly logger: ILogger;

@@ -4,21 +4,21 @@
   "description": "A koa 2 middleware for webpack development and hot reloading.",
   "type": "module",
   "sideEffects": [
-    "client/esm/main.js",
-    "client/cjs/main.cjs"
+    "esm/client/main.js",
+    "cjs/client/main.cjs"
   ],
-  "main": "server/cjs/index.cjs",
-  "module": "server/esm/index.js",
+  "main": "cjs/server/index.cjs",
+  "module": "esm/server/index.js",
   "types": "types/server/index.d.ts",
   "exports": {
     ".": {
-      "import": "./server/esm/index.js",
-      "require": "./server/cjs/index.cjs",
+      "import": "./esm/server/index.js",
+      "require": "./cjs/server/index.cjs",
       "types": "./types/server/index.d.ts"
     },
-    "./events": {
-      "import": "./client/esm/index.js",
-      "require": "./client/cjs/index.cjs",
+    "./client": {
+      "import": "./esm/client/index.js",
+      "require": "./cjs/client/index.cjs",
       "types": "./types/client/index.d.ts"
     }
   },
@@ -27,7 +27,7 @@
       ".": [
         "./types/server/index.d.ts"
       ],
-      "events": [
+      "client": [
         "./types/client/index.d.ts"
       ]
     }

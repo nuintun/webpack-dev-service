@@ -31,6 +31,6 @@ declare module '*.mp4' {
   export default content;
 }
 
-declare module 'webpack-dev-service/events' {
-  export = import('../types/client/events');
+declare module 'webpack-dev-service/client' {
+  export = import('../types/client/index');
 }

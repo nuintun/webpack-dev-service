@@ -130,6 +130,6 @@ dist
 .pnp.*
 
 # Build dist
+/cjs/
+/esm/
 /types/
-/server/
-/client/

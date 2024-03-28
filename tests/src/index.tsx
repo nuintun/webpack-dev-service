@@ -11,10 +11,7 @@ if (import.meta.webpackHot) {
     root.render(<App />);
   });
 
-  import(
-    // webpackMode: 'eager'
-    'webpack-dev-service/events'
-  ).then(({ on }) => {
+  import('webpack-dev-service/client').then(({ on }) => {
     on('ok', ({ timestamp }) => {
       console.log(`[HMR] App is up to date at ${new Date(timestamp).toLocaleString()}`);
     });

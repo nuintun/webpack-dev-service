@@ -28,8 +28,7 @@ const banner = `/**
  */
 function env(esnext) {
   const ext = esnext ? 'js' : 'cjs';
-  const dir = esnext ? 'esm' : 'cjs';
-  const client = `../../../client/${dir}/main.${ext}`;
+  const client = `../../client/main.${ext}`;
 
   return replace({
     preventAssignment: true,
@@ -56,7 +55,7 @@ export default function rollup(esnext) {
         preserveModules: true,
         format: esnext ? 'esm' : 'cjs',
         generatedCode: { constBindings: true },
-        dir: esnext ? 'server/esm' : 'server/cjs',
+        dir: esnext ? 'esm/server' : 'cjs/server',
         entryFileNames: `[name].${esnext ? 'js' : 'cjs'}`,
         chunkFileNames: `[name].${esnext ? 'js' : 'cjs'}`
       },
@@ -94,7 +93,7 @@ export default function rollup(esnext) {
         preserveModules: true,
         format: esnext ? 'esm' : 'cjs',
         generatedCode: { constBindings: true },
-        dir: esnext ? 'client/esm' : 'client/cjs',
+        dir: esnext ? 'esm/client' : 'cjs/client',
         entryFileNames: `[name].${esnext ? 'js' : 'cjs'}`,
         chunkFileNames: `[name].${esnext ? 'js' : 'cjs'}`
       },
