@@ -110,9 +110,9 @@ export const schema: Schema = {
         }
       ]
     },
-    onCompilerDone: {
+    onCompilationDone: {
       instanceof: 'Function',
-      description: 'Callback function when the compiler is done, providing statistics and options.'
+      description: 'Callback function when the compilation is done, providing statistics and options.'
     }
   },
   additionalProperties: false

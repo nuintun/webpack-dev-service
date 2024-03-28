@@ -8,7 +8,11 @@ import { StatsCompilation, StatsOptions } from 'webpack';
 import { ICompiler, IStatsOptions } from '/server/interface';
 import { isMultiCompilerMode, isObject } from '/server/utils';
 
-export const WEBSOCKET_RE = /^websocket$/i;
+export function isUpgradable(context: Context): boolean {
+  const { upgrade } = context.headers;
+
+  return !!upgrade && /^websocket$/i.test(upgrade.trim());
+}
 
 function normalize(path: string): string {
   const segments: string[] = [];
@@ -46,12 +50,6 @@ export function getOptions(options?: Options): Required<Options> {
   settings.path = normalize(settings.path);
 
   return settings;
-}
-
-export function isUpgradable(context: Context, detector: RegExp): boolean {
-  const { upgrade } = context.headers;
-
-  return !!upgrade && detector.test(upgrade.trim());
 }
 
 export function hasIssues<T>(issues: ArrayLike<T> | undefined): boolean {
