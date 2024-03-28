@@ -16,16 +16,6 @@
       "require": "./server/cjs/index.cjs",
       "types": "./types/server/index.d.ts"
     },
-    "./client": {
-      "import": "./client/esm/main.js",
-      "require": "./client/cjs/main.cjs",
-      "types": "./types/client/main.d.ts"
-    },
-    "./client?*": {
-      "import": "./client/esm/main.js?*",
-      "require": "./client/cjs/main.cjs?*",
-      "types": "./types/client/main.d.ts"
-    },
     "./events": {
       "import": "./client/esm/index.js",
       "require": "./client/cjs/index.cjs",
@@ -36,12 +26,6 @@
     "*": {
       ".": [
         "./types/server/index.d.ts"
-      ],
-      "client": [
-        "./types/client/main.d.ts"
-      ],
-      "client?*": [
-        "./types/client/main.d.ts"
       ],
       "events": [
         "./types/client/index.d.ts"
@@ -102,9 +86,10 @@
     "ws": "^8.16.0"
   },
   "devDependencies": {
+    "@rollup/plugin-replace": "^5.0.5",
     "@rollup/plugin-typescript": "^11.1.6",
     "@swc/core": "^1.4.11",
-    "@swc/helpers": "^0.5.7",
+    "@swc/helpers": "^0.5.8",
     "@types/destroy": "^1.0.3",
     "@types/etag": "^1.8.3",
     "@types/koa-compose": "^3.2.8",

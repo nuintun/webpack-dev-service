@@ -3,12 +3,16 @@
  */
 
 import { Context } from 'koa';
+import { fileURLToPath } from 'url';
+import { dirname, resolve } from 'path';
 import WebSocket, { WebSocketServer } from 'ws';
 import webpack, { StatsCompilation } from 'webpack';
 import { Options, PluginFactory } from './interface';
 import { getCompilers, PLUGIN_NAME } from '/server/utils';
 import { ICompiler, ILogger, IStats } from '/server/interface';
 import { getOptions, getStatsOptions, getTimestamp, hasIssues, isUpgradable, WEBSOCKET_RE } from './utils';
+
+const client = resolve(dirname(fileURLToPath(import.meta.url)), __HOT_CLIENT__);
 
 export class Socket {
   private readonly logger: ILogger;
@@ -111,7 +115,7 @@ export class Socket {
         params.set('progress', options.progress ? 'true' : 'false');
 
         // Auto add hot client to entry.
-        return new webpack.EntryPlugin(context, `webpack-dev-service/client?${params}`, {
+        return new webpack.EntryPlugin(context, `${client}?${params}`, {
           // Don't create runtime.
           runtime: false
         });

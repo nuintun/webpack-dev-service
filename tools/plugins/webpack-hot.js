@@ -13,7 +13,11 @@ export default function webpackHot(exnext) {
     name: 'rollup-plugin-webpack-hot',
     resolveImportMeta(property) {
       if (property === 'webpackHot') {
-        return exnext ? 'import.meta.webpackHot' : 'module.hot';
+        if (exnext) {
+          return 'import.meta.webpackHot';
+        }
+
+        return 'module.hot';
       }
     }
   };

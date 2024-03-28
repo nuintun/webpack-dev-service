@@ -3,6 +3,8 @@
  */
 
 import { createRequire } from 'module';
+import metaURL from './plugins/meta-url.js';
+import replace from '@rollup/plugin-replace';
 import treeShake from './plugins/tree-shake.js';
 import webpackHot from './plugins/webpack-hot.js';
 import typescript from '@rollup/plugin-typescript';
@@ -18,6 +20,24 @@ const banner = `/**
   * @see ${pkg.homepage}
   */
  `;
+
+/**
+ * @function env
+ * @param {boolean} esnext
+ * @return {import('rollup').Plugin}
+ */
+function env(esnext) {
+  const ext = esnext ? 'js' : 'cjs';
+  const dir = esnext ? 'esm' : 'cjs';
+  const client = `../../../client/${dir}/main.${ext}`;
+
+  return replace({
+    preventAssignment: true,
+    values: {
+      __HOT_CLIENT__: JSON.stringify(client)
+    }
+  });
+}
 
 /**
  * @function rollup
@@ -40,7 +60,7 @@ export default function rollup(esnext) {
         entryFileNames: `[name].${esnext ? 'js' : 'cjs'}`,
         chunkFileNames: `[name].${esnext ? 'js' : 'cjs'}`
       },
-      plugins: [typescript(), treeShake()],
+      plugins: [typescript(), treeShake(), metaURL(esnext), env(esnext)],
       onwarn(error, warn) {
         if (error.code !== 'CIRCULAR_DEPENDENCY') {
           warn(error);
