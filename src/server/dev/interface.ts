@@ -27,7 +27,7 @@ export interface Options extends Omit<ServiceOptions, 'fs'> {
   fs?: FileSystem;
   stats?: IStatsOptions;
   writeToDisk?: boolean | ((targetPath: string) => boolean);
-  onCompilerDone?(stats: IStats, statsOptions: Readonly<StatsOptions>): void;
+  onCompilationDone?(stats: IStats, statsOptions: Readonly<StatsOptions>): void;
 }
 
 export type FileService = [publicPath: string, service: Service];

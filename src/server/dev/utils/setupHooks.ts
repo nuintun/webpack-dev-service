@@ -66,7 +66,7 @@ export function setupHooks(context: InitialContext): void {
   };
 
   const {
-    onCompilerDone = (stats: IStats, statsOptions: StatsOptions) => {
+    onCompilationDone = (stats: IStats, statsOptions: StatsOptions) => {
       const printedStats = stats.toString(statsOptions);
 
       // Avoid extra empty line when `stats: 'none'`.
@@ -86,8 +86,8 @@ export function setupHooks(context: InitialContext): void {
 
       // Check if still in valid state.
       if (stats) {
-        // Call onCompilerDone.
-        onCompilerDone(stats, statsOptions);
+        // Call onCompilationDone.
+        onCompilationDone(stats, statsOptions);
 
         // Callbacks.
         const { callbacks } = context;
