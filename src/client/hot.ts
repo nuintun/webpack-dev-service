@@ -5,7 +5,7 @@
 // Last error.
 let error: Error;
 // Last update hash.
-let hash: string = __webpack_hash__;
+let hash = __webpack_hash__;
 // HMR status.
 let status: HotUpdateStatus = 'idle';
 
