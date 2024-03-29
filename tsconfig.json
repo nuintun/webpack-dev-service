@@ -6,7 +6,7 @@
     "newLine": "lf",
     "jsx": "react-jsx",
     "module": "ESNext",
-    "target": "ES2018",
+    "target": "ESNext",
     "skipLibCheck": true,
     "importHelpers": true,
     "noUnusedLocals": true,
@@ -15,6 +15,7 @@
     "moduleResolution": "Node",
     "noImplicitOverride": true,
     "noUnusedParameters": true,
+    "useDefineForClassFields": true,
     "forceConsistentCasingInFileNames": true,
     "paths": {
       "/*": [
