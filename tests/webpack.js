@@ -121,6 +121,7 @@ const compiler = webpack({
                   esModule: true,
                   modules: {
                     auto: true,
+                    namedExport: false,
                     localIdentName: '[local]-[hash:8]',
                     exportLocalsConvention: 'camelCaseOnly'
                   }
