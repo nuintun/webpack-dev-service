@@ -123,7 +123,7 @@ const compiler = webpack({
                     auto: true,
                     namedExport: false,
                     localIdentName: '[local]-[hash:8]',
-                    exportLocalsConvention: 'camelCaseOnly'
+                    exportLocalsConvention: 'camel-case-only'
                   }
                 }
               }
