@@ -88,7 +88,7 @@
   "devDependencies": {
     "@rollup/plugin-replace": "^5.0.5",
     "@rollup/plugin-typescript": "^11.1.6",
-    "@swc/core": "^1.4.12",
+    "@swc/core": "^1.4.13",
     "@swc/helpers": "^0.5.8",
     "@types/destroy": "^1.0.3",
     "@types/etag": "^1.8.3",
