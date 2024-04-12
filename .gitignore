@@ -133,3 +133,4 @@ dist
 /cjs/
 /esm/
 /types/
+/tests/wwwroot/

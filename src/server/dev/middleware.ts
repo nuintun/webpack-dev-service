@@ -74,30 +74,17 @@ export function middleware(context: Context): Middleware {
       return ctx.throw(400);
     }
 
-    // Is path respond.
-    let respond = false;
-
     // Get the file services.
     const services = await getFileServicesAsync(context, path);
 
     // Try to respond.
     for (const [publicPath, service] of services) {
-      if (path.startsWith(publicPath)) {
-        ctx.path = path.slice(publicPath.length);
-
-        respond = await service.response(ctx);
-
-        if (respond) {
-          return;
-        } else {
-          ctx.path = path;
-        }
+      if (await service.response(ctx, publicPath)) {
+        return;
       }
     }
 
     // Not respond.
-    if (!respond) {
-      await next();
-    }
+    await next();
   };
 }

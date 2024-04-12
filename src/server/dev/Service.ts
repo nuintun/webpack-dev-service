@@ -223,17 +223,28 @@ export class Service {
    * @method response
    * @description Response to koa context.
    * @param context Koa context.
+   * @param publicPath Public path.
    */
-  public async response(context: Context): Promise<boolean> {
-    const { root } = this;
+  public async response(context: Context, publicPath: string): Promise<boolean> {
+    // Get request pathname.
+    const { pathname } = context.URL;
+
+    // Check public path.
+    if (!pathname.startsWith(publicPath)) {
+      return false;
+    }
 
     // Only support GET and HEAD (405).
     if (context.method !== 'GET' && context.method !== 'HEAD') {
       return false;
     }
 
+    // Get root path.
+    const { root } = this;
+    // Slice length, public path cannot be empty.
+    const length = publicPath.length - 1;
     // Get path of file.
-    const path = unixify(join(root, context.path));
+    const path = unixify(join(root, pathname.slice(length)));
 
     // Malicious path (403).
     if (isOutRoot(path, root)) {

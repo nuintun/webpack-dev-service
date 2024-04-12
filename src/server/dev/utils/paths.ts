@@ -18,13 +18,19 @@ function getOutputPath(compilation: Compilation): string {
 
 function getPublicPath(compilation: Compilation): string {
   const { publicPath } = compilation.outputOptions;
-  const path = compilation.getPath(publicPath ? publicPath : '');
+  // @see https://webpack.js.org/guides/public-path/#automatic-publicpath
+  const path = publicPath ? compilation.getPath(publicPath) : 'auto';
+
+  // Return / if auto.
+  if (path === 'auto') {
+    return '/';
+  }
 
   // Get the path.
   try {
     return new URL(path).pathname;
   } catch {
-    return path;
+    return `/${path}/`.replace(/\/{2,}/g, '/');
   }
 }
 

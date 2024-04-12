@@ -48,8 +48,8 @@ const compiler = webpack({
   output: {
     publicPath: '/public/',
     filename: `js/[name].js`,
-    path: path.resolve('public'),
     chunkFilename: `js/[name].js`,
+    path: path.resolve('wwwroot/public'),
     assetModuleFilename: `[path][name][ext]`
   },
   devtool: 'eval-cheap-module-source-map',
