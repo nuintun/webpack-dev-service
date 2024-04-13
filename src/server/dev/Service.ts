@@ -241,10 +241,12 @@ export class Service {
 
     // Get root path.
     const { root } = this;
-    // Slice length, public path cannot be empty.
-    const length = publicPath.length - 1;
+    // Slice length.
+    const { length } = publicPath;
+    // Real pathname.
+    const realpath = pathname.slice(length);
     // Get path of file.
-    const path = unixify(join(root, pathname.slice(length)));
+    const path = unixify(join(root, realpath));
 
     // Malicious path (403).
     if (isOutRoot(path, root)) {

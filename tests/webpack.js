@@ -16,7 +16,7 @@ const progress = {
   percentBy: 'entries'
 };
 
-const entryHTML = path.resolve('public/index.html');
+const entryHTML = path.resolve('wwwroot/index.html');
 
 const html = {
   xhtml: true,
