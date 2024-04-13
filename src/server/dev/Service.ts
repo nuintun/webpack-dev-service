@@ -227,15 +227,10 @@ export class Service {
    */
   public async response(context: Context, publicPath: string): Promise<boolean> {
     // Get request pathname.
-    const { pathname } = context.URL;
+    const pathname = context.path || '/';
 
     // Check public path.
     if (!pathname.startsWith(publicPath)) {
-      return false;
-    }
-
-    // Only support GET and HEAD (405).
-    if (context.method !== 'GET' && context.method !== 'HEAD') {
       return false;
     }
 

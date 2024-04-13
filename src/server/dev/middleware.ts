@@ -74,13 +74,16 @@ export function middleware(context: Context): Middleware {
       return ctx.throw(400);
     }
 
-    // Get the file services.
-    const services = await getFileServicesAsync(context, path);
+    // Only support GET and HEAD (405).
+    if (ctx.method === 'GET' || ctx.method === 'HEAD') {
+      // Get the file services.
+      const services = await getFileServicesAsync(context, path);
 
-    // Try to respond.
-    for (const [publicPath, service] of services) {
-      if (await service.response(ctx, publicPath)) {
-        return;
+      // Try to respond.
+      for (const [publicPath, service] of services) {
+        if (await service.response(ctx, publicPath)) {
+          return;
+        }
       }
     }
 
