@@ -14,15 +14,6 @@ type PathsItem = [
   publicPath: string
 ];
 
-function getStats(stats: IStats): Stats[] {
-  if (isMultiStatsMode(stats)) {
-    return stats.stats;
-  }
-
-  // Return the stats.
-  return [stats];
-}
-
 function normalize(path: string): string {
   path = unixify(path);
 
@@ -31,6 +22,15 @@ function normalize(path: string): string {
   }
 
   return `/${path}`;
+}
+
+function getStats(stats: IStats): Stats[] {
+  if (isMultiStatsMode(stats)) {
+    return stats.stats;
+  }
+
+  // Return the stats.
+  return [stats];
 }
 
 function getOutputPath(compilation: Compilation): string {
