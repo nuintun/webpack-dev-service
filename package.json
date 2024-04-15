@@ -88,7 +88,7 @@
   "devDependencies": {
     "@rollup/plugin-replace": "^5.0.5",
     "@rollup/plugin-typescript": "^11.1.6",
-    "@swc/core": "^1.4.13",
+    "@swc/core": "^1.4.14",
     "@swc/helpers": "^0.5.9",
     "@types/destroy": "^1.0.3",
     "@types/etag": "^1.8.3",
@@ -108,7 +108,7 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "rimraf": "^5.0.5",
-    "rollup": "^4.14.2",
+    "rollup": "^4.14.3",
     "swc-loader": "^0.2.6",
     "tsc-alias": "^1.8.8",
     "typescript": "^5.4.5",
