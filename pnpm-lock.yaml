@@ -21,8 +21,8 @@ dependencies:
     specifier: ^1.8.1
     version: 1.8.1
   memfs:
-    specifier: ^4.8.1
-    version: 4.8.1
+    specifier: ^4.8.2
+    version: 4.8.2
   range-parser:
     specifier: ^1.2.1
     version: 1.2.1
@@ -1645,8 +1645,8 @@ packages:
     engines: {node: '>= 0.6'}
     dev: true
 
-  /memfs@4.8.1:
-    resolution: {integrity: sha512-7q/AdPzf2WpwPlPL4v1kE2KsJsHl7EF4+hAeVzlyanr2+YnR21NVn9mDqo+7DEaKDRsQy8nvxPlKH4WqMtiO0w==}
+  /memfs@4.8.2:
+    resolution: {integrity: sha512-j4WKth315edViMBGkHW6NTF0QBjsTrcRDmYNcGsPq+ozMEyCCCIlX2d2mJ5wuh6iHvJ3FevUrr48v58YRqVdYg==}
     engines: {node: '>= 4.0.0'}
     dependencies:
       tslib: 2.6.2
