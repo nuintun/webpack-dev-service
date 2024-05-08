@@ -2,14 +2,21 @@
  * @module rollup.base
  */
 
-import { createRequire } from 'module';
 import metaURL from './plugins/meta-url.js';
 import replace from '@rollup/plugin-replace';
 import treeShake from './plugins/tree-shake.js';
 import webpackHot from './plugins/webpack-hot.js';
+import { createRequire, isBuiltin } from 'module';
 import typescript from '@rollup/plugin-typescript';
 
 const pkg = createRequire(import.meta.url)('../package.json');
+
+const externals = [
+  // Dependencies
+  ...Object.keys(pkg.dependencies || {}),
+  // Peer dependencies
+  ...Object.keys(pkg.peerDependencies || {})
+];
 
 const banner = `/**
   * @package ${pkg.name}
@@ -65,23 +72,19 @@ export default function rollup(esnext) {
           warn(error);
         }
       },
-      external: [
-        'fs',
-        'ws',
-        'url',
-        'etag',
-        'path',
-        'memfs',
-        'tslib',
-        'crypto',
-        'stream',
-        'destroy',
-        'webpack',
-        'koa-compose',
-        'range-parser',
-        'schema-utils',
-        'supports-color'
-      ]
+      external(source) {
+        if (isBuiltin(source)) {
+          return true;
+        }
+
+        for (const external of externals) {
+          if (source === external || source.startsWith(`${external}/`)) {
+            return true;
+          }
+        }
+
+        return false;
+      }
     },
     {
       input: ['src/client/main.ts', 'src/client/index.ts'],
@@ -103,7 +106,19 @@ export default function rollup(esnext) {
           warn(error);
         }
       },
-      external: ['tslib', '@nuintun/ansi']
+      external(source) {
+        if (isBuiltin(source)) {
+          return true;
+        }
+
+        for (const external of externals) {
+          if (source === external || source.startsWith(`${external}/`)) {
+            return true;
+          }
+        }
+
+        return false;
+      }
     }
   ];
 }
