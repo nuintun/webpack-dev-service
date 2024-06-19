@@ -1,6 +1,6 @@
 {
   "name": "webpack-dev-service",
-  "version": "0.11.4",
+  "version": "0.11.5",
   "description": "A koa 2 middleware for webpack development and hot reloading.",
   "type": "module",
   "sideEffects": [
@@ -73,27 +73,27 @@
     "build:types": "tsc --declaration --emitDeclarationOnly --declarationDir types && node tools/fix-types.js"
   },
   "dependencies": {
-    "@nuintun/ansi": "^0.0.4",
+    "@nuintun/ansi": "^0.0.5",
     "@types/koa": "^2.15.0",
     "@types/ws": "^8.5.10",
     "destroy": "^1.2.0",
     "etag": "^1.8.1",
-    "memfs": "^4.9.2",
+    "memfs": "^4.9.3",
     "range-parser": "^1.2.1",
     "schema-utils": "^4.2.0",
     "supports-color": "^9.4.0",
     "tslib": "^2.6.3",
-    "ws": "^8.17.0"
+    "ws": "^8.17.1"
   },
   "devDependencies": {
     "@rollup/plugin-replace": "^5.0.7",
     "@rollup/plugin-typescript": "^11.1.6",
-    "@swc/core": "^1.5.27",
+    "@swc/core": "^1.6.3",
     "@swc/helpers": "^0.5.11",
     "@types/destroy": "^1.0.3",
     "@types/etag": "^1.8.3",
     "@types/koa-compose": "^3.2.8",
-    "@types/node": "^20.14.2",
+    "@types/node": "^20.14.5",
     "@types/range-parser": "^1.2.7",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
@@ -102,9 +102,9 @@
     "koa": "^2.15.3",
     "koa-compress": "^5.1.1",
     "magic-string": "^0.30.10",
-    "memfs": "^4.9.2",
+    "memfs": "^4.9.3",
     "mini-css-extract-plugin": "^2.9.0",
-    "prettier": "^3.3.1",
+    "prettier": "^3.3.2",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "rimraf": "^5.0.7",
@@ -112,7 +112,7 @@
     "swc-loader": "^0.2.6",
     "tsc-alias": "^1.8.10",
     "typescript": "^5.4.5",
-    "webpack": "^5.91.0"
+    "webpack": "^5.92.0"
   },
   "peerDependencies": {
     "koa": ">=2.0.0",
