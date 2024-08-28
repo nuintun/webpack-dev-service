@@ -3,21 +3,21 @@
  */
 
 import { Options } from './client';
-import * as Message from './message';
+import { HashMessage, InvalidMessage, IssuesMessage, OkMessage, ProgressMessage } from './message';
 
 type Listeners = {
   [E in keyof Events]: Events[E][];
 };
 
-interface Messages {
-  ok: Message.OK['payload'];
-  hash: Message.Hash['payload'];
-  issues: Message.Issues['payload'];
-  invalid: Message.Invalid['payload'];
-  progress: Message.Progress['payload'];
+export interface Messages {
+  ok: OkMessage['payload'];
+  hash: HashMessage['payload'];
+  issues: IssuesMessage['payload'];
+  invalid: InvalidMessage['payload'];
+  progress: ProgressMessage['payload'];
 }
 
-interface Events {
+export interface Events {
   ok(message: Messages['ok'], options: Options): void;
   hash(message: Messages['hash'], options: Options): void;
   issues(message: Messages['issues'], options: Options): void;

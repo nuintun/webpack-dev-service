@@ -4,7 +4,7 @@
 
 import { StatsError } from 'webpack';
 
-export interface Invalid {
+export interface InvalidMessage {
   action: 'invalid';
   payload: {
     path: string;
@@ -12,7 +12,7 @@ export interface Invalid {
   };
 }
 
-export interface Progress {
+export interface ProgressMessage {
   action: 'progress';
   payload: {
     value: number;
@@ -21,7 +21,7 @@ export interface Progress {
   };
 }
 
-export interface Hash {
+export interface HashMessage {
   action: 'hash';
   payload: {
     hash: string;
@@ -29,7 +29,7 @@ export interface Hash {
   };
 }
 
-export interface Issues {
+export interface IssuesMessage {
   action: 'issues';
   payload: {
     timestamp: number;
@@ -38,9 +38,11 @@ export interface Issues {
   };
 }
 
-export interface OK {
+export interface OkMessage {
   action: 'ok';
   payload: {
     timestamp: number;
   };
 }
+
+export type Message = InvalidMessage | ProgressMessage | HashMessage | IssuesMessage | OkMessage;

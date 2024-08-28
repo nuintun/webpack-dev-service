@@ -169,7 +169,7 @@ const HTML = `
 </div>
 `;
 
-export default class Overlay {
+export class Overlay {
   private hidden: boolean = true;
 
   private readonly name: HTMLElement;

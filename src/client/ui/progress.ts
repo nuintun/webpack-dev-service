@@ -52,7 +52,7 @@ const HTML = `
 </svg>
 `;
 
-export default class Progress {
+export class Progress {
   private timer?: number;
   private hidden: boolean = true;
 

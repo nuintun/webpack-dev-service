@@ -2,11 +2,11 @@
  * @module client
  */
 
-import { emit } from './events';
-import Overlay from './ui/overlay';
-import * as Message from './message';
-import Progress from './ui/progress';
+import { Message } from './message';
 import { StatsError } from 'webpack';
+import { Overlay } from './ui/overlay';
+import { emit, Events } from './events';
+import { Progress } from './ui/progress';
 import { applyUpdate, setHash } from './hot';
 
 export interface Options {
@@ -42,7 +42,7 @@ export default function createClient(options: Options): void {
     }, UPDATE_DELAY);
   };
 
-  const onInvalid = (): void => {
+  const onInvalid: Events['invalid'] = () => {
     clearTimeout(updateTimer);
 
     if (options.progress) {
@@ -51,13 +51,13 @@ export default function createClient(options: Options): void {
     }
   };
 
-  const onProgress = ({ value }: Message.Progress['payload']): void => {
+  const onProgress: Events['progress'] = ({ value }) => {
     if (options.progress) {
       progress.update(value);
     }
   };
 
-  const onHash = ({ hash }: Message.Hash['payload']): void => {
+  const onHash: Events['hash'] = ({ hash }) => {
     setHash(hash);
   };
 
@@ -80,7 +80,7 @@ export default function createClient(options: Options): void {
     }
   };
 
-  const onIssues = ({ errors, warnings }: Message.Issues['payload']): void => {
+  const onIssues: Events['issues'] = ({ errors, warnings }) => {
     progress.hide();
 
     setIssues('errors', errors);
@@ -95,16 +95,14 @@ export default function createClient(options: Options): void {
     }
   };
 
-  const onOk = (): void => {
+  const onOk: Events['ok'] = (): void => {
     overlay.hide();
     progress.hide();
 
     applyUpdateAsync();
   };
 
-  const parseMessage = (
-    message: MessageEvent<string>
-  ): Message.Invalid | Message.Progress | Message.Hash | Message.Issues | Message.OK | null => {
+  const parseMessage = (message: MessageEvent<string>): Message | null => {
     try {
       return JSON.parse(message.data);
     } catch {
@@ -123,19 +121,19 @@ export default function createClient(options: Options): void {
 
         switch (action) {
           case 'invalid':
-            onInvalid();
+            onInvalid(payload, options);
             break;
           case 'progress':
-            onProgress(payload);
+            onProgress(payload, options);
             break;
           case 'hash':
-            onHash(payload);
+            onHash(payload, options);
             break;
           case 'issues':
-            onIssues(payload);
+            onIssues(payload, options);
             break;
           case 'ok':
-            onOk();
+            onOk(payload, options);
             break;
         }
 
