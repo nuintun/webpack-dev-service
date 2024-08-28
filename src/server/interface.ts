@@ -8,8 +8,8 @@ export type IStats = Stats | MultiStats;
 
 export type ICompiler = Compiler | MultiCompiler;
 
-export type IStatsOptions = NonNullable<Configuration['stats']>;
+export type IStatsOptions = GetProp<Configuration, 'stats'>;
 
-export type ILogger = ReturnType<Compiler['getInfrastructureLogger']>;
+export type ILogger = ReturnType<GetProp<Compiler, 'getInfrastructureLogger'>>;
 
-export type IWatching = Watching | ReturnType<MultiCompiler['watch']>;
+export type IWatching = Watching | ReturnType<GetProp<MultiCompiler, 'watch'>>;

@@ -3,26 +3,26 @@
  */
 
 import { Options } from './client';
-import { HashMessage, InvalidMessage, IssuesMessage, OkMessage, ProgressMessage } from './message';
+import { HashMessage, InvalidMessage, IssuesMessage, OkMessage, ProgressMessage } from './Message';
 
 type Listeners = {
-  [E in keyof Events]: Events[E][];
+  [E in keyof Events]: GetProp<Events, E>[];
 };
 
 export interface Messages {
-  ok: OkMessage['payload'];
-  hash: HashMessage['payload'];
-  issues: IssuesMessage['payload'];
-  invalid: InvalidMessage['payload'];
-  progress: ProgressMessage['payload'];
+  ok: GetProp<OkMessage, 'payload'>;
+  hash: GetProp<HashMessage, 'payload'>;
+  issues: GetProp<IssuesMessage, 'payload'>;
+  invalid: GetProp<InvalidMessage, 'payload'>;
+  progress: GetProp<ProgressMessage, 'payload'>;
 }
 
 export interface Events {
-  ok(message: Messages['ok'], options: Options): void;
-  hash(message: Messages['hash'], options: Options): void;
-  issues(message: Messages['issues'], options: Options): void;
-  invalid(message: Messages['invalid'], options: Options): void;
-  progress(message: Messages['progress'], options: Options): void;
+  ok(message: GetProp<Messages, 'ok'>, options: Options): void;
+  hash(message: GetProp<Messages, 'hash'>, options: Options): void;
+  issues(message: GetProp<Messages, 'issues'>, options: Options): void;
+  invalid(message: GetProp<Messages, 'invalid'>, options: Options): void;
+  progress(message: GetProp<Messages, 'progress'>, options: Options): void;
 }
 
 const events: Listeners = {
@@ -39,7 +39,7 @@ const events: Listeners = {
  * @param event Event name.
  * @param callback Event listener callback.
  */
-export function on<E extends keyof Events>(event: E, callback: Events[E]): void {
+export function on<E extends keyof Events>(event: E, callback: GetProp<Events, E>): void {
   const callbacks = events[event];
 
   if (callbacks) {
@@ -53,7 +53,7 @@ export function on<E extends keyof Events>(event: E, callback: Events[E]): void 
  * @param event Event name.
  * @param callback Event listener callback.
  */
-export function off<E extends keyof Events>(event: E, callback?: Events[E]): void {
+export function off<E extends keyof Events>(event: E, callback?: GetProp<Events, E>): void {
   const callbacks = events[event];
 
   if (callbacks) {
@@ -69,7 +69,7 @@ export function off<E extends keyof Events>(event: E, callback?: Events[E]): voi
   }
 }
 
-export function emit<E extends keyof Events>(event: E, message: Messages[E], options: Options): void {
+export function emit<E extends keyof Events>(event: E, message: GetProp<Messages, E>, options: Options): void {
   const callbacks = events[event];
 
   if (callbacks && callbacks.length > 0) {

@@ -9,7 +9,7 @@ type PathLike = string | Buffer | URL;
 
 type FileStats = Stats | null | undefined;
 
-type IFileSystem = NonNullable<Compiler['outputFileSystem']>;
+type OutputFileSystem = GetProp<Compiler, 'outputFileSystem'>;
 
 /**
  * @function stat
@@ -25,6 +25,6 @@ export function stat(fs: FileSystem, path: string): Promise<FileStats> {
   });
 }
 
-export interface FileSystem extends IFileSystem {
+export interface FileSystem extends OutputFileSystem {
   createReadStream(path: PathLike, options?: { start?: number; end?: number }): ReadStream;
 }

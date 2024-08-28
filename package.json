@@ -35,7 +35,8 @@
   "files": [
     "cjs",
     "esm",
-    "types"
+    "types",
+    "global.d.ts"
   ],
   "engines": {
     "node": ">=18.0.0"

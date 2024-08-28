@@ -12,7 +12,7 @@ function getCompilerName({ options: { name } }: Compiler): string {
   return name ? `compiler "${name}": ` : '';
 }
 
-function isAllowWrite(targetPath: string, filter?: Options['writeToDisk']): boolean {
+function isAllowWrite(targetPath: string, filter?: GetProp<Options, 'writeToDisk'>): boolean {
   return isFunction(filter) ? filter(targetPath) : filter === true;
 }
 

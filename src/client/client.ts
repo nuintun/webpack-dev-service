@@ -2,11 +2,11 @@
  * @module client
  */
 
-import { Message } from './message';
+import { Message } from './Message';
 import { StatsError } from 'webpack';
-import { Overlay } from './ui/overlay';
-import { emit, Events } from './events';
-import { Progress } from './ui/progress';
+import { Overlay } from './ui/Overlay';
+import { Progress } from './ui/Progress';
+import { emit, Messages } from './events';
 import { applyUpdate, setHash } from './hot';
 
 export interface Options {
@@ -42,7 +42,7 @@ export default function createClient(options: Options): void {
     }, UPDATE_DELAY);
   };
 
-  const onInvalid: Events['invalid'] = () => {
+  const onInvalid = (): void => {
     clearTimeout(updateTimer);
 
     if (options.progress) {
@@ -51,13 +51,13 @@ export default function createClient(options: Options): void {
     }
   };
 
-  const onProgress: Events['progress'] = ({ value }) => {
+  const onProgress = ({ value }: GetProp<Messages, 'progress'>): void => {
     if (options.progress) {
       progress.update(value);
     }
   };
 
-  const onHash: Events['hash'] = ({ hash }) => {
+  const onHash = ({ hash }: GetProp<Messages, 'hash'>): void => {
     setHash(hash);
   };
 
@@ -80,7 +80,7 @@ export default function createClient(options: Options): void {
     }
   };
 
-  const onIssues: Events['issues'] = ({ errors, warnings }) => {
+  const onIssues = ({ errors, warnings }: GetProp<Messages, 'issues'>): void => {
     progress.hide();
 
     setIssues('errors', errors);
@@ -95,7 +95,7 @@ export default function createClient(options: Options): void {
     }
   };
 
-  const onOk: Events['ok'] = (): void => {
+  const onOk = (): void => {
     overlay.hide();
     progress.hide();
 
@@ -121,19 +121,19 @@ export default function createClient(options: Options): void {
 
         switch (action) {
           case 'invalid':
-            onInvalid(payload, options);
+            onInvalid();
             break;
           case 'progress':
-            onProgress(payload, options);
+            onProgress(payload);
             break;
           case 'hash':
-            onHash(payload, options);
+            onHash(payload);
             break;
           case 'issues':
-            onIssues(payload, options);
+            onIssues(payload);
             break;
           case 'ok':
-            onOk(payload, options);
+            onOk();
             break;
         }
 
