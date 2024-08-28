@@ -22,7 +22,7 @@ export function isUpdateAvailable(): boolean {
 /**
  * @function setHash
  * @description Set webpack hash.
- * @param value - The new hash value.
+ * @param value The new hash value.
  */
 export function setHash(value: string): void {
   hash = value;
