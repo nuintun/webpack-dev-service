@@ -3,9 +3,9 @@
  */
 
 import { URL } from 'url';
+import webpack from 'webpack';
 import { unixify } from './path';
 import { IStats } from '/server/interface';
-import { Compilation, MultiStats, Stats } from 'webpack';
 
 type PathsItem = [
   // Output path.
@@ -24,8 +24,8 @@ function normalize(path: string): string {
   return `/${path}`;
 }
 
-function getStats(stats: IStats): Stats[] {
-  if (isMultiStatsMode(stats)) {
+function getStats(stats: IStats): webpack.Stats[] {
+  if (stats instanceof webpack.MultiStats) {
     return stats.stats;
   }
 
@@ -33,15 +33,7 @@ function getStats(stats: IStats): Stats[] {
   return [stats];
 }
 
-function getOutputPath(compilation: Compilation): string {
-  // The `output.path` is always present and always absolute.
-  const { path } = compilation.outputOptions;
-
-  // Get the path.
-  return compilation.getPath(path ?? '');
-}
-
-function getPublicPath(compilation: Compilation): string {
+function getPublicPath(compilation: webpack.Compilation): string {
   const { publicPath } = compilation.outputOptions;
 
   // @see https://webpack.js.org/guides/public-path/#automatic-publicpath
@@ -60,8 +52,12 @@ function getPublicPath(compilation: Compilation): string {
   }
 }
 
-function isMultiStatsMode(stats: IStats): stats is MultiStats {
-  return 'stats' in stats;
+function getOutputPath(compilation: webpack.Compilation): string {
+  // The `output.path` is always present and always absolute.
+  const { path } = compilation.outputOptions;
+
+  // Get the path.
+  return compilation.getPath(path ?? '');
 }
 
 export function getPaths(stats: IStats): PathsItem[] {

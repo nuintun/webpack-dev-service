@@ -2,7 +2,7 @@
  * @module message
  */
 
-import { StatsError } from 'webpack';
+import webpack from 'webpack';
 
 export interface InvalidMessage {
   action: 'invalid';
@@ -33,8 +33,8 @@ export interface IssuesMessage {
   action: 'issues';
   payload: {
     timestamp: number;
-    errors: StatsError[];
-    warnings: StatsError[];
+    errors: webpack.StatsError[];
+    warnings: webpack.StatsError[];
   };
 }
 

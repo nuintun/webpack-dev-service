@@ -3,11 +3,11 @@
  */
 
 import { IWatching } from '/server/interface';
-import { isMultiCompilerMode } from '/server/utils';
+import { isMultiCompiler } from '/server/utils';
 import { ErrorCallback, InitialContext } from '/server/dev/interface';
 
 function getWatching({ compiler, logger }: InitialContext): IWatching {
-  const isMulti = isMultiCompilerMode(compiler);
+  const isMulti = isMultiCompiler(compiler);
 
   if (!isMulti && compiler.watching) {
     return compiler.watching;

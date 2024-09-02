@@ -2,13 +2,13 @@
  * @module setupHooks
  */
 
-import { StatsOptions } from 'webpack';
+import webpack from 'webpack';
 import supportsColor from 'supports-color';
 import { InitialContext } from '/server/dev/interface';
 import { IStats, IStatsOptions } from '/server/interface';
-import { isBoolean, isMultiCompilerMode, isString, PLUGIN_NAME } from '/server/utils';
+import { isBoolean, isMultiCompiler, isString, PLUGIN_NAME } from '/server/utils';
 
-function normalizeStatsOptions(statsOptions?: IStatsOptions): StatsOptions {
+function normalizeStatsOptions(statsOptions?: IStatsOptions): webpack.StatsOptions {
   if (statsOptions == null) {
     return { preset: 'normal' };
   } else if (isString(statsOptions)) {
@@ -26,28 +26,28 @@ function normalizeStatsOptions(statsOptions?: IStatsOptions): StatsOptions {
   return statsOptions;
 }
 
-function getStatsOptions(context: InitialContext): StatsOptions {
+function getStatsOptions(context: InitialContext): webpack.StatsOptions {
   const { compiler } = context;
   const { stats } = context.options;
 
   if (stats) {
-    if (isMultiCompilerMode(compiler)) {
+    if (isMultiCompiler(compiler)) {
       return {
         children: compiler.compilers.map(() => {
           return normalizeStatsOptions(stats);
         })
-      } as unknown as StatsOptions;
+      } as unknown as webpack.StatsOptions;
     }
 
     return normalizeStatsOptions(stats);
   }
 
-  if (isMultiCompilerMode(compiler)) {
+  if (isMultiCompiler(compiler)) {
     return {
       children: compiler.compilers.map(({ options }) => {
         return normalizeStatsOptions(options.stats);
       })
-    } as unknown as StatsOptions;
+    } as unknown as webpack.StatsOptions;
   }
 
   return normalizeStatsOptions(compiler.options.stats);
@@ -66,7 +66,7 @@ export function setupHooks(context: InitialContext): void {
   };
 
   const {
-    onCompilationDone = (stats: IStats, statsOptions: StatsOptions) => {
+    onCompilationDone = (stats: IStats, statsOptions: webpack.StatsOptions) => {
       const printedStats = stats.toString(statsOptions);
 
       // Avoid extra empty line when `stats: 'none'`.

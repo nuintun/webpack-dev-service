@@ -3,7 +3,7 @@
  */
 
 import WebSocket from 'ws';
-import { Compiler, WebpackPluginInstance } from 'webpack';
+import webpack from 'webpack';
 
 export interface Options {
   hmr?: boolean;
@@ -15,7 +15,7 @@ export interface Options {
 }
 
 export interface PluginFactory {
-  (compiler: Compiler): WebpackPluginInstance;
+  (compiler: webpack.Compiler): webpack.WebpackPluginInstance;
 }
 
 export interface Expose {

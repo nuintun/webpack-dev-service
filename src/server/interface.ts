@@ -2,14 +2,18 @@
  * @module interface
  */
 
-import { Compiler, Configuration, MultiCompiler, MultiStats, Stats, Watching } from 'webpack';
+import webpack from 'webpack';
 
-export type IStats = Stats | MultiStats;
+export type IStats = webpack.Stats | webpack.MultiStats;
 
-export type ICompiler = Compiler | MultiCompiler;
+export type GetProp<T, P extends keyof T> = NonNullable<T[P]>;
 
-export type IStatsOptions = GetProp<Configuration, 'stats'>;
+export type ICompiler = webpack.Compiler | webpack.MultiCompiler;
 
-export type ILogger = ReturnType<GetProp<Compiler, 'getInfrastructureLogger'>>;
+export type IStatsOptions = GetProp<webpack.Configuration, 'stats'>;
 
-export type IWatching = Watching | ReturnType<GetProp<MultiCompiler, 'watch'>>;
+export type ILogger = ReturnType<GetProp<webpack.Compiler, 'getInfrastructureLogger'>>;
+
+export type IWatching = webpack.Watching | ReturnType<GetProp<webpack.MultiCompiler, 'watch'>>;
+
+export type Optional<T extends object, K extends keyof T = keyof T> = Omit<T, K> & Partial<Pick<T, K>>;

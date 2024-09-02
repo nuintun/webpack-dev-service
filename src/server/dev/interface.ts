@@ -2,10 +2,10 @@
  * @module interface
  */
 
-import { StatsOptions } from 'webpack';
+import webpack from 'webpack';
 import { FileSystem } from './utils/fs';
 import { Options as ServiceOptions, Service } from './Service';
-import { ICompiler, ILogger, IStats, IStatsOptions, IWatching } from '/server/interface';
+import { ICompiler, ILogger, IStats, IStatsOptions, IWatching, Optional } from '/server/interface';
 
 export interface Callback {
   (stats: IStats): void;
@@ -27,7 +27,7 @@ export interface Options extends Omit<ServiceOptions, 'fs'> {
   fs?: FileSystem;
   stats?: IStatsOptions;
   writeToDisk?: boolean | ((targetPath: string) => boolean);
-  onCompilationDone?(stats: IStats, statsOptions: Readonly<StatsOptions>): void;
+  onCompilationDone?(stats: IStats, statsOptions: Readonly<webpack.StatsOptions>): void;
 }
 
 export type FileService = [publicPath: string, service: Service];

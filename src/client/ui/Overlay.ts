@@ -3,7 +3,7 @@
  * @see https://github.com/shellscape/webpack-plugin-serve
  */
 
-import { StatsError } from 'webpack';
+import webpack from 'webpack';
 import { ansiToHTML, appendHTML, getRootElement, injectCSS } from './utils';
 
 const OVERLAY = 'wds-overlay';
@@ -202,7 +202,7 @@ export class Overlay {
     });
   }
 
-  setIssues(type: 'errors' | 'warnings', issues: StatsError[]): void {
+  setIssues(type: 'errors' | 'warnings', issues: webpack.StatsError[]): void {
     const count = issues.length;
     const hidden = `${OVERLAY}-hidden`;
 

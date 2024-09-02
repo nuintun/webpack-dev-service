@@ -3,6 +3,7 @@
  */
 
 import { Options } from './client';
+import { GetProp } from '/server/interface';
 import { HashMessage, InvalidMessage, IssuesMessage, OkMessage, ProgressMessage } from './Message';
 
 type Listeners = {

@@ -2,13 +2,14 @@
  * @module setupWriteToDisk
  */
 
+import webpack from 'webpack';
 import { dirname } from 'path';
-import { Compiler } from 'webpack';
 import { mkdir, writeFile } from 'fs';
+import { GetProp } from '/server/interface';
 import { InitialContext, Options } from '/server/dev/interface';
 import { getCompilers, isFunction, PLUGIN_NAME } from '/server/utils';
 
-function getCompilerName({ options: { name } }: Compiler): string {
+function getCompilerName({ options: { name } }: webpack.Compiler): string {
   return name ? `compiler "${name}": ` : '';
 }
 

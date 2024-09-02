@@ -2,12 +2,12 @@
  * @module utils
  */
 
+import webpack from 'webpack';
 import { ICompiler } from './interface';
-import { Compiler, MultiCompiler } from 'webpack';
 
 const { toString } = Object.prototype;
 
-export const PLUGIN_NAME = 'webpack-dev-service';
+export const PLUGIN_NAME = __PLUGIN_NAME__;
 
 export function isObject(value: unknown): value is object {
   return toString.call(value) === '[object Object]';
@@ -25,14 +25,14 @@ export function isFunction(value: unknown): value is Function {
   return typeof value === 'function';
 }
 
-export function getCompilers(compiler: ICompiler): Compiler[] {
-  if (isMultiCompilerMode(compiler)) {
+export function getCompilers(compiler: ICompiler): webpack.Compiler[] {
+  if (isMultiCompiler(compiler)) {
     return compiler.compilers;
   }
 
   return [compiler];
 }
 
-export function isMultiCompilerMode(compiler: ICompiler): compiler is MultiCompiler {
-  return 'compilers' in compiler;
+export function isMultiCompiler(compiler: ICompiler): compiler is webpack.MultiCompiler {
+  return compiler instanceof webpack.MultiCompiler;
 }

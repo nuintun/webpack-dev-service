@@ -2,11 +2,12 @@
  * @module client
  */
 
+import webpack from 'webpack';
 import { Message } from './Message';
-import { StatsError } from 'webpack';
 import { Overlay } from './ui/Overlay';
 import { Progress } from './ui/Progress';
 import { emit, Messages } from './events';
+import { GetProp } from '/server/interface';
 import { applyUpdate, setHash } from './hot';
 
 export interface Options {
@@ -61,7 +62,7 @@ export default function createClient(options: Options): void {
     setHash(hash);
   };
 
-  const setIssues = (type: 'errors' | 'warnings', issues: StatsError[]): void => {
+  const setIssues = (type: 'errors' | 'warnings', issues: webpack.StatsError[]): void => {
     if (options.overlay) {
       overlay.setIssues(type, issues);
     }

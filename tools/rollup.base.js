@@ -40,7 +40,8 @@ function env(esnext) {
   return replace({
     preventAssignment: true,
     values: {
-      __HOT_CLIENT__: JSON.stringify(client)
+      __HOT_CLIENT__: JSON.stringify(client),
+      __PLUGIN_NAME__: JSON.stringify(pkg.name)
     }
   });
 }

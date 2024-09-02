@@ -2,11 +2,11 @@
  * @module utils
  */
 
+import webpack from 'webpack';
 import { Context } from 'koa';
 import { Options } from './interface';
-import { StatsCompilation, StatsOptions } from 'webpack';
+import { isMultiCompiler, isObject } from '/server/utils';
 import { ICompiler, IStatsOptions } from '/server/interface';
-import { isMultiCompilerMode, isObject } from '/server/utils';
 
 export function isUpgradable(context: Context): boolean {
   const { upgrade } = context.headers;
@@ -56,7 +56,7 @@ export function hasIssues<T>(issues: ArrayLike<T> | undefined): boolean {
   return Array.isArray(issues) && issues.length > 0;
 }
 
-function normalizeStatsOptions(statsOptions?: IStatsOptions): StatsOptions {
+function normalizeStatsOptions(statsOptions?: IStatsOptions): webpack.StatsOptions {
   if (!isObject(statsOptions)) {
     statsOptions = {};
   }
@@ -74,19 +74,19 @@ function normalizeStatsOptions(statsOptions?: IStatsOptions): StatsOptions {
   };
 }
 
-export function getStatsOptions(compiler: ICompiler): StatsOptions {
-  if (isMultiCompilerMode(compiler)) {
+export function getStatsOptions(compiler: ICompiler): webpack.StatsOptions {
+  if (isMultiCompiler(compiler)) {
     return {
       children: compiler.compilers.map(({ options }) => {
         return normalizeStatsOptions(options.stats);
       })
-    } as unknown as StatsOptions;
+    } as unknown as webpack.StatsOptions;
   }
 
   return normalizeStatsOptions(compiler.options.stats);
 }
 
-export function getTimestamp({ builtAt, children = [] }: StatsCompilation): number {
+export function getTimestamp({ builtAt, children = [] }: webpack.StatsCompilation): number {
   if (builtAt != null) {
     return builtAt;
   }

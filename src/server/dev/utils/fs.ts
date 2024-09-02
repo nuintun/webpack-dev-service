@@ -2,14 +2,15 @@
  * @module fs
  */
 
-import { Compiler } from 'webpack';
+import webpack from 'webpack';
 import { ReadStream, Stats } from 'fs';
+import { GetProp } from '/server/interface';
 
 type PathLike = string | Buffer | URL;
 
 type FileStats = Stats | null | undefined;
 
-type OutputFileSystem = GetProp<Compiler, 'outputFileSystem'>;
+type OutputFileSystem = GetProp<webpack.Compiler, 'outputFileSystem'>;
 
 /**
  * @function stat

@@ -2,11 +2,11 @@
  * @module Socket
  */
 
+import webpack from 'webpack';
 import { Context } from 'koa';
 import { fileURLToPath } from 'url';
 import { dirname, resolve } from 'path';
 import WebSocket, { WebSocketServer } from 'ws';
-import webpack, { StatsCompilation } from 'webpack';
 import { Options, PluginFactory } from './interface';
 import { getCompilers, PLUGIN_NAME } from '/server/utils';
 import { ICompiler, ILogger, IStats } from '/server/interface';
@@ -30,7 +30,7 @@ export class Socket {
   private readonly server: WebSocketServer;
   private readonly options: Required<Options>;
 
-  private stats: StatsCompilation | null = null;
+  private stats: webpack.StatsCompilation | null = null;
 
   constructor(compiler: ICompiler, options?: Options) {
     this.compiler = compiler;
@@ -193,7 +193,7 @@ export class Socket {
     }
   }
 
-  broadcastStats(clients: Set<WebSocket> | WebSocket[], stats: StatsCompilation): void {
+  broadcastStats(clients: Set<WebSocket> | WebSocket[], stats: webpack.StatsCompilation): void {
     if ((clients as Set<WebSocket>).size > 0 || (clients as WebSocket[]).length > 0) {
       const { hash, errors, warnings, builtAt: timestamp } = stats;
 
