@@ -34,5 +34,5 @@ export function getCompilers(compiler: ICompiler): webpack.Compiler[] {
 }
 
 export function isMultiCompiler(compiler: ICompiler): compiler is webpack.MultiCompiler {
-  return compiler instanceof webpack.MultiCompiler;
+  return 'compilers' in compiler;
 }

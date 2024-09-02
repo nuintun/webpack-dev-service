@@ -25,7 +25,7 @@ function normalize(path: string): string {
 }
 
 function getStats(stats: IStats): webpack.Stats[] {
-  if (stats instanceof webpack.MultiStats) {
+  if ('stats' in stats) {
     return stats.stats;
   }
 
