@@ -31,7 +31,7 @@ declare module '*.mp4' {
   export = content;
 }
 
-declare module 'rspack-dev-middleware/client' {
+declare module 'webpack-dev-service/client' {
   const { on, off } = await import('../types/client');
 
   export { on, off };
