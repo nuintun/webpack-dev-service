@@ -108,5 +108,4 @@ export function setupHooks(context: InitialContext): void {
 
   hooks.done.tap(PLUGIN_NAME, done);
   hooks.invalid.tap(PLUGIN_NAME, invalid);
-  hooks.watchRun.tap(PLUGIN_NAME, invalid);
 }
