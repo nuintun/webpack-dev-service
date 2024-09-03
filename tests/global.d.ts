@@ -10,27 +10,29 @@ declare module '*.module.css' {
     readonly [name: string]: string;
   };
 
-  export default content;
+  export = content;
 }
 
 declare module '*.css' {
   const content: string;
 
-  export default content;
+  export = content;
 }
 
 declare module '*.svg' {
   const content: string;
 
-  export default content;
+  export = content;
 }
 
 declare module '*.mp4' {
   const content: string;
 
-  export default content;
+  export = content;
 }
 
-declare module 'webpack-dev-service/client' {
-  export = import('../types/client/index');
+declare module 'rspack-dev-middleware/client' {
+  const { on, off } = await import('../types/client');
+
+  export { on, off };
 }
