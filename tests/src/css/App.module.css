@@ -4,6 +4,12 @@ body {
   padding: 0;
 }
 
+html {
+  color: #fff;
+  background-color: #2b3a42;
+  cursor: url(/images/cursor.png), auto;
+}
+
 noscript {
   top: 0;
   left: 0;

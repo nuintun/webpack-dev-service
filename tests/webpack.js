@@ -21,7 +21,7 @@ const entryHTML = path.resolve('wwwroot/index.html');
 const html = {
   xhtml: true,
   minify: false,
-  title: 'React',
+  title: 'Webpack',
   filename: entryHTML,
   templateParameters: { lang: 'en' },
   template: path.resolve('index.ejs'),
