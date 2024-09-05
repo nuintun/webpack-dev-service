@@ -5,10 +5,10 @@
 import webpack from 'webpack';
 import supportsColor from 'supports-color';
 import { InitialContext } from '/server/dev/interface';
-import { UnionStats, UnionStatsOptions } from '/server/interface';
+import { StatsOptions, UnionStats } from '/server/interface';
 import { isBoolean, isMultiCompiler, isString, PLUGIN_NAME } from '/server/utils';
 
-function normalizeStatsOptions(statsOptions?: UnionStatsOptions): webpack.StatsOptions {
+function normalizeStatsOptions(statsOptions?: StatsOptions): webpack.StatsOptions {
   if (statsOptions == null) {
     return { preset: 'normal' };
   } else if (isString(statsOptions)) {

@@ -9,7 +9,7 @@ import { dirname, resolve } from 'path';
 import WebSocket, { WebSocketServer } from 'ws';
 import { Options, PluginFactory } from './interface';
 import { getCompilers, PLUGIN_NAME } from '/server/utils';
-import { UnionCompiler, UnionLogger, UnionStats } from '/server/interface';
+import { Logger, UnionCompiler, UnionStats } from '/server/interface';
 import { getOptions, getStatsOptions, getTimestamp, hasIssues, isUpgradable } from './utils';
 
 function entrypoint(): string {
@@ -25,7 +25,7 @@ function entrypoint(): string {
 const client = resolve(entrypoint(), __HOT_CLIENT__);
 
 export class Socket {
-  private readonly logger: UnionLogger;
+  private readonly logger: Logger;
   private readonly compiler: UnionCompiler;
   private readonly server: WebSocketServer;
   private readonly options: Required<Options>;

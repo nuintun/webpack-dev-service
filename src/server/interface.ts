@@ -8,11 +8,11 @@ export type UnionStats = webpack.Stats | webpack.MultiStats;
 
 export type GetProp<T, P extends keyof T> = NonNullable<T[P]>;
 
+export type StatsOptions = GetProp<webpack.Configuration, 'stats'>;
+
 export type UnionCompiler = webpack.Compiler | webpack.MultiCompiler;
 
-export type UnionStatsOptions = GetProp<webpack.Configuration, 'stats'>;
-
-export type UnionLogger = ReturnType<GetProp<webpack.Compiler, 'getInfrastructureLogger'>>;
+export type Logger = ReturnType<GetProp<webpack.Compiler, 'getInfrastructureLogger'>>;
 
 export type UnionWatching = webpack.Watching | ReturnType<GetProp<webpack.MultiCompiler, 'watch'>>;
 
