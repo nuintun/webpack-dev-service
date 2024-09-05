@@ -5,7 +5,7 @@
 import { URL } from 'url';
 import webpack from 'webpack';
 import { unixify } from './path';
-import { IStats } from '/server/interface';
+import { UnionStats } from '/server/interface';
 
 type PathsItem = [
   // Output path.
@@ -24,7 +24,7 @@ function normalize(path: string): string {
   return `/${path}`;
 }
 
-function getStats(stats: IStats): webpack.Stats[] {
+function getStats(stats: UnionStats): webpack.Stats[] {
   if ('stats' in stats) {
     return stats.stats;
   }
@@ -60,7 +60,7 @@ function getOutputPath(compilation: webpack.Compilation): string {
   return compilation.getPath(path ?? '');
 }
 
-export function getPaths(stats: IStats): PathsItem[] {
+export function getPaths(stats: UnionStats): PathsItem[] {
   const paths: PathsItem[] = [];
   const childStats = getStats(stats);
 

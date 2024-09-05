@@ -2,11 +2,11 @@
  * @module setupWatching
  */
 
-import { IWatching } from '/server/interface';
 import { isMultiCompiler } from '/server/utils';
+import { UnionWatching } from '/server/interface';
 import { ErrorCallback, InitialContext } from '/server/dev/interface';
 
-function getWatching({ compiler, logger }: InitialContext): IWatching {
+function getWatching({ compiler, logger }: InitialContext): UnionWatching {
   const isMulti = isMultiCompiler(compiler);
 
   if (!isMulti && compiler.watching) {

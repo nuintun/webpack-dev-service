@@ -6,7 +6,7 @@ import webpack from 'webpack';
 import { Context } from 'koa';
 import { Options } from './interface';
 import { isMultiCompiler, isObject } from '/server/utils';
-import { ICompiler, IStatsOptions } from '/server/interface';
+import { UnionCompiler, UnionStatsOptions } from '/server/interface';
 
 export function isUpgradable(context: Context): boolean {
   const { upgrade } = context.headers;
@@ -56,7 +56,7 @@ export function hasIssues<T>(issues: ArrayLike<T> | undefined): boolean {
   return Array.isArray(issues) && issues.length > 0;
 }
 
-function normalizeStatsOptions(statsOptions?: IStatsOptions): webpack.StatsOptions {
+function normalizeStatsOptions(statsOptions?: UnionStatsOptions): webpack.StatsOptions {
   if (!isObject(statsOptions)) {
     statsOptions = {};
   }
@@ -74,7 +74,7 @@ function normalizeStatsOptions(statsOptions?: IStatsOptions): webpack.StatsOptio
   };
 }
 
-export function getStatsOptions(compiler: ICompiler): webpack.StatsOptions {
+export function getStatsOptions(compiler: UnionCompiler): webpack.StatsOptions {
   if (isMultiCompiler(compiler)) {
     return {
       children: compiler.compilers.map(({ options }) => {

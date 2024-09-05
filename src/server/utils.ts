@@ -3,7 +3,7 @@
  */
 
 import webpack from 'webpack';
-import { ICompiler } from './interface';
+import { UnionCompiler } from './interface';
 
 const { toString } = Object.prototype;
 
@@ -25,7 +25,7 @@ export function isFunction(value: unknown): value is Function {
   return typeof value === 'function';
 }
 
-export function getCompilers(compiler: ICompiler): webpack.Compiler[] {
+export function getCompilers(compiler: UnionCompiler): webpack.Compiler[] {
   if (isMultiCompiler(compiler)) {
     return compiler.compilers;
   }
@@ -33,6 +33,6 @@ export function getCompilers(compiler: ICompiler): webpack.Compiler[] {
   return [compiler];
 }
 
-export function isMultiCompiler(compiler: ICompiler): compiler is webpack.MultiCompiler {
+export function isMultiCompiler(compiler: UnionCompiler): compiler is webpack.MultiCompiler {
   return 'compilers' in compiler;
 }

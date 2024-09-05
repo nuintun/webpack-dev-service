@@ -7,10 +7,10 @@ import { Service } from './Service';
 import { ready } from './utils/ready';
 import { decodeURI } from './utils/http';
 import { getPaths } from './utils/paths';
-import { IStats } from '/server/interface';
+import { UnionStats } from '/server/interface';
 import { Context, FileService } from './interface';
 
-function getFileServices(context: Context, stats: IStats): FileService[] {
+function getFileServices(context: Context, stats: UnionStats): FileService[] {
   const cached = context.services;
 
   // Cache hit.

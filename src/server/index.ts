@@ -6,8 +6,8 @@ import { Middleware } from 'koa';
 import { schema } from './schema';
 import { compose } from './compose';
 import { PLUGIN_NAME } from './utils';
-import { ICompiler } from './interface';
 import { validate } from 'schema-utils';
+import { UnionCompiler } from './interface';
 import { Expose as HotExpose, hot, Options as HotOptions } from './hot';
 import { dev, Expose as DevExpose, Options as DevOptions } from './dev';
 
@@ -23,22 +23,22 @@ export type EnableHotMiddleware = DisableHotMiddleware & HotExpose;
  * @description Create koa dev server middleware.
  * @param compiler The webpack compiler instance.
  */
-export default function server(compiler: ICompiler): EnableHotMiddleware;
+export default function server(compiler: UnionCompiler): EnableHotMiddleware;
 /**
  * @function server
  * @description Create koa dev server middleware.
  * @param compiler The webpack compiler instance.
  * @param options Options.
  */
-export default function server(compiler: ICompiler, options: EnableHotOptions): EnableHotMiddleware;
+export default function server(compiler: UnionCompiler, options: EnableHotOptions): EnableHotMiddleware;
 /**
  * @function server
  * @description Create koa dev server middleware.
  * @param compiler The webpack compiler instance.
  * @param options Options.
  */
-export default function server(compiler: ICompiler, options: DisableHotOptions): DisableHotMiddleware;
-export default function server(compiler: ICompiler, options: Options = {}): EnableHotMiddleware | DisableHotMiddleware {
+export default function server(compiler: UnionCompiler, options: DisableHotOptions): DisableHotMiddleware;
+export default function server(compiler: UnionCompiler, options: Options = {}): EnableHotMiddleware | DisableHotMiddleware {
   validate(schema, options, {
     name: PLUGIN_NAME,
     baseDataPath: 'options'

@@ -5,10 +5,10 @@
 import webpack from 'webpack';
 import { FileSystem } from './utils/fs';
 import { Options as ServiceOptions, Service } from './Service';
-import { ICompiler, ILogger, IStats, IStatsOptions, IWatching, Optional } from '/server/interface';
+import { Optional, UnionCompiler, UnionLogger, UnionStats, UnionStatsOptions, UnionWatching } from '/server/interface';
 
 export interface Callback {
-  (stats: IStats): void;
+  (stats: UnionStats): void;
 }
 
 export interface ErrorCallback {
@@ -17,7 +17,7 @@ export interface ErrorCallback {
 
 export interface Expose {
   readonly state: boolean;
-  readonly logger: ILogger;
+  readonly logger: UnionLogger;
   readonly ready: (callback: Callback) => void;
   readonly close: (callback: ErrorCallback) => void;
   readonly invalidate: (callback: ErrorCallback) => void;
@@ -25,22 +25,22 @@ export interface Expose {
 
 export interface Options extends Omit<ServiceOptions, 'fs'> {
   fs?: FileSystem;
-  stats?: IStatsOptions;
+  stats?: UnionStatsOptions;
   writeToDisk?: boolean | ((targetPath: string) => boolean);
-  onCompilationDone?(stats: IStats, statsOptions: Readonly<webpack.StatsOptions>): void;
+  onCompilationDone?(stats: UnionStats, statsOptions: Readonly<webpack.StatsOptions>): void;
 }
 
 export type FileService = [publicPath: string, service: Service];
 
 export interface Context {
   fs: FileSystem;
-  logger: ILogger;
   options: Options;
-  compiler: ICompiler;
-  watching: IWatching;
-  stats: IStats | null;
+  logger: UnionLogger;
   callbacks: Callback[];
+  compiler: UnionCompiler;
+  watching: UnionWatching;
   services?: FileService[];
+  stats: UnionStats | null;
 }
 
 export type InitialContext = Optional<Context, 'fs' | 'watching'>;

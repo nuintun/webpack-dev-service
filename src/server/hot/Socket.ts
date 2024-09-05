@@ -9,7 +9,7 @@ import { dirname, resolve } from 'path';
 import WebSocket, { WebSocketServer } from 'ws';
 import { Options, PluginFactory } from './interface';
 import { getCompilers, PLUGIN_NAME } from '/server/utils';
-import { ICompiler, ILogger, IStats } from '/server/interface';
+import { UnionCompiler, UnionLogger, UnionStats } from '/server/interface';
 import { getOptions, getStatsOptions, getTimestamp, hasIssues, isUpgradable } from './utils';
 
 function entrypoint(): string {
@@ -25,14 +25,14 @@ function entrypoint(): string {
 const client = resolve(entrypoint(), __HOT_CLIENT__);
 
 export class Socket {
-  private readonly logger: ILogger;
-  private readonly compiler: ICompiler;
+  private readonly logger: UnionLogger;
+  private readonly compiler: UnionCompiler;
   private readonly server: WebSocketServer;
   private readonly options: Required<Options>;
 
   private stats: webpack.StatsCompilation | null = null;
 
-  constructor(compiler: ICompiler, options?: Options) {
+  constructor(compiler: UnionCompiler, options?: Options) {
     this.compiler = compiler;
     this.options = getOptions(options);
     this.logger = compiler.getInfrastructureLogger(PLUGIN_NAME);
@@ -68,7 +68,7 @@ export class Socket {
     const { hooks } = compiler;
     const statsOptions = getStatsOptions(compiler);
 
-    hooks.done.tap(PLUGIN_NAME, (stats: IStats) => {
+    hooks.done.tap(PLUGIN_NAME, (stats: UnionStats) => {
       // Get json stats.
       const jsonStats = stats.toJson(statsOptions);
 
