@@ -4,6 +4,20 @@ body {
   padding: 0;
 }
 
+noscript {
+  top: 0;
+  left: 0;
+  width: 100%;
+  color: #f00;
+  display: block;
+  cursor: default;
+  position: fixed;
+  line-height: 32px;
+  text-align: center;
+  background: #fff1a8;
+  border-bottom: 1px solid #f0c36d;
+}
+
 .main {
   height: 100vh;
   display: flex;
