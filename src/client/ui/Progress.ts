@@ -69,10 +69,10 @@ export class Progress {
     this.track = this.svg.querySelector(`.${PROGRESS}-track`)!;
   }
 
-  update(value: number): void {
-    value = Math.max(0, Math.min(100, value));
+  update(percentage: number): void {
+    percentage = 1 - Math.max(0, Math.min(1, percentage));
 
-    this.track.style.strokeDashoffset = (((100 - value) / 100) * PERIMETER).toString();
+    this.track.style.strokeDashoffset = `${PERIMETER * percentage}`;
   }
 
   show(): void {

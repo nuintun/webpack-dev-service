@@ -136,26 +136,13 @@ export class Socket {
     }
 
     if (options.progress) {
-      let value = 0;
+      let latestPercentage = -1;
 
-      new webpack.ProgressPlugin((percentage, status, message) => {
-        const nextValue = Math.floor(percentage * 100);
+      new webpack.ProgressPlugin((percentage, status, ...messages) => {
+        if (percentage !== latestPercentage) {
+          latestPercentage = percentage;
 
-        if (nextValue > value || nextValue === 0) {
-          value = nextValue;
-
-          switch (value) {
-            case 0:
-              status = 'start';
-              message = 'end idle';
-              break;
-            case 100:
-              status = 'finish';
-              message = 'begin idle';
-              break;
-          }
-
-          this.broadcast(this.clients(), 'progress', { status, message, value });
+          this.broadcast(this.clients(), 'progress', { status, messages, percentage });
         }
       }).apply(compiler);
     }
