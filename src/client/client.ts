@@ -82,7 +82,7 @@ export default function createClient(options: Options): void {
   };
 
   const onIssues = ({ errors, warnings }: GetProp<Messages, 'issues'>): void => {
-    progress.update(100);
+    progress.update(1);
     progress.hide();
 
     setIssues('errors', errors);
@@ -98,7 +98,7 @@ export default function createClient(options: Options): void {
   };
 
   const onOk = (): void => {
-    progress.update(100);
+    progress.update(1);
     progress.hide();
     overlay.hide();
 
