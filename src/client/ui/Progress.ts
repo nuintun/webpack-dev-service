@@ -6,6 +6,7 @@
 
 import { appendHTML, getRootElement, injectCSS } from './utils';
 
+const DURATION = 256;
 const PROGRESS = 'wds-progress';
 const PERIMETER = 2 * Math.PI * 44;
 
@@ -25,7 +26,7 @@ const CSS = `
   z-index: 2147483647;
   transform-origin: center;
   transform: scale(0) translateZ(0);
-  transition: transform .25s ease-out;
+  transition: transform ${DURATION}ms ease-out;
 }
 .${PROGRESS}-show {
   transform: scale(1) translateZ(0);
@@ -37,7 +38,7 @@ const CSS = `
   fill: rgba(0, 0, 0, 0);
   stroke-dasharray: ${PERIMETER};
   stroke-dashoffset: ${PERIMETER};
-  transition: stroke-dashoffset .25s linear;
+  transition: stroke-dashoffset ${DURATION}ms linear;
   transform: matrix(0, -1, 1, 0, 0, 96) translateZ(0);
 }
 `;
@@ -92,10 +93,12 @@ export class Progress {
       this.hidden = true;
 
       this.timer = self.setTimeout(() => {
-        this.update(0);
+        this.timer = self.setTimeout(() => {
+          this.update(0);
+        }, DURATION);
 
         this.svg.classList.remove(`${PROGRESS}-show`);
-      }, 300);
+      }, DURATION);
     }
   }
 }
