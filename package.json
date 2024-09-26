@@ -94,7 +94,7 @@
     "@types/destroy": "^1.0.3",
     "@types/etag": "^1.8.3",
     "@types/koa-compose": "^3.2.8",
-    "@types/node": "^22.7.0",
+    "@types/node": "^22.7.2",
     "@types/range-parser": "^1.2.7",
     "@types/react": "^18.3.9",
     "@types/react-dom": "^18.3.0",
@@ -112,7 +112,7 @@
     "swc-loader": "^0.2.6",
     "tsc-alias": "^1.8.10",
     "typescript": "^5.6.2",
-    "webpack": "^5.94.0"
+    "webpack": "^5.95.0"
   },
   "peerDependencies": {
     "koa": ">=2.0.0",
