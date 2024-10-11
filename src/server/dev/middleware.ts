@@ -45,7 +45,7 @@ function getFileServices(context: Context, stats: UnionStats): FileService[] {
   return services;
 }
 
-function getFileServicesAsync(context: Context, path: string): Promise<FileService[]> {
+function getFileServicesAsync(context: Context, pathname: string): Promise<FileService[]> {
   return new Promise(resolve => {
     const { stats } = context;
 
@@ -54,7 +54,7 @@ function getFileServicesAsync(context: Context, path: string): Promise<FileServi
       resolve(getFileServices(context, stats));
     } else {
       // Log waiting info.
-      context.logger.info(`wait until bundle finished: ${path}`);
+      context.logger.info(`wait until bundle finished: ${pathname}`);
 
       // Otherwise, wait until bundle finished.
       ready(context, stats => {
@@ -67,21 +67,21 @@ function getFileServicesAsync(context: Context, path: string): Promise<FileServi
 export function middleware(context: Context): Middleware {
   // Middleware.
   return async (ctx, next) => {
-    const path = decodeURI(ctx.path);
+    const pathname = decodeURI(ctx.path);
 
-    // Path -1 or null byte(s).
-    if (path === -1 || path.includes('\0')) {
+    // Pathname decode failed or includes null byte(s).
+    if (pathname === -1 || pathname.includes('\0')) {
       return ctx.throw(400);
     }
 
     // Only support GET and HEAD (405).
     if (ctx.method === 'GET' || ctx.method === 'HEAD') {
       // Get the file services.
-      const services = await getFileServicesAsync(context, path);
+      const services = await getFileServicesAsync(context, pathname);
 
       // Try to respond.
       for (const [publicPath, service] of services) {
-        if (await service.response(ctx, publicPath)) {
+        if (await service.respond(pathname, ctx, publicPath)) {
           return;
         }
       }
