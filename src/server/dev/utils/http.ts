@@ -2,8 +2,8 @@
  * @module http
  */
 
-import { Stats } from 'fs';
 import { Context } from 'koa';
+import { Stats } from 'node:fs';
 import { generate } from './hash';
 import parseRange from 'range-parser';
 

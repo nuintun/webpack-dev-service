@@ -2,8 +2,8 @@
  * @module paths
  */
 
-import { URL } from 'url';
 import webpack from 'webpack';
+import { URL } from 'node:url';
 import { unixify } from './path';
 import { UnionStats } from '/server/interface';
 

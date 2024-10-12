@@ -2,14 +2,14 @@
  * @module Service
  */
 
-import { Stats } from 'fs';
 import createETag from 'etag';
 import destroy from 'destroy';
 import { Context } from 'koa';
-import { PassThrough } from 'stream';
+import { Stats } from 'node:fs';
+import { PassThrough } from 'node:stream';
 import { isFunction } from '/server/utils';
 import { FileSystem, stat } from './utils/fs';
-import { extname, join, resolve } from 'path';
+import { extname, join, resolve } from 'node:path';
 import { hasTrailingSlash, isOutRoot, unixify } from './utils/path';
 import { isConditionalGET, isPreconditionFailure, parseRanges, Range } from './utils/http';
 
