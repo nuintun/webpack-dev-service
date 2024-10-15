@@ -3,15 +3,14 @@
  */
 
 import createETag from 'etag';
-import destroy from 'destroy';
 import { Context } from 'koa';
 import { Stats } from 'node:fs';
-import { PassThrough } from 'node:stream';
 import { isFunction } from '/server/utils';
 import { FileSystem, stat } from './utils/fs';
+import { FileReadStream } from './utils/stream';
 import { extname, join, resolve } from 'node:path';
 import { hasTrailingSlash, isOutRoot, unixify } from './utils/path';
-import { isConditionalGET, isPreconditionFailure, parseRanges, Range } from './utils/http';
+import { isConditionalGET, isPreconditionFailure, parseRanges } from './utils/http';
 
 interface IgnoreFunction {
   (path: string): boolean;
@@ -32,6 +31,7 @@ export interface Options {
   etag?: boolean;
   acceptRanges?: boolean;
   lastModified?: boolean;
+  highWaterMark?: number;
   ignore?: IgnoreFunction;
   headers?: Headers | HeaderFunction;
 }
@@ -121,91 +121,6 @@ export class Service {
         }
       } else {
         context.set(headers);
-      }
-    }
-  }
-
-  /**
-   * @private
-   * @method read
-   * @description Read file with range.
-   * @param path The file path to read.
-   * @param range The range to read.
-   * @param stream The destination stream.
-   * @param end The end flag after pipe to stream.
-   */
-  private read(path: string, range: Range, stream: PassThrough, end: boolean): Promise<boolean> {
-    const { fs } = this.options;
-
-    return new Promise((resolve): void => {
-      // Range prefix and suffix.
-      const { prefix, suffix } = range;
-      // Create file stream reader.
-      const reader = fs.createReadStream(path, range);
-
-      // File read stream open.
-      if (prefix) {
-        reader.once('open', () => {
-          // Write prefix boundary.
-          stream.write(prefix);
-        });
-      }
-
-      // File read stream end.
-      if (suffix) {
-        reader.once('end', () => {
-          // Push suffix boundary.
-          stream.write(suffix);
-        });
-      }
-
-      // File read stream error.
-      reader.once('error', () => {
-        // End stream.
-        stream.end();
-        // Unpipe.
-        reader.unpipe();
-        // Destroy.
-        destroy(reader);
-        // Resolve.
-        resolve(false);
-      });
-
-      // File read stream close.
-      reader.once('close', () => {
-        // Unpipe.
-        reader.unpipe();
-        // Destroy.
-        destroy(reader);
-        // Resolve.
-        resolve(true);
-      });
-
-      // Write data to buffer.
-      reader.pipe(stream, { end });
-    });
-  }
-
-  /**
-   * @private
-   * @method send
-   * @description Send file with ranges.
-   * @param path The file path to send.
-   * @param ranges The ranges to send.
-   * @param stream The destination stream.
-   */
-  private async send(path: string, ranges: Range[], stream: PassThrough): Promise<void> {
-    // Ranges length.
-    let { length } = ranges;
-
-    // Write ranges to stream.
-    for (const range of ranges) {
-      // Write range.
-      const passed = await this.read(path, range, stream, --length === 0);
-
-      // If not passed, break.
-      if (!passed) {
-        break;
       }
     }
   }
@@ -308,16 +223,11 @@ export class Service {
       return context.throw(400);
     }
 
-    // Set stream body, highWaterMark 64kb.
-    const stream = new PassThrough({
-      highWaterMark: 65536
-    });
-
-    // Send file with ranges.
-    this.send(path, ranges, stream);
+    // Ranges length.
+    const { fs, highWaterMark } = this.options;
 
     // Set response body.
-    context.body = stream;
+    context.body = new FileReadStream(path, ranges, { fs, highWaterMark });
 
     // File found.
     return true;

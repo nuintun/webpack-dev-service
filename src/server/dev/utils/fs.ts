@@ -3,14 +3,18 @@
  */
 
 import webpack from 'webpack';
+import fs, { Stats } from 'node:fs';
 import { GetProp } from '/server/interface';
-import { ReadStream, Stats } from 'node:fs';
 
-type PathLike = string | Buffer | URL;
+type Compiler = webpack.Compiler;
 
 type FileStats = Stats | null | undefined;
 
-type OutputFileSystem = GetProp<webpack.Compiler, 'outputFileSystem'>;
+export interface FileSystem extends GetProp<Compiler, 'outputFileSystem'> {
+  open: typeof fs.open;
+  read: typeof fs.read;
+  close: typeof fs.close;
+}
 
 /**
  * @function stat
@@ -24,8 +28,4 @@ export function stat(fs: FileSystem, path: string): Promise<FileStats> {
       resolve(error ? null : stats);
     });
   });
-}
-
-export interface FileSystem extends OutputFileSystem {
-  createReadStream(path: PathLike, options?: { start?: number; end?: number }): ReadStream;
 }
