@@ -223,7 +223,7 @@ export class Service {
       return context.throw(400);
     }
 
-    // Ranges length.
+    // Get stream options.
     const { fs, highWaterMark } = this.options;
 
     // Set response body.
