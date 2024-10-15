@@ -91,7 +91,6 @@
     "@swc/core": "^1.7.35",
     "@swc/helpers": "^0.5.13",
     "@types/etag": "^1.8.3",
-    "@types/koa-compose": "^3.2.8",
     "@types/node": "^22.7.5",
     "@types/range-parser": "^1.2.7",
     "@types/react": "^18.3.11",
