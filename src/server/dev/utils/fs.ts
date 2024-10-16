@@ -25,7 +25,7 @@ export interface FileSystem extends GetProp<Compiler, 'outputFileSystem'> {
 export function stat(fs: FileSystem, path: string): Promise<FileStats> {
   return new Promise(resolve => {
     fs.stat(path, (error, stats) => {
-      resolve(error ? null : stats);
+      resolve(error != null ? null : stats);
     });
   });
 }
