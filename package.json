@@ -74,7 +74,7 @@
     "build:types": "tsc --declaration --emitDeclarationOnly --declarationDir types && node tools/fix-types.js"
   },
   "dependencies": {
-    "@nuintun/ansi": "^0.0.9",
+    "@nuintun/ansi": "^0.1.0",
     "@types/koa": "^2.15.0",
     "@types/ws": "^8.5.12",
     "etag": "^1.8.1",
@@ -87,7 +87,7 @@
   },
   "devDependencies": {
     "@rollup/plugin-replace": "^6.0.1",
-    "@rollup/plugin-typescript": "^12.1.0",
+    "@rollup/plugin-typescript": "^12.1.1",
     "@swc/core": "^1.7.36",
     "@swc/helpers": "^0.5.13",
     "@types/etag": "^1.8.3",
