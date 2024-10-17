@@ -18,14 +18,13 @@ function getFileServices(context: Context, stats: UnionStats): FileService[] {
     return cached;
   }
 
+  const { options } = context;
   const paths = getPaths(stats);
-  const { fs, options } = context;
   const services: FileService[] = [];
-  const config = { highWaterMark: 65536, ...options, fs };
 
   // Get the file services.
   for (const [outputPath, publicPath] of paths) {
-    services.push([publicPath, new Service(outputPath, config)]);
+    services.push([publicPath, new Service(outputPath, options)]);
   }
 
   // Cache services.

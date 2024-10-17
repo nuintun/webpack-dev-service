@@ -4,6 +4,7 @@
 
 import { Middleware } from 'koa';
 import { ready } from './utils/ready';
+import { createMemfs } from './utils/fs';
 import { middleware } from './middleware';
 import { PLUGIN_NAME } from '/server/utils';
 import { setupHooks } from './utils/setupHooks';
@@ -17,11 +18,11 @@ export { Expose, Options };
 
 function setup(compiler: UnionCompiler, options: Options): Context {
   const context: InitialContext = {
-    options,
     compiler,
     stats: null,
     callbacks: [],
-    logger: compiler.getInfrastructureLogger(PLUGIN_NAME)
+    logger: compiler.getInfrastructureLogger(PLUGIN_NAME),
+    options: { fs: createMemfs(), highWaterMark: 65536, ...options }
   };
 
   setupHooks(context);

@@ -23,24 +23,22 @@ export interface Expose {
   readonly invalidate: (callback: ErrorCallback) => void;
 }
 
-export interface Options extends Omit<ServiceOptions, 'fs'> {
-  fs?: FileSystem;
+export interface Options extends Optional<ServiceOptions, 'fs'> {
   stats?: StatsOptions;
   writeToDisk?: boolean | ((targetPath: string) => boolean);
-  onCompilationDone?(stats: UnionStats, statsOptions: Readonly<webpack.StatsOptions>): void;
+  onCompilationDone?: (stats: UnionStats, statsOptions: Readonly<webpack.StatsOptions>) => void;
 }
 
 export type FileService = [publicPath: string, service: Service];
 
 export interface Context {
-  fs: FileSystem;
   logger: Logger;
-  options: Options;
   callbacks: Callback[];
   compiler: UnionCompiler;
   watching: UnionWatching;
   services?: FileService[];
   stats: UnionStats | null;
+  options: Options & { fs: FileSystem };
 }
 
-export type InitialContext = Optional<Context, 'fs' | 'watching'>;
+export type InitialContext = Optional<Context, 'watching'>;
