@@ -21,21 +21,11 @@ function getFileServices(context: Context, stats: UnionStats): FileService[] {
   const paths = getPaths(stats);
   const { fs, options } = context;
   const services: FileService[] = [];
-  const { etag, ignore, headers, acceptRanges, lastModified } = options;
+  const config = { highWaterMark: 65536, ...options, fs };
 
   // Get the file services.
   for (const [outputPath, publicPath] of paths) {
-    services.push([
-      publicPath,
-      new Service(outputPath, {
-        fs,
-        etag,
-        ignore,
-        headers,
-        acceptRanges,
-        lastModified
-      })
-    ]);
+    services.push([publicPath, new Service(outputPath, config)]);
   }
 
   // Cache services.
@@ -45,7 +35,7 @@ function getFileServices(context: Context, stats: UnionStats): FileService[] {
   return services;
 }
 
-function getFileServicesAsync(context: Context, pathname: string): Promise<FileService[]> {
+function getFileServicesAsync(context: Context): Promise<FileService[]> {
   return new Promise(resolve => {
     const { stats } = context;
 
@@ -53,9 +43,6 @@ function getFileServicesAsync(context: Context, pathname: string): Promise<FileS
     if (stats) {
       resolve(getFileServices(context, stats));
     } else {
-      // Log waiting info.
-      context.logger.info(`wait until bundle finished: ${pathname}`);
-
       // Otherwise, wait until bundle finished.
       ready(context, stats => {
         resolve(getFileServices(context, stats));
@@ -77,7 +64,7 @@ export function middleware(context: Context): Middleware {
     // Only support GET and HEAD (405).
     if (ctx.method === 'GET' || ctx.method === 'HEAD') {
       // Get the file services.
-      const services = await getFileServicesAsync(context, pathname);
+      const services = await getFileServicesAsync(context);
 
       // Try to respond.
       for (const [publicPath, service] of services) {
