@@ -54,50 +54,50 @@ const HTML = `
 `;
 
 export class Progress {
-  private timer?: number;
-  private hidden: boolean = true;
+  #timer?: number;
+  #hidden: boolean = true;
 
-  private readonly svg: SVGElement;
-  private readonly track: SVGElement;
+  readonly #svg: SVGElement;
+  readonly #track: SVGElement;
 
   constructor() {
     const root = getRootElement(PROGRESS);
 
     injectCSS(CSS, root);
 
-    [this.svg] = appendHTML(HTML, root) as [SVGElement];
+    [this.#svg] = appendHTML(HTML, root) as [SVGElement];
 
-    this.track = this.svg.querySelector(`.${PROGRESS}-track`)!;
+    this.#track = this.#svg.querySelector(`.${PROGRESS}-track`)!;
   }
 
-  update(percentage: number): void {
+  public update(percentage: number): void {
     percentage = 1 - Math.max(0, Math.min(1, percentage));
 
-    this.track.style.strokeDashoffset = `${PERIMETER * percentage}`;
+    this.#track.style.strokeDashoffset = `${PERIMETER * percentage}`;
   }
 
-  show(): void {
-    if (this.hidden) {
-      this.hidden = false;
+  public show(): void {
+    if (this.#hidden) {
+      this.#hidden = false;
 
-      clearTimeout(this.timer);
+      clearTimeout(this.#timer);
 
-      this.svg.classList.add(`${PROGRESS}-show`);
+      this.#svg.classList.add(`${PROGRESS}-show`);
     }
   }
 
-  hide(): void {
-    if (this.hidden) {
+  public hide(): void {
+    if (this.#hidden) {
       this.update(0);
     } else {
-      this.hidden = true;
+      this.#hidden = true;
 
-      this.timer = self.setTimeout(() => {
-        this.timer = self.setTimeout(() => {
+      this.#timer = self.setTimeout(() => {
+        this.#timer = self.setTimeout(() => {
           this.update(0);
         }, DURATION);
 
-        this.svg.classList.remove(`${PROGRESS}-show`);
+        this.#svg.classList.remove(`${PROGRESS}-show`);
       }, DURATION);
     }
   }

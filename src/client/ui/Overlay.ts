@@ -170,15 +170,15 @@ const HTML = `
 `;
 
 export class Overlay {
-  private hidden: boolean = true;
+  #hidden: boolean = true;
 
-  private readonly name: HTMLElement;
-  private readonly close: HTMLElement;
-  private readonly dialog: HTMLElement;
-  private readonly errorsList: HTMLElement;
-  private readonly errorsTitle: HTMLElement;
-  private readonly warningsList: HTMLElement;
-  private readonly warningsTitle: HTMLElement;
+  readonly #name: HTMLElement;
+  readonly #close: HTMLElement;
+  readonly #dialog: HTMLElement;
+  readonly #errorsList: HTMLElement;
+  readonly #errorsTitle: HTMLElement;
+  readonly #warningsList: HTMLElement;
+  readonly #warningsTitle: HTMLElement;
 
   constructor(name: string) {
     const root = getRootElement(OVERLAY);
@@ -187,30 +187,30 @@ export class Overlay {
 
     const [dialog] = appendHTML(HTML, root) as [HTMLElement];
 
-    this.dialog = dialog;
-    this.name = dialog.querySelector(`.${OVERLAY}-name`)!;
-    this.close = dialog.querySelector(`.${OVERLAY}-close`)!;
-    this.errorsList = dialog.querySelector(`.${OVERLAY}-errors`)!;
-    this.warningsList = dialog.querySelector(`.${OVERLAY}-warnings`)!;
-    this.errorsTitle = dialog.querySelector(`.${OVERLAY}-errors-title`)!;
-    this.warningsTitle = dialog.querySelector(`.${OVERLAY}-warnings-title`)!;
+    this.#dialog = dialog;
+    this.#name = dialog.querySelector(`.${OVERLAY}-name`)!;
+    this.#close = dialog.querySelector(`.${OVERLAY}-close`)!;
+    this.#errorsList = dialog.querySelector(`.${OVERLAY}-errors`)!;
+    this.#warningsList = dialog.querySelector(`.${OVERLAY}-warnings`)!;
+    this.#errorsTitle = dialog.querySelector(`.${OVERLAY}-errors-title`)!;
+    this.#warningsTitle = dialog.querySelector(`.${OVERLAY}-warnings-title`)!;
 
-    this.name.innerHTML = `⭕ ${name || DEFAULT_NAME}`;
+    this.#name.innerHTML = `⭕ ${name || DEFAULT_NAME}`;
 
-    this.close.addEventListener('click', () => {
+    this.#close.addEventListener('click', () => {
       this.hide();
     });
   }
 
-  setIssues(type: 'errors' | 'warnings', issues: webpack.StatsError[]): void {
+  public setIssues(type: 'errors' | 'warnings', issues: webpack.StatsError[]): void {
     const count = issues.length;
     const hidden = `${OVERLAY}-hidden`;
 
-    const problemMaps: Record<string, [string, HTMLElement, HTMLElement]> = {
-      errors: ['Error', this.errorsTitle, this.errorsList],
-      warnings: ['Warning', this.warningsTitle, this.warningsList]
+    const problems: Record<string, [string, HTMLElement, HTMLElement]> = {
+      errors: ['Error', this.#errorsTitle, this.#errorsList],
+      warnings: ['Warning', this.#warningsTitle, this.#warningsList]
     };
-    const [name, problemTitle, problemList] = problemMaps[type];
+    const [name, problemTitle, problemList] = problems[type];
 
     if (count > 0) {
       let html = '';
@@ -234,19 +234,19 @@ export class Overlay {
     }
   }
 
-  show(): void {
-    if (this.hidden) {
-      this.hidden = false;
+  public show(): void {
+    if (this.#hidden) {
+      this.#hidden = false;
 
-      this.dialog.classList.add(`${OVERLAY}-show`);
+      this.#dialog.classList.add(`${OVERLAY}-show`);
     }
   }
 
-  hide(): void {
-    if (!this.hidden) {
-      this.hidden = true;
+  public hide(): void {
+    if (!this.#hidden) {
+      this.#hidden = true;
 
-      this.dialog.classList.remove(`${OVERLAY}-show`);
+      this.#dialog.classList.remove(`${OVERLAY}-show`);
     }
   }
 }

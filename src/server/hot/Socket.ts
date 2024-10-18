@@ -26,36 +26,42 @@ function entrypoint(): string {
 const client = resolve(entrypoint(), __HOT_CLIENT__);
 
 export class Socket {
-  private readonly logger: Logger;
-  private readonly compiler: UnionCompiler;
-  private readonly server: WebSocketServer;
-  private readonly options: Required<Options>;
+  // Readonly props.
+  readonly #logger: Logger;
+  readonly #compiler: UnionCompiler;
+  readonly #server: WebSocketServer;
+  readonly #options: Required<Options>;
 
-  private stats: webpack.StatsCompilation | null = null;
+  // Mutable props.
+  #percentage: number = -1;
+  #stats: webpack.StatsCompilation | null = null;
 
   constructor(compiler: UnionCompiler, options?: Options) {
-    this.compiler = compiler;
-    this.options = getOptions(options);
-    this.logger = compiler.getInfrastructureLogger(PLUGIN_NAME);
-    this.server = new WebSocketServer({ noServer: true, path: this.options.path });
+    this.#compiler = compiler;
+    this.#options = getOptions(options);
+    this.#logger = compiler.getInfrastructureLogger(PLUGIN_NAME);
+    this.#server = new WebSocketServer({ noServer: true, path: this.#options.path });
 
-    this.setupWss();
-    this.setupHooks();
-    this.setupPlugins();
+    this.#setupWss();
+    this.#setupHooks();
+    this.#setupPlugins();
   }
 
-  setupWss(): void {
-    const { server, logger } = this;
+  #setupWss(): void {
+    const logger = this.#logger;
+    const server = this.#server;
 
     server.on('connection', client => {
+      const stats = this.#stats;
+
       logger.log('client connected');
 
       client.on('close', () => {
         logger.log('client disconnected');
       });
 
-      if (this.stats) {
-        this.broadcastStats([client], this.stats);
+      if (stats != null) {
+        this.#broadcastStats([client], stats);
       }
     });
 
@@ -64,8 +70,8 @@ export class Socket {
     });
   }
 
-  setupHooks(): void {
-    const { compiler } = this;
+  #setupHooks(): void {
+    const compiler = this.#compiler;
     const { hooks } = compiler;
     const statsOptions = getStatsOptions(compiler);
 
@@ -79,35 +85,36 @@ export class Socket {
       }
 
       // Cache stats.
-      this.stats = jsonStats;
+      this.#stats = jsonStats;
 
       // Do the stuff in nextTick, because bundle may be invalidated if a change happened while compiling.
       process.nextTick(() => {
-        const { stats } = this;
+        const stats = this.#stats;
 
         // Broadcast stats.
-        if (stats) {
-          this.broadcastStats(this.clients(), stats);
+        if (stats != null) {
+          this.#broadcastStats(this.clients(), stats);
         }
       });
     });
 
     hooks.invalid.tap(PLUGIN_NAME, (path, timestamp) => {
       // Set stats to null.
-      this.stats = null;
+      this.#stats = null;
+      // Reset percentage.
+      this.#percentage = -1;
 
       // Broadcast invalid.
       this.broadcast(this.clients(), 'invalid', { path, timestamp });
     });
   }
 
-  setupPlugins(): void {
-    const { options, compiler } = this;
+  #setupPlugins(): void {
+    const options = this.#options;
+    const compiler = this.#compiler;
     const compilers = getCompilers(compiler);
+
     const plugins: PluginFactory[] = [
-      () => {
-        return new webpack.NoEmitOnErrorsPlugin();
-      },
       () => {
         return new webpack.HotModuleReplacementPlugin();
       },
@@ -137,24 +144,24 @@ export class Socket {
     }
 
     if (options.progress) {
-      let latestPercentage = -1;
-
-      new webpack.ProgressPlugin((percentage, status, ...messages) => {
-        if (percentage !== latestPercentage) {
-          latestPercentage = percentage;
+      const progress = new webpack.ProgressPlugin((percentage, status, ...messages) => {
+        if (percentage > this.#percentage) {
+          this.#percentage = percentage;
 
           this.broadcast(this.clients(), 'progress', { status, messages, percentage });
         }
-      }).apply(compiler);
+      });
+
+      progress.apply(compiler);
     }
   }
 
-  clients(): Set<WebSocket> {
-    return this.server.clients;
+  public clients(): Set<WebSocket> {
+    return this.#server.clients;
   }
 
-  upgrade(context: Context): boolean {
-    const { server } = this;
+  public upgrade(context: Context): boolean {
+    const server = this.#server;
     const { req: request } = context;
 
     if (isUpgradable(context) && server.shouldHandle(request)) {
@@ -173,7 +180,7 @@ export class Socket {
     return false;
   }
 
-  broadcast<T>(clients: Set<WebSocket> | WebSocket[], action: string, payload: T): void {
+  public broadcast<T>(clients: Set<WebSocket> | WebSocket[], action: string, payload: T): void {
     for (const client of clients) {
       if (client.readyState === WebSocket.OPEN) {
         client.send(JSON.stringify({ action, payload }));
@@ -181,7 +188,7 @@ export class Socket {
     }
   }
 
-  broadcastStats(clients: Set<WebSocket> | WebSocket[], stats: webpack.StatsCompilation): void {
+  #broadcastStats(clients: Set<WebSocket> | WebSocket[], stats: webpack.StatsCompilation): void {
     if ((clients as Set<WebSocket>).size > 0 || (clients as WebSocket[]).length > 0) {
       const { hash, errors, warnings, builtAt: timestamp } = stats;
 

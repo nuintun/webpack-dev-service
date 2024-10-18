@@ -14,7 +14,7 @@ function getWatching({ compiler, logger }: InitialContext): UnionWatching {
   }
 
   const errorHandler: ErrorCallback = error => {
-    if (error) {
+    if (error != null) {
       // For example - `writeToDisk` can throw an error and right now it is ends watching.
       // We can improve that and keep watching active, but it is require API on webpack side.
       // Let's implement that in webpack@5 because it is rare case.

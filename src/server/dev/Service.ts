@@ -40,8 +40,8 @@ export interface Options {
  * @class Service
  */
 export class Service {
-  private root: string;
-  private options: Options;
+  readonly #root: string;
+  readonly #options: Options;
 
   /**
    * @constructor
@@ -50,32 +50,32 @@ export class Service {
    * @param options The file service options.
    */
   constructor(root: string, options: Options) {
-    this.options = options;
-    this.root = unixify(resolve(root));
+    this.#options = options;
+    this.#root = unixify(resolve(root));
   }
 
   /**
    * @private
-   * @method isIgnore
+   * @method #isIgnore
    * @description Check if path is ignore.
    * @param path The path to check.
    */
-  private isIgnore(path: string): boolean {
-    const { ignore } = this.options;
+  #isIgnore(path: string): boolean {
+    const { ignore } = this.#options;
 
     return (isFunction(ignore) ? ignore(path) : false) === true;
   }
 
   /**
    * @private
-   * @method setupHeaders
+   * @method #setupHeaders
    * @description Setup headers.
    * @param context The koa context.
    * @param path The file path.
    * @param stats The file stats.
    */
-  private setupHeaders(context: Context, path: string, stats: Stats): void {
-    const { options } = this;
+  #setupHeaders(context: Context, path: string, stats: Stats): void {
+    const options = this.#options;
     const { headers, etag } = options;
 
     // Set status.
@@ -140,7 +140,7 @@ export class Service {
     }
 
     // Get root path.
-    const { root } = this;
+    const root = this.#root;
     // Slice length.
     const { length } = publicPath;
     // Real pathname.
@@ -154,12 +154,16 @@ export class Service {
     }
 
     // Is ignore path or file (403).
-    if (this.isIgnore(path)) {
+    if (this.#isIgnore(path)) {
       return false;
     }
 
+    // Get options.
+    const options = this.#options;
+    // Get file system.
+    const { fs } = options;
     // File stats.
-    const stats = await stat(this.options.fs, path);
+    const stats = await stat(fs, path);
 
     // Check file stats.
     if (
@@ -174,7 +178,7 @@ export class Service {
     }
 
     // Setup headers.
-    this.setupHeaders(context, path, stats);
+    this.#setupHeaders(context, path, stats);
 
     // Conditional get support.
     if (isConditionalGET(context)) {
@@ -224,7 +228,7 @@ export class Service {
     }
 
     // Get stream options.
-    const { fs, highWaterMark } = this.options;
+    const { highWaterMark } = options;
 
     // Set response body.
     context.body = new FileReadStream(path, ranges, { fs, highWaterMark });

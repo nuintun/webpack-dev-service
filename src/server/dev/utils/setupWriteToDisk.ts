@@ -32,14 +32,14 @@ export function setupWriteToDisk(context: InitialContext): void {
       const name = getCompilerName(compiler);
 
       return mkdir(dir, { recursive: true }, error => {
-        if (error) {
+        if (error != null) {
           logger.error(`${name}unable to write "${dir}" directory to disk:\n${error}`);
 
           return callback(error);
         }
 
         writeFile(targetPath, content, error => {
-          if (error) {
+          if (error != null) {
             logger.error(`${name}unable to write "${targetPath}" asset to disk:\n${error}`);
 
             return callback(error);
