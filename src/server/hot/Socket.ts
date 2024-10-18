@@ -60,7 +60,7 @@ export class Socket {
         logger.log('client disconnected');
       });
 
-      if (stats != null) {
+      if (stats) {
         this.#broadcastStats([client], stats);
       }
     });
@@ -92,7 +92,7 @@ export class Socket {
         const stats = this.#stats;
 
         // Broadcast stats.
-        if (stats != null) {
+        if (stats) {
           this.#broadcastStats(this.clients(), stats);
         }
       });
