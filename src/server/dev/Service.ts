@@ -5,9 +5,9 @@
 import createETag from 'etag';
 import { Context } from 'koa';
 import { Stats } from 'node:fs';
+import { ReadStream } from './ReadStream';
 import { isFunction } from '/server/utils';
 import { FileSystem, stat } from './utils/fs';
-import { FileReadStream } from './utils/stream';
 import { extname, join, resolve } from 'node:path';
 import { hasTrailingSlash, isOutRoot, unixify } from './utils/path';
 import { isConditionalGET, isPreconditionFailure, parseRanges } from './utils/http';
@@ -226,7 +226,7 @@ export class Service {
     }
 
     // Set response body.
-    context.body = new FileReadStream(path, ranges, options);
+    context.body = new ReadStream(path, ranges, options);
 
     // File found.
     return true;
