@@ -4,6 +4,7 @@
 
 import { PathLike } from 'node:fs';
 import { Buffer } from 'node:buffer';
+import { Range } from './utils/http';
 import { FileSystem } from './utils/fs';
 import { Readable, ReadableOptions } from 'node:stream';
 
@@ -20,13 +21,6 @@ export interface Options
     'highWaterMark'
   > {
   fs: FileSystem;
-}
-
-export interface Range {
-  offset: number;
-  length: number;
-  prefix?: Buffer;
-  suffix?: Buffer;
 }
 
 interface Callback {

@@ -4,10 +4,16 @@
 
 import { Context } from 'koa';
 import { Stats } from 'node:fs';
-import { Range } from './stream';
 import { generate } from './hash';
 import { Buffer } from 'node:buffer';
 import parseRange from 'range-parser';
+
+export interface Range {
+  offset: number;
+  length: number;
+  prefix?: Buffer;
+  suffix?: Buffer;
+}
 
 type Ranges = Range[] | -1 | -2;
 
