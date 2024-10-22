@@ -53,7 +53,8 @@ function getFileServicesAsync(context: Context): Promise<FileService[]> {
 export function middleware(context: Context): Middleware {
   // Middleware.
   return async (ctx, next) => {
-    const pathname = decodeURI(ctx.path);
+    const { request } = ctx;
+    const pathname = decodeURI(request.path);
 
     // Pathname decode failed or includes null byte(s).
     if (pathname === -1 || pathname.includes('\0')) {
@@ -61,7 +62,7 @@ export function middleware(context: Context): Middleware {
     }
 
     // Get request method.
-    const { method } = ctx;
+    const { method } = request;
 
     // Only support GET and HEAD (405).
     if (method === 'GET' || method === 'HEAD') {

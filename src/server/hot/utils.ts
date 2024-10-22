@@ -8,8 +8,8 @@ import { Options } from './interface';
 import { isMultiCompiler, isObject } from '/server/utils';
 import { StatsOptions, UnionCompiler } from '/server/interface';
 
-export function isUpgradable(context: Context): boolean {
-  const { upgrade } = context.headers;
+export function isUpgradable({ request }: Context): boolean {
+  const upgrade = request.get('Upgrade');
 
   return !!upgrade && /^websocket$/i.test(upgrade.trim());
 }

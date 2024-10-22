@@ -74,16 +74,15 @@ export class Service {
    * @param path The file path.
    * @param stats The file stats.
    */
-  #setupHeaders(context: Context, path: string, stats: Stats): void {
+  #setupHeaders({ response }: Context, path: string, stats: Stats): void {
     const options = this.#options;
-    const { response } = context;
     const { headers } = options;
 
     // Set status.
-    context.status = 200;
+    response.status = 200;
 
     // Set Content-Type.
-    context.type = extname(path);
+    response.type = extname(path);
 
     // Set headers.
     if (headers) {
@@ -91,38 +90,38 @@ export class Service {
         const fields = headers(path, stats);
 
         if (fields) {
-          context.set(fields);
+          response.set(fields);
         }
       } else {
-        context.set(headers);
+        response.set(headers);
       }
     }
 
     // Accept-Ranges.
     if (options.acceptRanges === false) {
       // Set Accept-Ranges to none tell client not support.
-      context.set('Accept-Ranges', 'none');
+      response.set('Accept-Ranges', 'none');
     } else {
       // Set Accept-Ranges.
-      context.set('Accept-Ranges', 'bytes');
+      response.set('Accept-Ranges', 'bytes');
     }
 
     // ETag.
     if (options.etag === false) {
       // Remove ETag.
-      context.remove('ETag');
+      response.remove('ETag');
     } else if (!response.get('ETag')) {
-      // Set ETag.
-      context.set('ETag', createETag(stats));
+      // Set weak ETag.
+      response.set('ETag', createETag(stats));
     }
 
     // Last-Modified.
     if (options.lastModified === false) {
       // Remove Last-Modified.
-      context.remove('Last-Modified');
+      response.remove('Last-Modified');
     } else if (!response.get('Last-Modified')) {
-      // Set mtime utc string.
-      context.set('Last-Modified', stats.mtime.toUTCString());
+      // Set last modified from mtime.
+      response.set('Last-Modified', stats.mtime.toUTCString());
     }
   }
 
@@ -176,6 +175,9 @@ export class Service {
       return false;
     }
 
+    // Koa request and response.
+    const { request, response } = context;
+
     // Setup headers.
     this.#setupHeaders(context, path, stats);
 
@@ -187,11 +189,11 @@ export class Service {
       }
 
       // Request fresh (304).
-      if (context.fresh) {
+      if (request.fresh) {
         // Set status.
-        context.status = 304;
+        response.status = 304;
         // Set body null.
-        context.body = null;
+        response.body = null;
 
         // File found.
         return true;
@@ -199,11 +201,11 @@ export class Service {
     }
 
     // Head request.
-    if (context.method === 'HEAD') {
+    if (request.method === 'HEAD') {
       // Set Content-Length.
-      context.length = stats.size;
+      response.length = stats.size;
       // Set body null
-      context.body = null;
+      response.body = null;
 
       // File found.
       return true;
@@ -215,7 +217,7 @@ export class Service {
     // 416
     if (ranges === -1) {
       // Set Content-Range.
-      context.set('Content-Range', `bytes */${stats.size}`);
+      response.set('Content-Range', `bytes */${stats.size}`);
 
       // Unsatisfiable 416.
       return context.throw(416);
@@ -227,7 +229,7 @@ export class Service {
     }
 
     // Set response body.
-    context.body = new ReadStream(path, ranges, options);
+    response.body = new ReadStream(path, ranges, options);
 
     // File found.
     return true;
