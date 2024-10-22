@@ -60,8 +60,11 @@ export function middleware(context: Context): Middleware {
       return ctx.throw(400);
     }
 
+    // Get request method.
+    const { method } = ctx;
+
     // Only support GET and HEAD (405).
-    if (ctx.method === 'GET' || ctx.method === 'HEAD') {
+    if (method === 'GET' || method === 'HEAD') {
       // Get the file services.
       const services = await getFileServicesAsync(context);
 

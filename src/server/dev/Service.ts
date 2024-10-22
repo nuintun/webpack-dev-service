@@ -76,40 +76,14 @@ export class Service {
    */
   #setupHeaders(context: Context, path: string, stats: Stats): void {
     const options = this.#options;
-    const { headers, etag } = options;
+    const { response } = context;
+    const { headers } = options;
 
     // Set status.
     context.status = 200;
 
     // Set Content-Type.
     context.type = extname(path);
-
-    // Accept-Ranges.
-    if (options.acceptRanges === false) {
-      // Set Accept-Ranges to none tell client not support.
-      context.set('Accept-Ranges', 'none');
-    } else {
-      // Set Accept-Ranges.
-      context.set('Accept-Ranges', 'bytes');
-    }
-
-    // ETag.
-    if (etag === false) {
-      // Remove ETag.
-      context.remove('ETag');
-    } else {
-      // Set ETag.
-      context.set('ETag', createETag(stats));
-    }
-
-    // Last-Modified.
-    if (options.lastModified === false) {
-      // Remove Last-Modified.
-      context.remove('Last-Modified');
-    } else {
-      // Set mtime utc string.
-      context.set('Last-Modified', stats.mtime.toUTCString());
-    }
 
     // Set headers.
     if (headers) {
@@ -122,6 +96,33 @@ export class Service {
       } else {
         context.set(headers);
       }
+    }
+
+    // Accept-Ranges.
+    if (options.acceptRanges === false) {
+      // Set Accept-Ranges to none tell client not support.
+      context.set('Accept-Ranges', 'none');
+    } else {
+      // Set Accept-Ranges.
+      context.set('Accept-Ranges', 'bytes');
+    }
+
+    // ETag.
+    if (options.etag === false) {
+      // Remove ETag.
+      context.remove('ETag');
+    } else if (!response.get('ETag')) {
+      // Set ETag.
+      context.set('ETag', createETag(stats));
+    }
+
+    // Last-Modified.
+    if (options.lastModified === false) {
+      // Remove Last-Modified.
+      context.remove('Last-Modified');
+    } else if (!response.get('Last-Modified')) {
+      // Set mtime utc string.
+      context.set('Last-Modified', stats.mtime.toUTCString());
     }
   }
 
