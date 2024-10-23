@@ -10,7 +10,7 @@ import { isFunction } from '/server/utils';
 import { FileSystem, stat } from './utils/fs';
 import { extname, join, resolve } from 'node:path';
 import { hasTrailingSlash, isOutRoot, unixify } from './utils/path';
-import { isConditionalGET, isPreconditionFailure, parseRanges } from './utils/http';
+import { isConditionalGET, isPreconditionFailed, parseRanges } from './utils/http';
 
 interface IgnoreFunction {
   (path: string): boolean;
@@ -22,8 +22,8 @@ interface Headers {
 
 type FileStats = Stats | null | undefined;
 
-interface HeaderFunction {
-  (path: string, stats: FileStats): Headers | void;
+interface HeadersFunction {
+  (path: string, stats: FileStats): Promise<Headers | void> | Headers | void;
 }
 
 export interface Options {
@@ -33,7 +33,7 @@ export interface Options {
   lastModified?: boolean;
   highWaterMark?: number;
   ignore?: IgnoreFunction;
-  headers?: Headers | HeaderFunction;
+  headers?: Headers | HeadersFunction;
 }
 
 /**
@@ -74,7 +74,7 @@ export class Service {
    * @param path The file path.
    * @param stats The file stats.
    */
-  #setupHeaders({ response }: Context, path: string, stats: Stats): void {
+  async #setupHeaders({ response }: Context, path: string, stats: Stats): Promise<void> {
     const options = this.#options;
     const { headers } = options;
 
@@ -87,7 +87,7 @@ export class Service {
     // Set headers.
     if (headers) {
       if (isFunction(headers)) {
-        const fields = headers(path, stats);
+        const fields = await headers(path, stats);
 
         if (fields) {
           response.set(fields);
@@ -179,12 +179,12 @@ export class Service {
     const { request, response } = context;
 
     // Setup headers.
-    this.#setupHeaders(context, path, stats);
+    await this.#setupHeaders(context, path, stats);
 
     // Conditional get support.
     if (isConditionalGET(context)) {
       // Request precondition failure.
-      if (isPreconditionFailure(context)) {
+      if (isPreconditionFailed(context)) {
         return context.throw(412);
       }
 

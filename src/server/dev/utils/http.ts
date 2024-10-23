@@ -15,27 +15,8 @@ export interface Range {
   suffix?: Buffer;
 }
 
-type Ranges = Range[] | -1 | -2;
-
-const TOKEN_SPLIT_REGEX = /\s*,\s*/;
-
-/**
- * @function isETag
- * @description Check if etag is valid.
- * @param value The value to check.
- */
-function isETag(value: string): boolean {
-  return /^(?:W\/)?"[\s\S]+"$/.test(value);
-}
-
-/**
- * @function parseTokens
- * @description Parse HTTP tokens.
- * @param value The tokens value string.
- */
-function parseTokens(value: string): string[] {
-  return value.trim().split(TOKEN_SPLIT_REGEX);
-}
+const SPLIT_ETAG_RE = /\s*,\s*/;
+const SINGLE_ETAG_RE = /^(?:W\/)?"[ !#-\x7E\x80-\xFF]+"$/;
 
 /**
  * @function decodeURI
@@ -65,51 +46,59 @@ export function isConditionalGET({ request }: Context): boolean {
 }
 
 /**
- * @function isETagMatching
- * @description Check if etag is matching.
+ * @function isETagMatch
+ * @see https://httpwg.org/specs/rfc9110.html
  * @param match The match value.
  * @param etag The etag value.
+ * @param isIfMatch The flag of if-match.
  */
-function isETagMatching(match: string, etag: string): boolean {
-  const tokens = parseTokens(match);
+function isETagMatch(match: string, etag: string, isIfMatch?: boolean): boolean {
+  // Trim etag.
+  etag = etag.trim();
 
-  // When tokens not empty compare with etag.
-  if (tokens.length > 0) {
-    return tokens.every(match => {
-      return match === etag || match === `W/${etag}` || `W/${match}` === etag;
-    });
+  // Weak tags cannot be matched and return false.
+  if (!etag || etag.startsWith('W/')) {
+    return false;
   }
 
-  // Not match.
-  return false;
+  // Trim match.
+  match = match.trim();
+
+  // Check If-Match.
+  if (isIfMatch) {
+    if (match === '*') {
+      return true;
+    }
+
+    return match.split(SPLIT_ETAG_RE).includes(etag);
+  }
+
+  // Check If-Range.
+  return match === etag;
 }
 
 /**
- * @function isPreconditionFailure
- * @description Check if request precondition failure.
+ * @function isPreconditionFailed
+ * @description Check if request precondition failed.
  * @param context The koa context.
  */
-export function isPreconditionFailure({ request, response }: Context): boolean {
+export function isPreconditionFailed({ request, response }: Context): boolean {
   // If-Match.
-  const match = request.get('If-Match');
+  const ifMatch = request.get('If-Match');
 
-  // Check if request match.
-  if (match) {
-    // Etag.
-    const etag = response.get('ETag');
-
-    return !etag || (match !== '*' && !isETagMatching(match, etag));
+  // Check If-Match.
+  if (ifMatch) {
+    return !isETagMatch(ifMatch, response.get('ETag'), true);
   }
 
   // If-Unmodified-Since.
-  const unmodifiedSinceDate = Date.parse(request.get('If-Unmodified-Since'));
+  const unmodifiedSince = Date.parse(request.get('If-Unmodified-Since'));
 
-  // Check if request unmodified.
-  if (!Number.isNaN(unmodifiedSinceDate)) {
-    // Last-Modified.
-    const lastModifiedDate = Date.parse(response.get('Last-Modified'));
+  // Check If-Unmodified-Since.
+  if (!Number.isNaN(unmodifiedSince)) {
+    const lastModified = Date.parse(response.get('Last-Modified'));
 
-    return Number.isNaN(lastModifiedDate) || lastModifiedDate > unmodifiedSinceDate;
+    return Number.isNaN(lastModified) || lastModified > unmodifiedSince;
   }
 
   // Check precondition passed.
@@ -129,24 +118,13 @@ function isRangeFresh({ request, response }: Context): boolean {
     return true;
   }
 
-  // If-Range as etag.
-  if (isETag(ifRange)) {
-    const etag = response.get('ETag');
-
-    return !!(etag && isETagMatching(ifRange, etag));
+  // If-Range as modified date failed.
+  if (SINGLE_ETAG_RE.test(ifRange)) {
+    return isETagMatch(ifRange, response.get('ETag'));
   }
 
-  // If-Range as modified date.
-  const ifRangeDate = Date.parse(ifRange);
-
-  if (!Number.isNaN(ifRangeDate)) {
-    const lastModifiedDate = Date.parse(response.get('Last-Modified'));
-
-    return !Number.isNaN(lastModifiedDate) && lastModifiedDate === ifRangeDate;
-  }
-
-  // Range not fresh.
-  return false;
+  // Check if Last-Modified is valid and equal to If-Range date
+  return Date.parse(response.get('Last-Modified')) <= Date.parse(ifRange);
 }
 
 /**
@@ -155,7 +133,7 @@ function isRangeFresh({ request, response }: Context): boolean {
  * @param context The koa context.
  * @param stats The file stats.
  */
-export function parseRanges(context: Context, stats: Stats): Ranges {
+export function parseRanges(context: Context, stats: Stats): Range[] | -1 | -2 {
   const { size } = stats;
   const { request, response } = context;
 
