@@ -58,7 +58,9 @@ export function hasIssues<T>(issues: ArrayLike<T> | undefined): boolean {
 
 function normalizeStatsOptions(statsOptions?: StatsOptions): webpack.StatsOptions {
   if (!isObject(statsOptions)) {
-    statsOptions = {};
+    statsOptions = {
+      preset: statsOptions
+    };
   }
 
   return {
