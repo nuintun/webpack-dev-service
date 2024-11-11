@@ -39,7 +39,7 @@ noscript {
 }
 
 .text {
-  text-transform: uppercase;
+  text-transform: capitalize;
 }
 
 .video {
