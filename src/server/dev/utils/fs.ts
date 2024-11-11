@@ -7,9 +7,7 @@ import fs, { Stats } from 'node:fs';
 import { GetProp } from '/server/interface';
 import { createFsFromVolume, Volume } from 'memfs';
 
-type Compiler = webpack.Compiler;
-
-export interface FileSystem extends GetProp<Compiler, 'outputFileSystem'> {
+export interface FileSystem extends GetProp<webpack.Compiler, 'outputFileSystem'> {
   stat: typeof fs.stat;
   open: typeof fs.open;
   read: typeof fs.read;

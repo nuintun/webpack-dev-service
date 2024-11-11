@@ -3,16 +3,17 @@
  */
 
 import webpack from 'webpack';
+import { GetProp } from '/server/interface';
 
-export interface InvalidMessage {
+export interface Invalid {
   action: 'invalid';
   payload: {
-    path: string;
     timestamp: number;
+    path: string | null;
   };
 }
 
-export interface ProgressMessage {
+export interface Progress {
   action: 'progress';
   payload: {
     status: string;
@@ -21,7 +22,7 @@ export interface ProgressMessage {
   };
 }
 
-export interface HashMessage {
+export interface Hash {
   action: 'hash';
   payload: {
     hash: string;
@@ -29,7 +30,7 @@ export interface HashMessage {
   };
 }
 
-export interface IssuesMessage {
+export interface Issues {
   action: 'issues';
   payload: {
     timestamp: number;
@@ -38,11 +39,19 @@ export interface IssuesMessage {
   };
 }
 
-export interface OkMessage {
+export interface Ok {
   action: 'ok';
   payload: {
     timestamp: number;
   };
 }
 
-export type Message = InvalidMessage | ProgressMessage | HashMessage | IssuesMessage | OkMessage;
+export interface Messages {
+  ok: GetProp<Ok, 'payload'>;
+  hash: GetProp<Hash, 'payload'>;
+  issues: GetProp<Issues, 'payload'>;
+  invalid: GetProp<Invalid, 'payload'>;
+  progress: GetProp<Progress, 'payload'>;
+}
+
+export type Message = Invalid | Progress | Hash | Issues | Ok;

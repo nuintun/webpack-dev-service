@@ -19,9 +19,6 @@
     "paths": {
       "/*": [
         "src/*"
-      ],
-      "/package.json": [
-        "package.json"
       ]
     }
   },

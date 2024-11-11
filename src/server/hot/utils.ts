@@ -4,9 +4,11 @@
 
 import webpack from 'webpack';
 import { Context } from 'koa';
-import { Options } from './interface';
-import { isMultiCompiler, isObject } from '/server/utils';
-import { StatsOptions, UnionCompiler } from '/server/interface';
+import { URL } from 'node:url';
+import { isBoolean, isString } from '/server/utils';
+import { NormalizedOptions, Options } from './interface';
+
+export const BASE_URL = 'wss://127.0.0.1';
 
 export function isUpgradable({ request }: Context): boolean {
   const upgrade = request.get('Upgrade');
@@ -14,32 +16,9 @@ export function isUpgradable({ request }: Context): boolean {
   return !!upgrade && /^websocket$/i.test(upgrade.trim());
 }
 
-function normalize(path: string): string {
-  const segments: string[] = [];
-  const parts = path.split(/[\\/]+/);
-
-  for (const segment of parts) {
-    switch (segment) {
-      case '.':
-        break;
-      case '..':
-        segments.pop();
-        break;
-      default:
-        segments.push(segment);
-        break;
-    }
-  }
-
-  const pathname = segments.join('/');
-
-  return pathname.startsWith('/') ? pathname : `/${pathname}`;
-}
-
-export function getOptions(options?: Options): Required<Options> {
+export function getOptions(options?: Options): NormalizedOptions {
   const settings = {
     hmr: true,
-    wss: false,
     path: '/hot',
     reload: true,
     overlay: true,
@@ -47,7 +26,7 @@ export function getOptions(options?: Options): Required<Options> {
     ...options
   };
 
-  settings.path = normalize(settings.path);
+  settings.path = new URL(settings.path, BASE_URL).pathname;
 
   return settings;
 }
@@ -56,11 +35,13 @@ export function hasIssues<T>(issues: ArrayLike<T> | undefined): boolean {
   return Array.isArray(issues) && issues.length > 0;
 }
 
-function normalizeStatsOptions(statsOptions?: StatsOptions): webpack.StatsOptions {
-  if (!isObject(statsOptions)) {
-    statsOptions = {
-      preset: statsOptions
-    };
+export function getStatsOptions(compiler: webpack.Compiler): webpack.StatsOptions {
+  let statsOptions = compiler.options.stats;
+
+  if (isString(statsOptions)) {
+    statsOptions = { preset: statsOptions };
+  } else if (isBoolean(statsOptions)) {
+    statsOptions = statsOptions ? { preset: 'normal' } : { preset: 'none' };
   }
 
   return {
@@ -74,18 +55,6 @@ function normalizeStatsOptions(statsOptions?: StatsOptions): webpack.StatsOption
     warnings: true,
     errorDetails: false
   };
-}
-
-export function getStatsOptions(compiler: UnionCompiler): webpack.StatsOptions {
-  if (isMultiCompiler(compiler)) {
-    return {
-      children: compiler.compilers.map(({ options }) => {
-        return normalizeStatsOptions(options.stats);
-      })
-    } as unknown as webpack.StatsOptions;
-  }
-
-  return normalizeStatsOptions(compiler.options.stats);
 }
 
 export function getTimestamp({ builtAt, children = [] }: webpack.StatsCompilation): number {

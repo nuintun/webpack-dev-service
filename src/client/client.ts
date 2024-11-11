@@ -3,12 +3,12 @@
  */
 
 import webpack from 'webpack';
-import { Message } from './Message';
+import { emit } from './events';
 import { Overlay } from './ui/Overlay';
 import { Progress } from './ui/Progress';
-import { emit, Messages } from './events';
 import { GetProp } from '/server/interface';
-import { applyUpdate, setHash } from './hot';
+import { applyUpdate, updateHash } from './hot';
+import { Message, Messages } from '/server/hot/Message';
 
 export interface Options {
   readonly hmr: boolean;
@@ -18,6 +18,7 @@ export interface Options {
   readonly reload: boolean;
   readonly overlay: boolean;
   readonly progress: boolean;
+  readonly uuid: string | null;
 }
 
 export default function createClient(options: Options): void {
@@ -59,7 +60,7 @@ export default function createClient(options: Options): void {
   };
 
   const onHash = ({ hash }: GetProp<Messages, 'hash'>): void => {
-    setHash(hash);
+    updateHash(hash);
   };
 
   const setIssues = (type: 'errors' | 'warnings', issues: webpack.StatsError[]): void => {
@@ -144,15 +145,32 @@ export default function createClient(options: Options): void {
       }
     };
 
-    ws.onclose = (): void => {
+    ws.onclose = (event: CloseEvent): void => {
       overlay.hide();
       progress.hide();
 
-      setTimeout((): void => {
-        createWebSocket(url);
-      }, RETRY_INTERVAL);
+      switch (event.code) {
+        case 4000:
+        case 4001:
+          fallback();
+          break;
+        default:
+          if (!event.wasClean) {
+            setTimeout((): void => {
+              createWebSocket(url);
+            }, RETRY_INTERVAL);
+          }
+          break;
+      }
     };
   };
 
-  createWebSocket(`${options.origin}${options.path}`);
+  const { uuid } = options;
+  const input = new URL(`${options.origin}${options.path}`);
+
+  if (uuid) {
+    input.searchParams.set('uuid', uuid);
+  }
+
+  createWebSocket(input.href);
 }

@@ -10,7 +10,7 @@ import { InitialContext, Options } from '/server/dev/interface';
 import { getCompilers, isFunction, PLUGIN_NAME } from '/server/utils';
 
 function getCompilerName({ options: { name } }: webpack.Compiler): string {
-  return name ? `compiler "${name}": ` : '';
+  return `compiler ${name ? `${name}: ` : ''}`;
 }
 
 function isAllowWrite(targetPath: string, filter?: GetProp<Options, 'writeToDisk'>): boolean {

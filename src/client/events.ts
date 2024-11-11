@@ -4,19 +4,11 @@
 
 import { Options } from './client';
 import { GetProp } from '/server/interface';
-import { HashMessage, InvalidMessage, IssuesMessage, OkMessage, ProgressMessage } from './Message';
+import { Messages } from '/server/hot/Message';
 
 type Listeners = {
   [E in keyof Events]: GetProp<Events, E>[];
 };
-
-export interface Messages {
-  ok: GetProp<OkMessage, 'payload'>;
-  hash: GetProp<HashMessage, 'payload'>;
-  issues: GetProp<IssuesMessage, 'payload'>;
-  invalid: GetProp<InvalidMessage, 'payload'>;
-  progress: GetProp<ProgressMessage, 'payload'>;
-}
 
 export interface Events {
   ok(message: GetProp<Messages, 'ok'>, options: Options): void;

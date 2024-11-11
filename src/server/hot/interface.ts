@@ -4,6 +4,7 @@
 
 import WebSocket from 'ws';
 import webpack from 'webpack';
+import { RequiredKeys } from '/server/interface';
 
 export interface Options {
   hmr?: boolean;
@@ -14,11 +15,13 @@ export interface Options {
   progress?: boolean;
 }
 
-export interface PluginFactory {
-  (compiler: webpack.Compiler): webpack.WebpackPluginInstance;
+export type Clients = Set<WebSocket>;
+
+export interface CompilerContext {
+  percentage: number;
+  readonly uuid: string;
+  readonly clients: Clients;
+  stats: Required<webpack.StatsCompilation> | null;
 }
 
-export interface Expose {
-  readonly clients: () => Set<WebSocket>;
-  readonly broadcast: <T>(clients: Set<WebSocket> | WebSocket[], action: string, payload: T) => void;
-}
+export type NormalizedOptions = RequiredKeys<Options, 'hmr' | 'path' | 'reload' | 'overlay' | 'progress'>;

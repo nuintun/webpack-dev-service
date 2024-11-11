@@ -12,6 +12,8 @@ export type StatsOptions = GetProp<webpack.Configuration, 'stats'>;
 
 export type UnionCompiler = webpack.Compiler | webpack.MultiCompiler;
 
+export type RequiredKeys<T, K extends keyof T> = T & { [P in K]-?: T[P] };
+
 export type Logger = ReturnType<GetProp<webpack.Compiler, 'getInfrastructureLogger'>>;
 
 export type UnionWatching = webpack.Watching | ReturnType<GetProp<webpack.MultiCompiler, 'watch'>>;

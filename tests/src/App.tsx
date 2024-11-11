@@ -9,7 +9,7 @@ export default memo(function App() {
   return (
     <div className={styles.main}>
       <img className={styles.logo} src={logo} alt="webpack" />
-      <p className={styles.text}>hello webpack-dev-service + react!</p>
+      <p className={styles.text}>hello webpack-dev-service + react!aa</p>
       <video muted controls autoPlay className={styles.video}>
         <source src={github} type="video/mp4" />
       </video>

@@ -23,13 +23,13 @@ export interface Expose {
   readonly invalidate: (callback: ErrorCallback) => void;
 }
 
+export type FileService = [publicPath: string, service: Service];
+
 export interface Options extends Optional<ServiceOptions, 'fs'> {
   stats?: StatsOptions;
   writeToDisk?: boolean | ((targetPath: string) => boolean);
   onCompilationDone?: (stats: UnionStats, statsOptions: Readonly<webpack.StatsOptions>) => void;
 }
-
-export type FileService = [publicPath: string, service: Service];
 
 export interface Context {
   logger: Logger;
