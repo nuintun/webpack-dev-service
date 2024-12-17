@@ -1,6 +1,6 @@
 {
   "name": "webpack-dev-service",
-  "version": "0.14.0",
+  "version": "0.14.1",
   "description": "A koa 2 middleware for webpack development and hot reloading.",
   "type": "module",
   "sideEffects": [
@@ -9,33 +9,19 @@
   ],
   "main": "cjs/server/index.cjs",
   "module": "esm/server/index.js",
-  "types": "types/server/index.d.ts",
   "exports": {
     ".": {
       "import": "./esm/server/index.js",
-      "require": "./cjs/server/index.cjs",
-      "types": "./types/server/index.d.ts"
+      "require": "./cjs/server/index.cjs"
     },
     "./client": {
       "import": "./esm/client/index.js",
-      "require": "./cjs/client/index.cjs",
-      "types": "./types/client/index.d.ts"
-    }
-  },
-  "typesVersions": {
-    "*": {
-      ".": [
-        "./types/server/index.d.ts"
-      ],
-      "client": [
-        "./types/client/index.d.ts"
-      ]
+      "require": "./cjs/client/index.cjs"
     }
   },
   "files": [
     "cjs",
     "esm",
-    "types",
     "global.d.ts"
   ],
   "engines": {
@@ -68,10 +54,10 @@
     "test": "cd tests && node webpack.js",
     "build:cjs": "rollup -c tools/rollup.cjs.js",
     "build:esm": "rollup -c tools/rollup.esm.js",
+    "build:fix-types": "node tools/fix-types.js",
     "format": "prettier --write . --ignore-path .prettierignore",
     "build": "npm run clean && npm run build:main && npm run format",
-    "build:main": "npm run build:cjs && npm run build:esm && npm run build:types",
-    "build:types": "tsc --declaration --emitDeclarationOnly --declarationDir types && node tools/fix-types.js"
+    "build:main": "npm run build:cjs && npm run build:esm && npm run build:fix-types"
   },
   "dependencies": {
     "@nuintun/ansi": "^0.1.1",
