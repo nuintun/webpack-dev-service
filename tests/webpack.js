@@ -8,8 +8,8 @@ import memfs from 'memfs';
 import path from 'node:path';
 import webpack from 'webpack';
 import compress from 'koa-compress';
-import dev from 'webpack-dev-service';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
+import { server as dev } from 'webpack-dev-service';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 
 const progress = {

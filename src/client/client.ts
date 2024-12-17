@@ -21,7 +21,7 @@ export interface Options {
   readonly uuid: string | null;
 }
 
-export default function createClient(options: Options): void {
+export function createClient(options: Options): void {
   let updateTimer: number;
 
   const UPDATE_DELAY = 128;

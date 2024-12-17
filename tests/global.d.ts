@@ -32,7 +32,7 @@ declare module '*.mp4' {
 }
 
 declare module 'webpack-dev-service/client' {
-  const { on, off } = await import('../types/client');
+  const { on, off } = await import('../esm/client');
 
-  export { on, off };
+  export = { on, off };
 }

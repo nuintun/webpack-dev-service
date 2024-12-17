@@ -12,9 +12,9 @@
     "noUnusedLocals": true,
     "esModuleInterop": true,
     "resolveJsonModule": true,
-    "moduleResolution": "Node",
     "noImplicitOverride": true,
     "noUnusedParameters": true,
+    "moduleResolution": "bundler",
     "forceConsistentCasingInFileNames": true,
     "paths": {
       "/*": [

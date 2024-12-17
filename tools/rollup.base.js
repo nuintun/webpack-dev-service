@@ -50,77 +50,48 @@ function env(esnext) {
 /**
  * @function rollup
  * @param {boolean} [esnext]
- * @return {import('rollup').RollupOptions[]}
+ * @return {import('rollup').RollupOptions}
  */
 export default function rollup(esnext) {
-  return [
-    {
-      input: 'src/server/index.ts',
-      output: {
-        banner,
-        esModule: false,
-        exports: 'auto',
-        interop: 'auto',
-        preserveModules: true,
-        format: esnext ? 'esm' : 'cjs',
-        generatedCode: { constBindings: true },
-        dir: esnext ? 'esm/server' : 'cjs/server',
-        entryFileNames: `[name].${esnext ? 'js' : 'cjs'}`,
-        chunkFileNames: `[name].${esnext ? 'js' : 'cjs'}`
-      },
-      plugins: [env(esnext), metaURL(esnext), typescript(), treeShake()],
-      onwarn(error, warn) {
-        if (error.code !== 'CIRCULAR_DEPENDENCY') {
-          warn(error);
-        }
-      },
-      external(source) {
-        if (isBuiltin(source)) {
-          return true;
-        }
-
-        for (const external of externals) {
-          if (source === external || source.startsWith(`${external}/`)) {
-            return true;
-          }
-        }
-
-        return false;
+  return {
+    input: ['src/server/index.ts', 'src/client/main.ts', 'src/client/index.ts'],
+    output: {
+      banner,
+      interop: 'auto',
+      preserveModules: true,
+      dir: esnext ? 'esm' : 'cjs',
+      format: esnext ? 'esm' : 'cjs',
+      generatedCode: { constBindings: true },
+      chunkFileNames: `[name].${esnext ? 'js' : 'cjs'}`,
+      entryFileNames: `[name].${esnext ? 'js' : 'cjs'}`
+    },
+    plugins: [
+      env(esnext),
+      metaURL(esnext),
+      webpackHot(esnext),
+      typescript({
+        declaration: true,
+        declarationDir: esnext ? 'esm' : 'cjs'
+      }),
+      treeShake()
+    ],
+    onwarn(error, warn) {
+      if (error.code !== 'CIRCULAR_DEPENDENCY') {
+        warn(error);
       }
     },
-    {
-      input: ['src/client/main.ts', 'src/client/index.ts'],
-      output: {
-        banner,
-        esModule: false,
-        exports: 'auto',
-        interop: 'auto',
-        preserveModules: true,
-        format: esnext ? 'esm' : 'cjs',
-        generatedCode: { constBindings: true },
-        dir: esnext ? 'esm/client' : 'cjs/client',
-        entryFileNames: `[name].${esnext ? 'js' : 'cjs'}`,
-        chunkFileNames: `[name].${esnext ? 'js' : 'cjs'}`
-      },
-      plugins: [webpackHot(esnext), typescript(), treeShake()],
-      onwarn(error, warn) {
-        if (error.code !== 'CIRCULAR_DEPENDENCY') {
-          warn(error);
-        }
-      },
-      external(source) {
-        if (isBuiltin(source)) {
+    external(source) {
+      if (isBuiltin(source)) {
+        return true;
+      }
+
+      for (const external of externals) {
+        if (source === external || source.startsWith(`${external}/`)) {
           return true;
         }
-
-        for (const external of externals) {
-          if (source === external || source.startsWith(`${external}/`)) {
-            return true;
-          }
-        }
-
-        return false;
       }
+
+      return false;
     }
-  ];
+  };
 }

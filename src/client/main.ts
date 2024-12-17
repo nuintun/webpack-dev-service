@@ -2,7 +2,7 @@
  * @module main
  */
 
-import createClient, { Options } from './client';
+import { createClient, Options } from './client';
 
 type WebSocketProtocol = 'ws:' | 'wss:';
 

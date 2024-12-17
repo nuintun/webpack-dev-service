@@ -12,13 +12,14 @@ import { hot, Options as HotOptions } from './hot';
 import { dev, Expose, Options as DevOptions } from './dev';
 
 export type Options = DevOptions & { hot?: HotOptions | false };
+
 /**
  * @function server
  * @description Create koa dev server middleware.
  * @param compiler The rspack compiler instance.
  * @param options Options.
  */
-export default function server(compiler: UnionCompiler, options: Options = {}): Middleware & Expose {
+export function server(compiler: UnionCompiler, options: Options = {}): Middleware & Expose {
   validate(schema, options, {
     name: PLUGIN_NAME,
     baseDataPath: 'options'
