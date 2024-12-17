@@ -19,8 +19,8 @@
  */
 
 import Koa from 'koa';
-import path from 'path';
 import memfs from 'memfs';
+import path from 'node:path';
 import webpack from 'webpack';
 import compress from 'koa-compress';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
@@ -31,12 +31,12 @@ const progress = {
   percentBy: 'entries'
 };
 
-const entryHTML = path.resolve('public/index.html');
+const entryHTML = path.resolve('wwwroot/index.html');
 
 const html = {
   xhtml: true,
   minify: false,
-  title: 'React',
+  title: 'Webpack',
   filename: entryHTML,
   templateParameters: { lang: 'en' },
   template: path.resolve('index.ejs'),
@@ -56,15 +56,15 @@ function httpError(error) {
 }
 
 const compiler = webpack({
-  name: 'react',
+  name: 'React',
   mode: 'development',
   context: path.resolve('src'),
   entry: path.resolve('src/index.tsx'),
   output: {
     publicPath: '/public/',
     filename: `js/[name].js`,
-    path: path.resolve('public'),
     chunkFilename: `js/[name].js`,
+    path: path.resolve('wwwroot/public'),
     assetModuleFilename: `[path][name][ext]`
   },
   devtool: 'eval-cheap-module-source-map',
@@ -136,8 +136,9 @@ const compiler = webpack({
                   esModule: true,
                   modules: {
                     auto: true,
+                    namedExport: false,
                     localIdentName: '[local]-[hash:8]',
-                    exportLocalsConvention: 'camelCaseOnly'
+                    exportLocalsConvention: 'camel-case-only'
                   }
                 }
               }
