@@ -20,11 +20,12 @@ export interface Middleware<C> {
 
 /**
  * @function dispatch
- * @param middlewares 中间件数组
- * @param index 要执行的中间件索引
- * @param stack 调用栈信息
- * @param context 执行上下文
- * @param [next] 下一个中间件
+ * @description Dispatch middlewares.
+ * @param middlewares The middlewares list.
+ * @param index The current middleware index.
+ * @param stack The call stack.
+ * @param context The execution context.
+ * @param next The next middleware.
  */
 async function dispatch<C>(
   middlewares: Middleware<C>[],
@@ -54,15 +55,15 @@ async function dispatch<C>(
 
 /**
  * @function compose
- * @description 生成融合中间件
- * @param middlewares 中间件数组
+ * @description Compose middlewares.
+ * @param middlewares The middlewares list.
  */
 export function compose<C>(...middlewares: Middleware<C>[]): Composed<C> {
   /**
-   * @function middleware
-   * @description 融合中间件
-   * @param context 执行上下文
-   * @param [next] 下一个中间件
+   * @function compose
+   * @description Compose middlewares.
+   * @param context The execution context.
+   * @param next The next middleware.
    */
   return (context, next) => {
     const stack = { index: -1 };

@@ -5,7 +5,7 @@
 /***
  * @function metaURL
  * @param {boolean} [exnext]
- * @description Fixed meta url
+ * @description Fixed meta url.
  * @return {import('rollup').Plugin}
  */
 export default function metaURL(exnext) {

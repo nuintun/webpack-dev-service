@@ -12,9 +12,9 @@ import { createRequire, isBuiltin } from 'node:module';
 const pkg = createRequire(import.meta.url)('../package.json');
 
 const externals = [
-  // Dependencies
+  // Dependencies.
   ...Object.keys(pkg.dependencies || {}),
-  // Peer dependencies
+  // Peer dependencies.
   ...Object.keys(pkg.peerDependencies || {})
 ];
 
@@ -30,7 +30,7 @@ const banner = `/**
 
 /**
  * @function env
- * @param {boolean} esnext
+ * @param {boolean} [esnext] Is esnext.
  * @return {import('rollup').Plugin}
  */
 function env(esnext) {
@@ -49,7 +49,7 @@ function env(esnext) {
 
 /**
  * @function rollup
- * @param {boolean} [esnext]
+ * @param {boolean} [esnext] Is esnext.
  * @return {import('rollup').RollupOptions}
  */
 export default function rollup(esnext) {

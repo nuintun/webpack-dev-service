@@ -5,7 +5,7 @@
 /***
  * @function webpackHot
  * @param {boolean} [exnext]
- * @description Fixed webpack hot
+ * @description Fixed webpack hot.
  * @return {import('rollup').Plugin}
  */
 export default function webpackHot(exnext) {
