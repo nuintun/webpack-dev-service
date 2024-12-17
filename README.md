@@ -15,7 +15,7 @@
 ```ts
 /**
  * @module webpack
- * @description Webpack config
+ * @description Webpack config.
  */
 
 import Koa from 'koa';
