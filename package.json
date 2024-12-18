@@ -1,6 +1,6 @@
 {
   "name": "webpack-dev-service",
-  "version": "0.14.1",
+  "version": "0.14.2",
   "description": "A koa 2 middleware for webpack development and hot reloading.",
   "type": "module",
   "sideEffects": [
@@ -60,7 +60,7 @@
     "build:main": "npm run build:cjs && npm run build:esm && npm run build:fix-types"
   },
   "dependencies": {
-    "@nuintun/ansi": "^0.1.1",
+    "@nuintun/ansi": "^0.2.0",
     "@types/koa": "^2.15.0",
     "@types/ws": "^8.5.13",
     "etag": "^1.8.1",
