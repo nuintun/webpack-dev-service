@@ -2,7 +2,7 @@
  * @module utils
  */
 
-import Ansi, { AnsiBlock } from '@nuintun/ansi';
+import { Ansi, AnsiBlock } from '@nuintun/ansi';
 
 const ansi = new Ansi();
 
