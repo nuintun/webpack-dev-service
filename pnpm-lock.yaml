@@ -30,8 +30,8 @@ importers:
         specifier: ^4.3.0
         version: 4.3.0
       supports-color:
-        specifier: ^9.4.0
-        version: 9.4.0
+        specifier: ^10.0.0
+        version: 10.0.0
       tslib:
         specifier: ^2.8.1
         version: 2.8.1
@@ -64,11 +64,11 @@ importers:
         specifier: ^1.2.7
         version: 1.2.7
       '@types/react':
-        specifier: ^19.0.1
-        version: 19.0.1
+        specifier: ^19.0.2
+        version: 19.0.2
       '@types/react-dom':
         specifier: ^19.0.2
-        version: 19.0.2(@types/react@19.0.1)
+        version: 19.0.2(@types/react@19.0.2)
       css-loader:
         specifier: ^7.1.2
         version: 7.1.2(webpack@5.97.1(@swc/core@1.10.1(@swc/helpers@0.5.15)))
@@ -80,7 +80,7 @@ importers:
         version: 5.6.3(webpack@5.97.1(@swc/core@1.10.1(@swc/helpers@0.5.15)))
       koa:
         specifier: ^2.15.3
-        version: 2.15.3(supports-color@9.4.0)
+        version: 2.15.3(supports-color@10.0.0)
       koa-compress:
         specifier: ^5.1.1
         version: 5.1.1
@@ -445,8 +445,8 @@ packages:
     peerDependencies:
       '@types/react': ^19.0.0
 
-  '@types/react@19.0.1':
-    resolution: {integrity: sha512-YW6614BDhqbpR5KtUYzTA+zlA7nayzJRA9ljz9CQoxthR0sDisYZLuvSMsil36t4EH/uAt8T52Xb4sVw17G+SQ==}
+  '@types/react@19.0.2':
+    resolution: {integrity: sha512-USU8ZI/xyKJwFTpjSVIrSeHBVAGagkHQKPNbxeWwql/vDmnTIBgx+TJnhFnj1NXgz8XfprU0egV2dROLGpsBEg==}
 
   '@types/send@0.17.4':
     resolution: {integrity: sha512-x2EM6TJOybec7c52BX0ZspPodMsQUd5L6PRwOunVyVUhXiBSKf3AezDL8Dgvgt5o0UfKNfuA0eMLr2wLT4AiBA==}
@@ -1215,13 +1215,13 @@ packages:
     resolution: {integrity: sha512-iq6eVVI64nQQTRYq2KtEg2d2uU7LElhTJwsH4YzIHZshxlgZms/wIc4VoDQTlG/IvVIrBKG06CrZnp0qv7hkcQ==}
     engines: {node: '>=12'}
 
+  supports-color@10.0.0:
+    resolution: {integrity: sha512-HRVVSbCCMbj7/kdWF9Q+bbckjBHLtHMEoJWlkmYzzdwhYMkjkOwubLM6t7NbWKjgKamGDrWL1++KrjUO1t9oAQ==}
+    engines: {node: '>=18'}
+
   supports-color@8.1.1:
     resolution: {integrity: sha512-MpUEN2OodtUzxvKQl72cUF7RQ5EiHsGvSsVG0ia9c5RbWGL2CI4C7EpPS8UTBIplnlzZiNuV56w+FuNxy3ty2Q==}
     engines: {node: '>=10'}
-
-  supports-color@9.4.0:
-    resolution: {integrity: sha512-VL+lNrEoIXww1coLPOmiEmK/0sGigko5COxI09KzHc2VJXJsQ37UaQ+8quuxjDeA7+KnLGTWRyOXSLLR2Wb4jw==}
-    engines: {node: '>=12'}
 
   supports-preserve-symlinks-flag@1.0.0:
     resolution: {integrity: sha512-ot0WnXS9fgdkgIcePe6RHNk1WA8+muPa6cSjeR3V8K27q9BB1rTE3R1p7Hv0z1ZyAc8s6Vvv8DIyWf681MAt0w==}
@@ -1657,11 +1657,11 @@ snapshots:
 
   '@types/range-parser@1.2.7': {}
 
-  '@types/react-dom@19.0.2(@types/react@19.0.1)':
+  '@types/react-dom@19.0.2(@types/react@19.0.2)':
     dependencies:
-      '@types/react': 19.0.1
+      '@types/react': 19.0.2
 
-  '@types/react@19.0.1':
+  '@types/react@19.0.2':
     dependencies:
       csstype: 3.1.3
 
@@ -1903,11 +1903,11 @@ snapshots:
 
   csstype@3.1.3: {}
 
-  debug@4.3.4(supports-color@9.4.0):
+  debug@4.3.4(supports-color@10.0.0):
     dependencies:
       ms: 2.1.2
     optionalDependencies:
-      supports-color: 9.4.0
+      supports-color: 10.0.0
 
   deep-equal@1.0.1: {}
 
@@ -2141,14 +2141,14 @@ snapshots:
 
   koa-is-json@1.0.0: {}
 
-  koa@2.15.3(supports-color@9.4.0):
+  koa@2.15.3(supports-color@10.0.0):
     dependencies:
       accepts: 1.3.8
       cache-content-type: 1.0.1
       content-disposition: 0.5.4
       content-type: 1.0.5
       cookies: 0.9.1
-      debug: 4.3.4(supports-color@9.4.0)
+      debug: 4.3.4(supports-color@10.0.0)
       delegates: 1.0.0
       depd: 2.0.0
       destroy: 1.2.0
@@ -2442,11 +2442,11 @@ snapshots:
     dependencies:
       ansi-regex: 6.0.1
 
+  supports-color@10.0.0: {}
+
   supports-color@8.1.1:
     dependencies:
       has-flag: 4.0.0
-
-  supports-color@9.4.0: {}
 
   supports-preserve-symlinks-flag@1.0.0: {}
 
