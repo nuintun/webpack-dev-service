@@ -203,4 +203,4 @@ app.listen(port, () => {
 [side-effect-image]: https://img.shields.io/badge/side--effect-true-yellow?style=flat-square
 [bundle-phobia-url]: https://bundlephobia.com/result?p=webpack-dev-service
 [license-image]: https://img.shields.io/github/license/nuintun/webpack-dev-service?style=flat-square
-[license-url]: https://github.com/nuintun/webpack-dev-service/blob/master/LICENSE
+[license-url]: https://github.com/nuintun/webpack-dev-service/blob/main/LICENSE
