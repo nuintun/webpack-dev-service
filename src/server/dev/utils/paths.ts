@@ -14,16 +14,6 @@ type PathsItem = [
   publicPath: string
 ];
 
-function normalize(path: string): string {
-  path = unixify(path);
-
-  if (/^\//.test(path)) {
-    return path;
-  }
-
-  return `/${path}`;
-}
-
 function getStats(stats: UnionStats): webpack.Stats[] {
   if ('stats' in stats) {
     return stats.stats;
