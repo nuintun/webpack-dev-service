@@ -45,11 +45,7 @@ function getPublicPath(compilation: webpack.Compilation): string {
   const path = compilation.getPath(publicPath ?? '');
 
   // Get public path without protocol.
-  try {
-    return new URL(path).pathname;
-  } catch {
-    return normalize(path);
-  }
+  return new URL(path, 'https://127.0.0.1').pathname;
 }
 
 function getOutputPath(compilation: webpack.Compilation): string {
