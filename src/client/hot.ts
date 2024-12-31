@@ -81,8 +81,10 @@ export function applyUpdate(hmr: boolean, fallback: (error?: Error) => void): vo
                 case 'fail':
                 case 'abort':
                   updateStatus(status);
+                  break;
                 default:
                   updateStatus('fail');
+                  break;
               }
 
               // Cache error.
