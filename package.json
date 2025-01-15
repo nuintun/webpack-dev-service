@@ -80,7 +80,7 @@
     "@types/etag": "^1.8.3",
     "@types/node": "^22.10.6",
     "@types/range-parser": "^1.2.7",
-    "@types/react": "^19.0.6",
+    "@types/react": "^19.0.7",
     "@types/react-dom": "^19.0.3",
     "css-loader": "^7.1.2",
     "dts-paths": "^1.1.1",
