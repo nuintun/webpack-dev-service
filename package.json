@@ -75,10 +75,10 @@
   "devDependencies": {
     "@rollup/plugin-replace": "^6.0.2",
     "@rollup/plugin-typescript": "^12.1.2",
-    "@swc/core": "^1.10.15",
+    "@swc/core": "^1.10.16",
     "@swc/helpers": "^0.5.15",
     "@types/etag": "^1.8.3",
-    "@types/node": "^22.13.1",
+    "@types/node": "^22.13.2",
     "@types/range-parser": "^1.2.7",
     "@types/react": "^19.0.8",
     "@types/react-dom": "^19.0.3",
