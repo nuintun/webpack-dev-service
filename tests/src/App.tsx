@@ -1,4 +1,4 @@
-import styles from './css/App.module.css';
+import * as styles from './css/App.module.css';
 
 import { memo } from 'react';
 
