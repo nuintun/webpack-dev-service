@@ -54,7 +54,6 @@ const compiler = webpack({
   },
   devtool: 'eval-cheap-module-source-map',
   resolve: {
-    fallback: { url: false },
     extensions: ['.ts', '.tsx', '.js', '.jsx']
   },
   watchOptions: {
@@ -78,7 +77,6 @@ const compiler = webpack({
     new webpack.ProgressPlugin(progress)
   ],
   module: {
-    strictExportPresence: true,
     rules: [
       {
         oneOf: [
