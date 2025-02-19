@@ -60,12 +60,16 @@ const compiler = webpack({
     aggregateTimeout: 256
   },
   stats: {
+    all: false,
+    assets: true,
     colors: true,
-    chunks: false,
-    children: false,
-    entrypoints: false,
-    runtimeModules: false,
-    dependentModules: false
+    errors: true,
+    timings: true,
+    version: true,
+    warnings: true,
+    errorsCount: true,
+    warningsCount: true,
+    groupAssetsByPath: true
   },
   plugins: [
     new HtmlWebpackPlugin(html),
