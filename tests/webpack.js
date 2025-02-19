@@ -52,34 +52,6 @@ const compiler = webpack({
     path: path.resolve('wwwroot/public'),
     assetModuleFilename: `[path][name][ext]`
   },
-  devtool: 'eval-cheap-module-source-map',
-  resolve: {
-    extensions: ['.ts', '.tsx', '.js', '.jsx']
-  },
-  watchOptions: {
-    aggregateTimeout: 256
-  },
-  stats: {
-    all: false,
-    assets: true,
-    colors: true,
-    errors: true,
-    timings: true,
-    version: true,
-    warnings: true,
-    errorsCount: true,
-    warningsCount: true,
-    groupAssetsByPath: true
-  },
-  plugins: [
-    new HtmlWebpackPlugin(html),
-    new MiniCssExtractPlugin({
-      ignoreOrder: true,
-      filename: 'css/[name].css',
-      chunkFilename: 'css/[name].css'
-    }),
-    new webpack.ProgressPlugin(progress)
-  ],
   module: {
     rules: [
       {
@@ -139,7 +111,35 @@ const compiler = webpack({
         ]
       }
     ]
-  }
+  },
+  resolve: {
+    extensions: ['.ts', '.tsx', '.js', '.jsx']
+  },
+  plugins: [
+    new HtmlWebpackPlugin(html),
+    new MiniCssExtractPlugin({
+      ignoreOrder: true,
+      filename: 'css/[name].css',
+      chunkFilename: 'css/[name].css'
+    }),
+    new webpack.ProgressPlugin(progress)
+  ],
+  watchOptions: {
+    aggregateTimeout: 256
+  },
+  stats: {
+    all: false,
+    assets: true,
+    colors: true,
+    errors: true,
+    timings: true,
+    version: true,
+    warnings: true,
+    errorsCount: true,
+    warningsCount: true,
+    groupAssetsByPath: true
+  },
+  devtool: 'eval-cheap-module-source-map'
 });
 
 const port = 8000;
