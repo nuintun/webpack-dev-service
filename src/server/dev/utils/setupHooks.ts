@@ -71,7 +71,7 @@ export function setupHooks(context: InitialContext): void {
 
       // Avoid extra empty line when `stats: 'none'`.
       if (printedStats) {
-        context.logger.info(printedStats);
+        context.logger.info(`build stats:\n${printedStats}`);
       }
     }
   } = context.options;
