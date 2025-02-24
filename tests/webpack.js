@@ -172,6 +172,6 @@ app.on('error', error => {
 
 app.listen(port, () => {
   server.ready(() => {
-    server.logger.info(`server run at: \u001B[36mhttp://127.0.0.1:${port}\u001B[0m`);
+    server.logger.info(`server run at: \x1b[36mhttp://127.0.0.1:${port}\x1b[0m`);
   });
 });
