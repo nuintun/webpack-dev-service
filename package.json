@@ -78,7 +78,7 @@
     "@swc/core": "^1.11.5",
     "@swc/helpers": "^0.5.15",
     "@types/etag": "^1.8.3",
-    "@types/node": "^22.13.8",
+    "@types/node": "^22.13.9",
     "@types/range-parser": "^1.2.7",
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.4",
