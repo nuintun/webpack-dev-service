@@ -62,7 +62,7 @@
   "dependencies": {
     "@nuintun/ansi": "^0.3.1",
     "@types/koa": "^2.15.0",
-    "@types/ws": "^8.5.14",
+    "@types/ws": "^8.18.0",
     "etag": "^1.8.1",
     "memfs": "^4.17.0",
     "range-parser": "^1.2.1",
@@ -75,12 +75,12 @@
   "devDependencies": {
     "@rollup/plugin-replace": "^6.0.2",
     "@rollup/plugin-typescript": "^12.1.2",
-    "@swc/core": "^1.11.5",
+    "@swc/core": "^1.11.13",
     "@swc/helpers": "^0.5.15",
     "@types/etag": "^1.8.3",
-    "@types/node": "^22.13.9",
+    "@types/node": "^22.13.11",
     "@types/range-parser": "^1.2.7",
-    "@types/react": "^19.0.10",
+    "@types/react": "^19.0.12",
     "@types/react-dom": "^19.0.4",
     "css-loader": "^7.1.2",
     "dts-paths": "^1.1.4",
@@ -93,7 +93,7 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "rimraf": "^6.0.1",
-    "rollup": "^4.34.9",
+    "rollup": "^4.37.0",
     "swc-loader": "^0.2.6",
     "typescript": "^5.8.2",
     "webpack": "^5.98.0"
