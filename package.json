@@ -1,6 +1,6 @@
 {
   "name": "webpack-dev-service",
-  "version": "0.14.16",
+  "version": "0.14.17",
   "description": "A koa 2 middleware for webpack development and hot reloading.",
   "type": "module",
   "sideEffects": [
@@ -12,11 +12,13 @@
   "exports": {
     ".": {
       "import": "./esm/server/index.js",
-      "require": "./cjs/server/index.cjs"
+      "require": "./cjs/server/index.cjs",
+      "default": "./esm/server/index.js"
     },
     "./client": {
       "import": "./esm/client/index.js",
-      "require": "./cjs/client/index.cjs"
+      "require": "./cjs/client/index.cjs",
+      "default": "./esm/client/index.js"
     }
   },
   "files": [
@@ -60,7 +62,7 @@
     "build:main": "npm run build:cjs && npm run build:esm && npm run build:fix-types"
   },
   "dependencies": {
-    "@nuintun/ansi": "^0.3.1",
+    "@nuintun/ansi": "^0.3.2",
     "@types/koa": "^2.15.0",
     "@types/ws": "^8.18.0",
     "etag": "^1.8.1",
@@ -78,12 +80,12 @@
     "@swc/core": "^1.11.13",
     "@swc/helpers": "^0.5.15",
     "@types/etag": "^1.8.3",
-    "@types/node": "^22.13.13",
+    "@types/node": "^22.13.14",
     "@types/range-parser": "^1.2.7",
     "@types/react": "^19.0.12",
     "@types/react-dom": "^19.0.4",
     "css-loader": "^7.1.2",
-    "dts-paths": "^1.1.4",
+    "dts-paths": "^1.1.5",
     "html-webpack-plugin": "^5.6.3",
     "koa": "^2.16.0",
     "koa-compress": "^5.1.1",
