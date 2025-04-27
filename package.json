@@ -80,7 +80,7 @@
     "@swc/core": "^1.11.22",
     "@swc/helpers": "^0.5.17",
     "@types/etag": "^1.8.3",
-    "@types/node": "^22.14.1",
+    "@types/node": "^22.15.2",
     "@types/range-parser": "^1.2.7",
     "@types/react": "^19.1.2",
     "@types/react-dom": "^19.1.2",
@@ -98,7 +98,7 @@
     "rollup": "^4.40.0",
     "swc-loader": "^0.2.6",
     "typescript": "^5.8.3",
-    "webpack": "^5.99.6"
+    "webpack": "^5.99.7"
   },
   "peerDependencies": {
     "koa": ">=2.0.0",
