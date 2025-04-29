@@ -2,6 +2,7 @@
  * @module rollup.base
  */
 
+import url from '@rollup/plugin-url';
 import metaURL from './plugins/meta-url.js';
 import replace from '@rollup/plugin-replace';
 import treeShake from './plugins/tree-shake.js';
@@ -69,6 +70,7 @@ export default function rollup(esnext) {
       env(esnext),
       metaURL(esnext),
       webpackHot(esnext),
+      url({ limit: Infinity }),
       typescript({
         declaration: true,
         declarationDir: esnext ? 'esm' : 'cjs'

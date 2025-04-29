@@ -4,6 +4,12 @@
 
 /// <reference types="webpack/module" />
 
+declare module '*.svg' {
+  const content: string;
+
+  export = content;
+}
+
 declare const __ESM__: boolean;
 
 declare const __HOT_CLIENT__: string;
