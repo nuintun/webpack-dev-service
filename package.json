@@ -86,7 +86,7 @@
     "@types/react": "^19.1.4",
     "@types/react-dom": "^19.1.5",
     "css-loader": "^7.1.2",
-    "dts-paths": "^1.1.6",
+    "dts-paths": "^1.1.7",
     "html-webpack-plugin": "^5.6.3",
     "koa": "^3.0.0",
     "koa-compress": "^5.1.1",
