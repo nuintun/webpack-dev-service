@@ -78,10 +78,10 @@
     "@rollup/plugin-replace": "^6.0.2",
     "@rollup/plugin-typescript": "^12.1.4",
     "@rollup/plugin-url": "^8.0.2",
-    "@swc/core": "^1.12.11",
+    "@swc/core": "^1.13.2",
     "@swc/helpers": "^0.5.17",
     "@types/etag": "^1.8.4",
-    "@types/node": "^24.0.12",
+    "@types/node": "^24.1.0",
     "@types/range-parser": "^1.2.7",
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.1.6",
@@ -96,10 +96,10 @@
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "rimraf": "^6.0.1",
-    "rollup": "^4.44.2",
+    "rollup": "^4.45.1",
     "swc-loader": "^0.2.6",
     "typescript": "^5.8.3",
-    "webpack": "^5.100.0"
+    "webpack": "^5.100.2"
   },
   "peerDependencies": {
     "koa": ">=2.0.0",
