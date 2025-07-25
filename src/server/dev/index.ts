@@ -6,17 +6,19 @@ import { Middleware } from 'koa';
 import { ready } from './utils/ready';
 import { createMemfs } from './utils/fs';
 import { middleware } from './middleware';
-import { PLUGIN_NAME } from '/server/utils';
 import { setupHooks } from './utils/setupHooks';
 import { UnionCompiler } from '/server/interface';
 import { setupWatching } from './utils/setupWatching';
 import { setupWriteToDisk } from './utils/setupWriteToDisk';
+import { assertPublicPath, PLUGIN_NAME } from '/server/utils';
 import { setupOutputFileSystem } from './utils/setupOutputFileSystem';
 import { Context, Expose, InitialContext, Options } from './interface';
 
 export { Expose, Options };
 
 function setup(compiler: UnionCompiler, options: Options): Context {
+  assertPublicPath(compiler);
+
   const context: InitialContext = {
     compiler,
     stats: null,

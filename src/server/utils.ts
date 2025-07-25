@@ -21,6 +21,16 @@ export function isFunction(value: unknown): value is Function {
   return typeof value === 'function';
 }
 
+export function assertPublicPath(compiler: UnionCompiler): never | void {
+  const compilers = getCompilers(compiler);
+
+  for (const { options } of compilers) {
+    if (isFunction(options.output.publicPath)) {
+      throw new TypeError('function type public path is not supported');
+    }
+  }
+}
+
 export function getCompilers(compiler: UnionCompiler): webpack.Compiler[] {
   if (isMultiCompiler(compiler)) {
     return compiler.compilers;
