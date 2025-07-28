@@ -12,28 +12,30 @@ import { extname, join, resolve } from 'node:path';
 import { hasTrailingSlash, isOutRoot, unixify } from './utils/path';
 import { isConditionalGET, isPreconditionFailed, parseRanges } from './utils/http';
 
-interface IgnoreFunction {
-  (path: string): boolean;
-}
-
 interface Headers {
   [key: string]: string | string[];
 }
 
-type FileStats = Stats | null | undefined;
+interface IgnoreFunction {
+  (path: string): Promise<boolean> | boolean;
+}
+
+interface HighWaterMarkFunction {
+  (path: string, stats: Stats): Promise<number> | number;
+}
 
 interface HeadersFunction {
-  (path: string, stats: FileStats): Promise<Headers | void> | Headers | void;
+  (path: string, stats: Stats): Promise<Headers | void> | Headers | void;
 }
 
 export interface Options {
-  fs: FileSystem;
   etag?: boolean;
+  fs: FileSystem;
   acceptRanges?: boolean;
   lastModified?: boolean;
-  highWaterMark?: number;
   ignore?: IgnoreFunction;
   headers?: Headers | HeadersFunction;
+  highWaterMark?: number | HighWaterMarkFunction;
 }
 
 /**
@@ -41,7 +43,12 @@ export interface Options {
  */
 export class Service {
   readonly #root: string;
-  readonly #options: Options;
+  readonly #options: Options & {
+    fs: FileSystem;
+    ignore: IgnoreFunction;
+    headers: HeadersFunction;
+    highWaterMark: HighWaterMarkFunction;
+  };
 
   /**
    * @constructor
@@ -50,20 +57,16 @@ export class Service {
    * @param options The file service options.
    */
   constructor(root: string, options: Options) {
-    this.#options = options;
     this.#root = unixify(resolve(root));
-  }
 
-  /**
-   * @private
-   * @method #isIgnore
-   * @description Check if path is ignore.
-   * @param path The path to check.
-   */
-  #isIgnore(path: string): boolean {
-    const { ignore } = this.#options;
+    const { ignore, headers, highWaterMark = 65536 } = options;
 
-    return (isFunction(ignore) ? ignore(path) : false) === true;
+    this.#options = {
+      ...options,
+      ignore: isFunction(ignore) ? ignore : () => false,
+      headers: isFunction(headers) ? headers : () => headers,
+      highWaterMark: isFunction(highWaterMark) ? highWaterMark : () => highWaterMark
+    };
   }
 
   /**
@@ -76,7 +79,6 @@ export class Service {
    */
   async #setupHeaders({ response }: Context, path: string, stats: Stats): Promise<void> {
     const options = this.#options;
-    const { headers } = options;
 
     // Set status.
     response.status = 200;
@@ -84,17 +86,12 @@ export class Service {
     // Set Content-Type.
     response.type = extname(path);
 
-    // Set headers.
-    if (headers) {
-      if (isFunction(headers)) {
-        const fields = await headers(path, stats);
+    // Get headers.
+    const headers = await options.headers(path, stats);
 
-        if (fields) {
-          response.set(fields);
-        }
-      } else {
-        response.set(headers);
-      }
+    // If headers not empty, set headers.
+    if (headers) {
+      response.set(headers);
     }
 
     // Accept-Ranges.
@@ -153,13 +150,14 @@ export class Service {
       return false;
     }
 
+    // Get options.
+    const options = this.#options;
+
     // Is ignore path or file (403).
-    if (this.#isIgnore(path)) {
+    if (await options.ignore(path)) {
       return false;
     }
 
-    // Get options.
-    const options = this.#options;
     // File stats.
     const stats = await stat(options.fs, path);
 
@@ -229,7 +227,10 @@ export class Service {
     }
 
     // Set response body.
-    response.body = new ReadStream(path, ranges, options);
+    response.body = new ReadStream(path, ranges, {
+      fs: options.fs,
+      highWaterMark: await options.highWaterMark(path, stats)
+    });
 
     // File found.
     return true;
