@@ -5,8 +5,8 @@
 import { PathLike } from 'node:fs';
 import { Buffer } from 'node:buffer';
 import { Range } from './utils/http';
+import { Readable } from 'node:stream';
 import { FileSystem } from './utils/fs';
-import { Readable, ReadableOptions } from 'node:stream';
 
 const enum ReadState {
   PREFIX,
@@ -14,13 +14,9 @@ const enum ReadState {
   SUFFIX
 }
 
-export interface Options
-  extends Pick<
-    ReadableOptions,
-    // High water mark.
-    'highWaterMark'
-  > {
+export interface Options {
   fs: FileSystem;
+  highWaterMark?: number;
 }
 
 interface Callback {
