@@ -15,7 +15,6 @@
     "noImplicitOverride": true,
     "noUnusedParameters": true,
     "moduleResolution": "bundler",
-    "forceConsistentCasingInFileNames": true,
     "paths": {
       "/*": [
         "src/*"
