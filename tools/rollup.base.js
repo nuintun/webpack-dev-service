@@ -5,7 +5,6 @@
 import url from '@rollup/plugin-url';
 import metaURL from './plugins/meta-url.js';
 import replace from '@rollup/plugin-replace';
-import treeShake from './plugins/tree-shake.js';
 import webpackHot from './plugins/webpack-hot.js';
 import typescript from '@rollup/plugin-typescript';
 import { createRequire, isBuiltin } from 'node:module';
@@ -74,8 +73,7 @@ export default function rollup(esnext) {
       typescript({
         declaration: true,
         declarationDir: esnext ? 'esm' : 'cjs'
-      }),
-      treeShake()
+      })
     ],
     onwarn(error, warn) {
       if (error.code !== 'CIRCULAR_DEPENDENCY') {
