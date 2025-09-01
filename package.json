@@ -84,7 +84,7 @@
     "@types/node": "^24.3.0",
     "@types/range-parser": "^1.2.7",
     "@types/react": "^19.1.12",
-    "@types/react-dom": "^19.1.8",
+    "@types/react-dom": "^19.1.9",
     "css-loader": "^7.1.2",
     "dts-paths": "^1.1.11",
     "html-webpack-plugin": "^5.6.4",
@@ -95,7 +95,7 @@
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "rimraf": "^6.0.1",
-    "rollup": "^4.49.0",
+    "rollup": "^4.50.0",
     "swc-loader": "^0.2.6",
     "typescript": "^5.9.2",
     "webpack": "^5.101.3"
