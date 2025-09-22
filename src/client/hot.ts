@@ -6,32 +6,12 @@
 let error: Error;
 // Last update hash.
 let hash = __webpack_hash__;
+
+// Webpack hot.
+const webpackHot = import.meta.webpackHot;
+
 // HMR status.
-let status: HotUpdateStatus = 'idle';
-
-/**
- * @function isUpdateAvailable
- * @description Is there a newer version of this code available.
- */
-function isUpdateAvailable(): boolean {
-  // __webpack_hash__ is the hash of the current compilation.
-  // It's a global variable injected by webpack.
-  return hash !== __webpack_hash__;
-}
-
-/**
- * @function updateStatus
- * @description Update hot status.
- * @param value The new status of the hot update.
- */
-function updateStatus(value: HotUpdateStatus): void {
-  status = value;
-}
-
-// Initialize status.
-if (import.meta.webpackHot) {
-  updateStatus(import.meta.webpackHot.status());
-}
+let status: HotUpdateStatus = webpackHot?.status() ?? 'idle';
 
 /**
  * @function updateHash
@@ -50,40 +30,33 @@ export function updateHash(value: string): void {
  */
 export function applyUpdate(hmr: boolean, fallback: (error?: Error) => void): void {
   // Update available.
-  if (isUpdateAvailable()) {
+  if (hash !== __webpack_hash__) {
     // HMR enabled.
-    if (hmr && import.meta.webpackHot) {
+    if (hmr && webpackHot != null) {
       switch (status) {
         case 'idle':
           // Update status.
-          updateStatus('check');
+          status = 'check';
 
           // Auto check and apply updates.
-          import.meta.webpackHot
+          webpackHot
             .check(true)
-            .then(updated => {
+            .then(() => {
               // Update status.
-              updateStatus(import.meta.webpackHot.status());
-
-              // When updated modules is available,
-              // it indicates server is ready to serve new bundle.
-              if (updated) {
-                // While update completed, do it again until no update available.
-                applyUpdate(hmr, fallback);
-              }
+              status = webpackHot.status();
             })
             .catch((exception: Error) => {
               // Get status.
-              const status = import.meta.webpackHot.status();
+              const currentStatus = webpackHot.status();
 
               // Update status.
-              switch (status) {
+              switch (currentStatus) {
                 case 'fail':
                 case 'abort':
-                  updateStatus(status);
+                  status = currentStatus;
                   break;
                 default:
-                  updateStatus('fail');
+                  status = 'fail';
                   break;
               }
 
