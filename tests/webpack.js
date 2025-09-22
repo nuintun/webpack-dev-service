@@ -4,10 +4,10 @@
  */
 
 import Koa from 'koa';
-import memfs from 'memfs';
 import path from 'node:path';
 import webpack from 'webpack';
 import compress from 'koa-compress';
+import { Volume, createFsFromVolume } from 'memfs';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import { server as dev } from 'webpack-dev-service';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
@@ -30,10 +30,9 @@ const html = {
 };
 
 function createMemfs() {
-  const volume = new memfs.Volume();
-  const fs = memfs.createFsFromVolume(volume);
+  const volume = new Volume();
 
-  return fs;
+  return createFsFromVolume(volume);
 }
 
 function httpError(error) {
