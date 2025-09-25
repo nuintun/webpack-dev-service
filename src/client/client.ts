@@ -5,9 +5,9 @@
 import webpack from 'webpack';
 import { emit } from './events';
 import { Overlay } from './ui/Overlay';
+import { HotUpdate } from './HotUpdate';
 import { Progress } from './ui/Progress';
 import { GetProp } from '/server/interface';
-import { applyUpdate, updateHash } from './hot';
 import { Message, Messages } from '/server/hot/Message';
 
 export interface Options {
@@ -22,31 +22,24 @@ export interface Options {
 }
 
 export function createClient(options: Options): void {
-  let updateTimer: number;
-
-  const UPDATE_DELAY = 128;
   const RETRY_INTERVAL = 3000;
 
   const progress = new Progress();
   const overlay = new Overlay(options.name);
 
   const fallback = (): void => {
-    if (options.reload) {
-      self.location.reload();
-    } else {
-      console.warn('Use fallback update but you turn off live reload, please reload by yourself.');
-    }
+    queueMicrotask(() => {
+      if (options.reload) {
+        self.location.reload();
+      } else {
+        console.warn('[HMR] Hot update failed. Please reload the page manually.');
+      }
+    });
   };
 
-  const applyUpdateAsync = (): void => {
-    updateTimer = self.setTimeout(() => {
-      applyUpdate(options.hmr, fallback);
-    }, UPDATE_DELAY);
-  };
+  const hot = new HotUpdate(options.hmr, fallback);
 
   const onInvalid = (): void => {
-    clearTimeout(updateTimer);
-
     if (options.progress) {
       progress.update(0);
       progress.show();
@@ -60,7 +53,7 @@ export function createClient(options: Options): void {
   };
 
   const onHash = ({ hash }: GetProp<Messages, 'hash'>): void => {
-    updateHash(hash);
+    hot.updateHash(hash);
   };
 
   const setIssues = (type: 'errors' | 'warnings', issues: webpack.StatsError[]): void => {
@@ -94,16 +87,17 @@ export function createClient(options: Options): void {
     }
 
     if (errors.length <= 0) {
-      applyUpdateAsync();
+      hot.performUpdate();
     }
   };
 
   const onOk = (): void => {
     progress.update(1);
     progress.hide();
+
     overlay.hide();
 
-    applyUpdateAsync();
+    hot.performUpdate();
   };
 
   const parseMessage = (message: MessageEvent<string>): Message | null => {

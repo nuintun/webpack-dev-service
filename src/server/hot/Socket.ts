@@ -48,11 +48,20 @@ export class Socket {
 
       contexts.set(uuid, context);
 
+      this.#setupOutput(compiler, uuid);
       this.#setupHooks(compiler, context);
       this.#setupPlugins(compiler, context);
     }
 
     this.#setupWss(contexts);
+  }
+
+  #setupOutput(compiler: webpack.Compiler, uuid: string): void {
+    const { output } = compiler.options;
+
+    // Override hot update filename.
+    output.hotUpdateChunkFilename = `[id].${uuid}.hot-update.js`;
+    output.hotUpdateMainFilename = `[runtime].${uuid}.hot-update.json`;
   }
 
   #setupHooks(compiler: webpack.Compiler, context: CompilerContext): void {

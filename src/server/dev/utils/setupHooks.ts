@@ -92,12 +92,15 @@ export function setupHooks(context: InitialContext): void {
         // Callbacks.
         const { callbacks } = context;
 
-        // Clear callbacks.
-        context.callbacks = [];
+        // Call callbacks if there are any.
+        if (callbacks.length > 0) {
+          // Clear callbacks.
+          context.callbacks = [];
 
-        // Call callbacks.
-        for (const callback of callbacks) {
-          callback(stats);
+          // Call callbacks.
+          for (const callback of callbacks) {
+            callback(stats);
+          }
         }
 
         // Log compilation finished.

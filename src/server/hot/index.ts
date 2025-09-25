@@ -13,8 +13,8 @@ export function hot(compiler: UnionCompiler, options?: Options): Middleware {
   const socket = new Socket(compiler, options);
 
   // Middleware.
-  return async (ctx, next) => {
-    if (!socket.upgrade(ctx)) {
+  return async (context, next) => {
+    if (!socket.upgrade(context)) {
       await next();
     }
   };

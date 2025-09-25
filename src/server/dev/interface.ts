@@ -17,8 +17,6 @@ export interface ErrorCallback {
 
 export interface Expose {
   readonly logger: Logger;
-  readonly state: boolean;
-  readonly ready: (callback: Callback) => void;
   readonly close: (callback: ErrorCallback) => void;
   readonly invalidate: (callback: ErrorCallback) => void;
 }
@@ -36,7 +34,6 @@ export interface Context {
   callbacks: Callback[];
   compiler: UnionCompiler;
   watching: UnionWatching;
-  services?: FileService[];
   stats: UnionStats | null;
   options: Options & { fs: FileSystem };
 }

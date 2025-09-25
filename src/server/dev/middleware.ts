@@ -11,13 +11,6 @@ import { UnionStats } from '/server/interface';
 import { Context, FileService } from './interface';
 
 function getFileServices(context: Context, stats: UnionStats): FileService[] {
-  const cached = context.services;
-
-  // Cache hit.
-  if (cached) {
-    return cached;
-  }
-
   const { options } = context;
   const paths = getPaths(stats);
   const services: FileService[] = [];
@@ -26,9 +19,6 @@ function getFileServices(context: Context, stats: UnionStats): FileService[] {
   for (const [outputPath, publicPath] of paths) {
     services.push([publicPath, new Service(outputPath, options)]);
   }
-
-  // Cache services.
-  context.services = services;
 
   // Return services.
   return services;
@@ -50,15 +40,18 @@ function getFileServicesAsync(context: Context): Promise<FileService[]> {
   });
 }
 
-export function middleware(context: Context): Middleware {
+export async function middleware(context: Context): Promise<Middleware> {
+  // Get the file services.
+  const services = await getFileServicesAsync(context);
+
   // Middleware.
-  return async (ctx, next) => {
-    const { request } = ctx;
+  return async (context, next) => {
+    const { request } = context;
     const pathname = decodeURI(request.path);
 
     // Pathname decode failed or includes null byte(s).
     if (pathname === -1 || pathname.includes('\0')) {
-      return ctx.throw(400);
+      return context.throw(400);
     }
 
     // Get request method.
@@ -66,12 +59,9 @@ export function middleware(context: Context): Middleware {
 
     // Only support GET and HEAD (405).
     if (method === 'GET' || method === 'HEAD') {
-      // Get the file services.
-      const services = await getFileServicesAsync(context);
-
       // Try to respond.
       for (const [publicPath, service] of services) {
-        if (await service.respond(pathname, ctx, publicPath)) {
+        if (await service.respond(pathname, context, publicPath)) {
           return;
         }
       }

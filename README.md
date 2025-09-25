@@ -19,10 +19,10 @@
  */
 
 import Koa from 'koa';
-import memfs from 'memfs';
 import path from 'node:path';
 import webpack from 'webpack';
 import compress from 'koa-compress';
+import { Volume, createFsFromVolume } from 'memfs';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import { server as dev } from 'webpack-dev-service';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
@@ -45,10 +45,9 @@ const html = {
 };
 
 function createMemfs() {
-  const volume = new memfs.Volume();
-  const fs = memfs.createFsFromVolume(volume);
+  const volume = new Volume();
 
-  return fs;
+  return createFsFromVolume(volume);
 }
 
 function httpError(error) {
@@ -67,33 +66,7 @@ const compiler = webpack({
     path: path.resolve('wwwroot/public'),
     assetModuleFilename: `[path][name][ext]`
   },
-  devtool: 'eval-cheap-module-source-map',
-  resolve: {
-    fallback: { url: false },
-    extensions: ['.ts', '.tsx', '.js', '.jsx']
-  },
-  watchOptions: {
-    aggregateTimeout: 256
-  },
-  stats: {
-    colors: true,
-    chunks: false,
-    children: false,
-    entrypoints: false,
-    runtimeModules: false,
-    dependentModules: false
-  },
-  plugins: [
-    new HtmlWebpackPlugin(html),
-    new MiniCssExtractPlugin({
-      ignoreOrder: true,
-      filename: 'css/[name].css',
-      chunkFilename: 'css/[name].css'
-    }),
-    new webpack.ProgressPlugin(progress)
-  ],
   module: {
-    strictExportPresence: true,
     rules: [
       {
         oneOf: [
@@ -136,7 +109,7 @@ const compiler = webpack({
                   esModule: true,
                   modules: {
                     auto: true,
-                    namedExport: false,
+                    namedExport: true,
                     localIdentName: '[local]-[hash:8]',
                     exportLocalsConvention: 'camel-case-only'
                   }
@@ -152,13 +125,41 @@ const compiler = webpack({
         ]
       }
     ]
-  }
+  },
+  resolve: {
+    extensions: ['.ts', '.tsx', '.js', '.jsx']
+  },
+  plugins: [
+    new HtmlWebpackPlugin(html),
+    new MiniCssExtractPlugin({
+      ignoreOrder: true,
+      filename: 'css/[name].css',
+      chunkFilename: 'css/[name].css'
+    }),
+    new webpack.ProgressPlugin(progress)
+  ],
+  watchOptions: {
+    aggregateTimeout: 256
+  },
+  stats: {
+    all: false,
+    assets: true,
+    colors: true,
+    errors: true,
+    timings: true,
+    version: true,
+    warnings: true,
+    errorsCount: true,
+    warningsCount: true,
+    groupAssetsByPath: true
+  },
+  devtool: 'eval-cheap-module-source-map'
 });
 
 const port = 8000;
 const app = new Koa();
 const fs = createMemfs();
-const server = dev(compiler, {
+const server = await dev(compiler, {
   fs,
   headers: {
     'Cache-Control': 'no-cache',
@@ -184,9 +185,7 @@ app.on('error', error => {
 });
 
 app.listen(port, () => {
-  server.ready(() => {
-    server.logger.info(`server run at: \u001B[36mhttp://127.0.0.1:${port}\u001B[0m`);
-  });
+  server.logger.info(`server run at: \x1b[36mhttp://127.0.0.1:${port}\x1b[0m`);
 });
 ```
 

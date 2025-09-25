@@ -3,7 +3,6 @@
  */
 
 import { Middleware } from 'koa';
-import { ready } from './utils/ready';
 import { createMemfs } from './utils/fs';
 import { middleware } from './middleware';
 import { setupHooks } from './utils/setupHooks';
@@ -40,18 +39,12 @@ function setup(compiler: UnionCompiler, options: Options): Context {
   return context as Context;
 }
 
-export function dev(compiler: UnionCompiler, options: Options): Middleware & Expose {
+export async function dev(compiler: UnionCompiler, options: Options): Promise<Middleware & Expose> {
   const context = setup(compiler, options);
 
-  return Object.assign<Middleware, Expose>(middleware(context), {
-    get state() {
-      return !!context.stats;
-    },
+  return Object.assign<Middleware, Expose>(await middleware(context), {
     get logger() {
       return context.logger;
-    },
-    ready(callback) {
-      ready(context, callback);
     },
     close(callback) {
       context.watching.close(callback);

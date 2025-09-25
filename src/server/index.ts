@@ -19,7 +19,7 @@ export type Options = DevOptions & { hot?: HotOptions | false };
  * @param compiler The rspack compiler instance.
  * @param options Options.
  */
-export function server(compiler: UnionCompiler, options: Options = {}): Middleware & Expose {
+export async function server(compiler: UnionCompiler, options: Options = {}): Promise<Middleware & Expose> {
   validate(schema, options, {
     name: PLUGIN_NAME,
     baseDataPath: 'options'
@@ -34,8 +34,7 @@ export function server(compiler: UnionCompiler, options: Options = {}): Middlewa
   // All plugins must be initialized before watching.
   // Because dev will start watching, so call hot before dev.
   const hotMiddleware = hot(compiler, hotOptions);
-  const devMiddleware = dev(compiler, options);
-  const middleware = compose(devMiddleware, hotMiddleware);
+  const devMiddleware = await dev(compiler, options);
 
-  return Object.assign(middleware, devMiddleware, hotMiddleware);
+  return Object.assign(compose(devMiddleware, hotMiddleware), devMiddleware);
 }

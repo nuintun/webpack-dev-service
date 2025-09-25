@@ -117,19 +117,19 @@ export type RootElement = HTMLElement | ShadowRoot;
 
 export function getRootElement(tagName: string): ShadowRoot {
   const stage = document.createElement(tagName);
-  const root = stage.attachShadow({ mode: 'closed' });
+  const shadowRoot = stage.attachShadow({ mode: 'closed' });
 
   document.body.appendChild(stage);
 
-  return root;
+  return shadowRoot;
 }
 
-export function injectCSS(
+export function insertCSSString(
   css: string,
   root: HTMLElement | ShadowRoot = document.body,
   styleElement: HTMLStyleElement = document.createElement('style')
 ): HTMLStyleElement {
-  styleElement.appendChild(document.createTextNode(css.trim()));
+  styleElement.appendChild(document.createTextNode(css));
 
   if (!root.contains(styleElement)) {
     root.appendChild(styleElement);
@@ -138,17 +138,22 @@ export function injectCSS(
   return styleElement;
 }
 
-export function appendHTML(html: string, root: RootElement = document.body): ChildNode[] {
+export function appendDOMString<T extends DOMParserSupportedType>(
+  type: T,
+  string: string,
+  root: RootElement = document.body
+): (T extends 'image/svg+xml' ? SVGElement : HTMLElement)[] {
   const nodes: ChildNode[] = [];
   const parser = new DOMParser();
   const fragment = document.createDocumentFragment();
-  const { body } = parser.parseFromString(html.trim(), 'text/html');
+  const { body, childNodes } = parser.parseFromString(string, type);
 
-  while (body.firstChild) {
-    nodes.push(fragment.appendChild(body.firstChild));
+  for (const node of body ? body.childNodes : childNodes) {
+    nodes.push(node);
+    fragment.appendChild(node);
   }
 
   root.appendChild(fragment);
 
-  return nodes;
+  return nodes as (T extends 'image/svg+xml' ? SVGElement : HTMLElement)[];
 }
