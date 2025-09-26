@@ -2,20 +2,24 @@
  * @module HotUpdate
  */
 
+export interface Fallback {
+  (error?: Error): Promise<void> | void;
+}
+
 export class HotUpdate {
+  #hmr: boolean;
+  #fallback: Fallback;
+
   #pending = false;
   #hash = __webpack_hash__;
   #hot = import.meta.webpackHot;
-
-  #hmr: boolean;
-  #fallback: (error?: Error) => void;
 
   /**
    * @constructor
    * @param hmr Whether to enable HMR hot update.
    * @param fallback Fallback handler for update failures.
    */
-  constructor(hmr = true, fallback: (error?: Error) => void) {
+  constructor(hmr = true, fallback: Fallback) {
     this.#hmr = hmr;
     this.#fallback = fallback;
 
@@ -50,23 +54,21 @@ export class HotUpdate {
    * @method performUpdate
    * @description Execute update strategy.
    */
-  async performUpdate() {
+  async performUpdate(): Promise<void> {
     if (this.#isUpdateAvailable()) {
       if (!this.#hmr || !this.#hot) {
-        return this.#fallback();
-      }
-
-      if (this.#hot.status() === 'idle') {
+        await this.#fallback();
+      } else if (this.#hot.status() === 'idle') {
         try {
           const outdated = await this.#hot.check(true);
 
           if (outdated == null || outdated.length <= 0) {
             if (this.#isUpdateAvailable()) {
-              this.#fallback();
+              await this.#fallback();
             }
           }
         } catch (error) {
-          this.#fallback(error as Error);
+          await this.#fallback(error as Error);
         }
       } else {
         this.#pending = true;
