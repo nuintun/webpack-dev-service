@@ -62,8 +62,8 @@ export class HotUpdate {
         try {
           const outdated = await this.#hot.check(true);
 
-          if (outdated == null || outdated.length <= 0) {
-            if (this.#isUpdateAvailable()) {
+          if (this.#isUpdateAvailable()) {
+            if (outdated == null || outdated.length <= 0) {
               await this.#fallback();
             }
           }
