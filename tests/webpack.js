@@ -16,6 +16,16 @@ const progress = {
   percentBy: 'entries'
 };
 
+// HTTP client error codes.
+const HTTP_CLIENT_ERROR_CODES = new Set([
+  'EOF', // End of file - client closed connection.
+  'EPIPE', // Broken pipe - client disconnected.
+  'ECANCELED', // Operation canceled.
+  'ECONNRESET', // Connection reset by peer.
+  'ECONNABORTED', // Connection aborted.
+  'ERR_STREAM_PREMATURE_CLOSE' // Stream closed before finishing.
+]);
+
 const entryHTML = path.resolve('wwwroot/index.html');
 
 const html = {
@@ -33,10 +43,6 @@ function createMemfs() {
   const volume = new Volume();
 
   return createFsFromVolume(volume);
-}
-
-function httpError(error) {
-  return /^(EOF|EPIPE|ECANCELED|ECONNRESET|ECONNABORTED)$/i.test(error.code);
 }
 
 const compiler = webpack({
@@ -166,7 +172,9 @@ app.use(async ctx => {
 });
 
 app.on('error', error => {
-  !httpError(error) && console.error(error);
+  if (!HTTP_CLIENT_ERROR_CODES.has(error.code)) {
+    console.error(error);
+  }
 });
 
 app.listen(port, () => {
