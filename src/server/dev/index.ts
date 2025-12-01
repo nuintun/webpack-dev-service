@@ -47,10 +47,10 @@ export async function dev(compiler: UnionCompiler, options: Options): Promise<Mi
       return context.logger;
     },
     close(callback) {
-      context.watching.close(callback);
+      context.watching?.close(callback);
     },
     invalidate(callback) {
-      context.watching.invalidate(callback);
+      context.watching?.invalidate(callback);
     }
   });
 }
