@@ -60,10 +60,12 @@ const getOptions = (): Options => {
   };
 };
 
-if (document.readyState !== 'loading') {
-  createClient(getOptions());
-} else {
-  document.addEventListener('DOMContentLoaded', () => {
+if (typeof document !== 'undefined') {
+  if (document.readyState !== 'loading') {
     createClient(getOptions());
-  });
+  } else {
+    document.addEventListener('DOMContentLoaded', () => {
+      createClient(getOptions());
+    });
+  }
 }
