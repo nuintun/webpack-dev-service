@@ -1,6 +1,6 @@
 {
   "name": "webpack-dev-service",
-  "version": "0.16.4",
+  "version": "0.16.5",
   "description": "A koa 2 middleware for webpack development and hot reloading.",
   "type": "module",
   "sideEffects": [
@@ -62,7 +62,7 @@
     "build:main": "pnpm build:cjs && pnpm build:esm && pnpm build:fix-types"
   },
   "dependencies": {
-    "@nuintun/ansi": "^0.3.9",
+    "@nuintun/ansi": "^0.3.10",
     "@types/koa": "^3.0.1",
     "@types/ws": "^8.18.1",
     "etag": "^1.8.1",
@@ -81,12 +81,12 @@
     "@swc/core": "^1.15.11",
     "@swc/helpers": "^0.5.18",
     "@types/etag": "^1.8.4",
-    "@types/node": "^25.2.0",
+    "@types/node": "^25.2.1",
     "@types/range-parser": "^1.2.7",
-    "@types/react": "^19.2.12",
+    "@types/react": "^19.2.13",
     "@types/react-dom": "^19.2.3",
     "css-loader": "^7.1.3",
-    "dts-paths": "^1.1.15",
+    "dts-paths": "^1.1.16",
     "html-webpack-plugin": "^5.6.6",
     "koa": "^3.1.1",
     "koa-compress": "^5.1.1",
