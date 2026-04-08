@@ -2,7 +2,6 @@
  * @module ReadStream
  */
 
-import { PathLike } from 'node:fs';
 import { Buffer } from 'node:buffer';
 import { Range } from './utils/http';
 import { Readable } from 'node:stream';
@@ -26,8 +25,8 @@ interface Callback {
 const DISPOSE_EVENT = Symbol('dispose');
 
 export class ReadStream extends Readable {
+  readonly #path: string;
   readonly #fs: FileSystem;
-  readonly #path: PathLike;
   readonly #ranges: Range[];
 
   #bytesRead: number = 0;
@@ -42,7 +41,7 @@ export class ReadStream extends Readable {
    * @param ranges The ranges to read.
    * @param options The stream options.
    */
-  constructor(path: PathLike, ranges: Range[], options: Options) {
+  constructor(path: string, ranges: Range[], options: Options) {
     const { fs, highWaterMark } = options;
 
     super({ highWaterMark });

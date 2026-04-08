@@ -2,13 +2,14 @@
  * @module webpackHot
  */
 
+import type { Plugin } from 'rollup';
+
 /***
  * @function webpackHot
- * @param {boolean} [exnext]
- * @description Fixed webpack hot.
- * @return {import('rollup').Plugin}
+ * @description fixed meta url
+ * @param {boolean} [esnext] is esnext
  */
-export default function webpackHot(exnext) {
+export default function webpackHot(exnext?: boolean): Plugin {
   return {
     name: 'rollup-plugin-webpack-hot',
     resolveImportMeta(property) {

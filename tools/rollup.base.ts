@@ -3,44 +3,47 @@
  */
 
 import url from '@rollup/plugin-url';
-import metaURL from './plugins/meta-url.js';
+import { isBuiltin } from 'node:module';
+import metaURL from './plugins/meta-url.ts';
+import type { RollupOptions } from 'rollup';
 import replace from '@rollup/plugin-replace';
-import webpackHot from './plugins/webpack-hot.js';
+import webpackHot from './plugins/webpack-hot.ts';
 import typescript from '@rollup/plugin-typescript';
-import { createRequire, isBuiltin } from 'node:module';
-
-const pkg = createRequire(import.meta.url)('../package.json');
+import pkg from '../package.json' with { type: 'json' };
 
 const externals = [
-  // Dependencies.
-  ...Object.keys(pkg.dependencies || {}),
-  // Peer dependencies.
-  ...Object.keys(pkg.peerDependencies || {})
+  // @ts-ignore
+  // dependencies
+  ...Object.keys(pkg.dependencies ?? {}),
+  // @ts-ignore
+  // peer dependencies
+  ...Object.keys(pkg.peerDependencies ?? {})
 ];
 
 const banner = `/**
-  * @package ${pkg.name}
-  * @license ${pkg.license}
-  * @version ${pkg.version}
-  * @author ${pkg.author.name} <${pkg.author.email}>
-  * @description ${pkg.description}
-  * @see ${pkg.homepage}
-  */
- `;
+ * @module webpack-dev-service
+ * @package ${pkg.name}
+ * @license ${pkg.license}
+ * @version ${pkg.version}
+ * @author ${pkg.author.name} <${pkg.author.email}>
+ * @description ${pkg.description}
+ * @see ${pkg.homepage}
+ */
+`;
 
 /**
  * @function env
- * @param {boolean} [esnext] Is esnext.
- * @return {import('rollup').Plugin}
+ * @description replace environment variables
+ * @param {boolean} esnext is esnext
  */
-function env(esnext) {
+function env(esnext: boolean) {
   const ext = esnext ? 'js' : 'cjs';
   const client = `../../client/main.${ext}`;
 
   return replace({
     preventAssignment: true,
     values: {
-      __ESM__: esnext,
+      __ESM__: `${esnext} === true`,
       __HOT_CLIENT__: JSON.stringify(client),
       __PLUGIN_NAME__: JSON.stringify(pkg.name)
     }
@@ -49,21 +52,23 @@ function env(esnext) {
 
 /**
  * @function rollup
- * @param {boolean} [esnext] Is esnext.
- * @return {import('rollup').RollupOptions}
+ * @description rollup configuration
+ * @param {boolean} [esnext] is esnext
  */
-export default function rollup(esnext) {
+export default function rollup(esnext = false): RollupOptions {
   return {
     input: ['src/server/index.ts', 'src/client/main.ts', 'src/client/index.ts'],
     output: {
       banner,
+      esModule: false,
       interop: 'auto',
+      exports: 'named',
       preserveModules: true,
       dir: esnext ? 'esm' : 'cjs',
       format: esnext ? 'esm' : 'cjs',
       generatedCode: { constBindings: true },
-      chunkFileNames: `[name].${esnext ? 'js' : 'cjs'}`,
-      entryFileNames: `[name].${esnext ? 'js' : 'cjs'}`
+      entryFileNames: `[name].${esnext ? 'js' : 'cjs'}`,
+      chunkFileNames: `[name].${esnext ? 'js' : 'cjs'}`
     },
     plugins: [
       env(esnext),
@@ -71,8 +76,10 @@ export default function rollup(esnext) {
       webpackHot(esnext),
       url({ limit: Infinity }),
       typescript({
+        rootDir: 'src',
         declaration: true,
-        declarationDir: esnext ? 'esm' : 'cjs'
+        declarationDir: esnext ? 'esm' : 'cjs',
+        include: ['../src/**/*', '../global.d.ts']
       })
     ],
     onwarn(error, warn) {

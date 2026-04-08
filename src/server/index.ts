@@ -16,7 +16,7 @@ export type Options = DevOptions & { hot?: HotOptions | false };
 /**
  * @function server
  * @description Create koa dev server middleware.
- * @param compiler The rspack compiler instance.
+ * @param compiler The webpack compiler instance.
  * @param options Options.
  */
 export async function server(compiler: UnionCompiler, options: Options = {}): Promise<Middleware & Expose> {

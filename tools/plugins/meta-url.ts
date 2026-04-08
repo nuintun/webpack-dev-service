@@ -2,13 +2,14 @@
  * @module metaURL
  */
 
+import type { Plugin } from 'rollup';
+
 /***
  * @function metaURL
- * @param {boolean} [exnext]
- * @description Fixed meta url.
- * @return {import('rollup').Plugin}
+ * @description fixed meta url
+ * @param {boolean} [esnext] is esnext
  */
-export default function metaURL(exnext) {
+export default function metaURL(exnext?: boolean): Plugin {
   return {
     name: 'rollup-plugin-meta-url',
     resolveImportMeta(property) {

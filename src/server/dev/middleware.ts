@@ -61,7 +61,7 @@ export async function middleware(context: Context): Promise<Middleware> {
     if (method === 'GET' || method === 'HEAD') {
       // Try to respond.
       for (const [publicPath, service] of services) {
-        if (await service.respond(pathname, context, publicPath)) {
+        if (await service.respond(context, pathname, publicPath)) {
           return;
         }
       }

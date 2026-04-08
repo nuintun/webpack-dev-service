@@ -1,20 +1,25 @@
 /**
- * @module webpack
- * @description Webpack config.
+ * @module webpack.config
  */
 
 import Koa from 'koa';
 import path from 'node:path';
 import webpack from 'webpack';
+import type { IFs } from 'memfs';
 import compress from 'koa-compress';
-import { Volume, createFsFromVolume } from 'memfs';
+import type { Options } from 'webpack-dev-service';
+import { createFsFromVolume, Volume } from 'memfs';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import { server as dev } from 'webpack-dev-service';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 
+type FileSystem = Options['fs'] & {
+  createReadStream: IFs['createReadStream'];
+};
+
 const progress = {
   percentBy: 'entries'
-};
+} as const;
 
 // HTTP client error codes.
 const HTTP_CLIENT_ERROR_CODES = new Set([
@@ -28,6 +33,12 @@ const HTTP_CLIENT_ERROR_CODES = new Set([
 
 const entryHTML = path.resolve('wwwroot/index.html');
 
+function createMemfs() {
+  const volume = new Volume();
+
+  return createFsFromVolume(volume) as FileSystem;
+}
+
 const html = {
   xhtml: true,
   minify: false,
@@ -38,12 +49,6 @@ const html = {
   favicon: path.resolve('src/images/favicon.ico'),
   meta: { 'theme-color': '#4285f4', viewport: 'width=device-width,initial-scale=1.0' }
 };
-
-function createMemfs() {
-  const volume = new Volume();
-
-  return createFsFromVolume(volume);
-}
 
 const compiler = webpack({
   name: 'React',

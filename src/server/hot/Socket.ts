@@ -115,7 +115,7 @@ export class Socket {
       params.set('wss', wss ? 'true' : 'false');
     }
 
-    params.set('name', compiler.name || 'rspack');
+    params.set('name', compiler.name || 'webpack');
     params.set('hmr', options.hmr ? 'true' : 'false');
     params.set('reload', options.reload ? 'true' : 'false');
     params.set('overlay', options.overlay ? 'true' : 'false');

@@ -52,7 +52,7 @@
     "pretest": "pnpm build",
     "clean": "node tools/clean.ts",
     "prepublishOnly": "pnpm build",
-    "test": "cd tests && node rspack.config.ts",
+    "test": "cd tests && node webpack.config.ts",
     "build:cjs": "rollup -c tools/rollup.cjs.ts",
     "build:esm": "rollup -c tools/rollup.esm.ts",
     "build:fix-types": "node tools/fix-types.ts",

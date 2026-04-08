@@ -126,11 +126,11 @@ export class Service {
    * @public
    * @method respond
    * @description Respond file.
-   * @param pathname The pathname.
    * @param context The koa context.
+   * @param pathname The pathname.
    * @param publicPath The public path.
    */
-  public async respond(pathname: string, context: Context, publicPath: string): Promise<boolean> {
+  public async respond(context: Context, pathname: string, publicPath: string): Promise<boolean> {
     // Check public path.
     if (!pathname.startsWith(publicPath)) {
       return false;
@@ -181,7 +181,7 @@ export class Service {
 
     // Conditional get support.
     if (isConditionalGET(context)) {
-      // Request precondition failure.
+      // Request precondition failed.
       if (isPreconditionFailed(context)) {
         return context.throw(412);
       }

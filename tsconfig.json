@@ -1,12 +1,11 @@
 {
   "compilerOptions": {
-    "baseUrl": ".",
     "pretty": true,
     "strict": true,
     "newLine": "lf",
     "jsx": "react-jsx",
-    "module": "ESNext",
-    "target": "ESNext",
+    "module": "esnext",
+    "target": "esnext",
     "skipLibCheck": true,
     "importHelpers": true,
     "noUnusedLocals": true,
@@ -15,14 +14,21 @@
     "noImplicitOverride": true,
     "noUnusedParameters": true,
     "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "rewriteRelativeImportExtensions": true,
+    "types": [
+      "node"
+    ],
     "paths": {
       "/*": [
-        "src/*"
+        "./src/*"
       ]
     }
   },
   "include": [
     "src/**/*",
+    "tests/**/*",
+    "tools/**/*",
     "global.d.ts"
   ],
   "exclude": [

@@ -53,7 +53,7 @@ const getOptions = (): Options => {
     origin: getOrigin(params),
     hmr: params.get('hmr') !== 'false',
     path: params.get('path') || '/hot',
-    name: params.get('name') || 'rspack',
+    name: params.get('name') || 'webpack',
     reload: params.get('reload') !== 'false',
     overlay: params.get('overlay') !== 'false',
     progress: params.get('progress') !== 'false'
