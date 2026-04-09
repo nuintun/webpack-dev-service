@@ -3,7 +3,6 @@
  */
 
 import webpack from 'webpack';
-import { URL } from 'node:url';
 import { UnionStats } from '/server/interface';
 
 type PathsItem = [

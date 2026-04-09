@@ -4,7 +4,6 @@
 
 import webpack from 'webpack';
 import { Context } from 'koa';
-import { URL } from 'node:url';
 import { isBoolean, isString } from '/server/utils';
 import { NormalizedOptions, Options } from './interface';
 
