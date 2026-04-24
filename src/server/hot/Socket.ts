@@ -42,7 +42,7 @@ export class Socket {
       const context: CompilerContext = {
         uuid,
         stats: null,
-        progress: -1,
+        percent: -1,
         clients: new Set()
       };
 
@@ -71,8 +71,8 @@ export class Socket {
     hooks.invalid.tap(PLUGIN_NAME, (path, timestamp) => {
       // Set stats to null.
       context.stats = null;
-      // Reset progress.
-      context.progress = -1;
+      // Reset percent.
+      context.percent = -1;
 
       // Broadcast invalid.
       this.#broadcast(context.clients, 'invalid', { path, timestamp });
@@ -132,11 +132,11 @@ export class Socket {
 
     if (options.progress) {
       plugins.push(
-        new webpack.ProgressPlugin((progress, stage, ...details) => {
-          if (progress > context.progress) {
-            context.progress = progress;
+        new webpack.ProgressPlugin((percent, stage, ...details) => {
+          if (percent > context.percent) {
+            context.percent = percent;
 
-            this.#broadcast(context.clients, 'progress', { stage, details, progress });
+            this.#broadcast(context.clients, 'progress', { stage, details, percent });
           }
         })
       );
