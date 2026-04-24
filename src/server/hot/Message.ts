@@ -16,7 +16,7 @@ export interface Invalid {
 export interface Progress {
   action: 'progress';
   payload: {
-    message: string;
+    stage: string;
     details: string[];
     percentage: number;
   };
