@@ -3,10 +3,10 @@
  */
 
 import Koa from 'koa';
-import path from 'node:path';
 import webpack from 'webpack';
 import type { IFs } from 'memfs';
 import compress from 'koa-compress';
+import { resolve } from 'node:path';
 import type { Options } from 'webpack-dev-service';
 import { createFsFromVolume, Volume } from 'memfs';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
@@ -31,7 +31,7 @@ const HTTP_CLIENT_ERROR_CODES = new Set([
   'ERR_STREAM_PREMATURE_CLOSE' // Stream closed before finishing.
 ]);
 
-const entryHTML = path.resolve('wwwroot/index.html');
+const entryHTML = resolve('wwwroot/index.html');
 
 function createMemfs() {
   const volume = new Volume();
@@ -44,22 +44,22 @@ const html = {
   minify: false,
   title: 'Webpack',
   filename: entryHTML,
+  template: resolve('index.ejs'),
   templateParameters: { lang: 'en' },
-  template: path.resolve('index.ejs'),
-  favicon: path.resolve('src/images/favicon.ico'),
+  favicon: resolve('src/images/favicon.ico'),
   meta: { 'theme-color': '#4285f4', viewport: 'width=device-width,initial-scale=1.0' }
 };
 
 const compiler = webpack({
   name: 'React',
   mode: 'development',
-  context: path.resolve('src'),
-  entry: path.resolve('src/index.tsx'),
+  context: resolve('src'),
+  entry: resolve('src/index.tsx'),
   output: {
     publicPath: '/public/',
     filename: `js/[name].js`,
     chunkFilename: `js/[name].js`,
-    path: path.resolve('wwwroot/public'),
+    path: resolve('wwwroot/public'),
     assetModuleFilename: `[path][name][ext]`
   },
   module: {
