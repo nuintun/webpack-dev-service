@@ -18,7 +18,7 @@ export interface Options {
 export type Clients = Set<WebSocket>;
 
 export interface CompilerContext {
-  percentage: number;
+  progress: number;
   readonly uuid: string;
   readonly clients: Clients;
   stats: Required<webpack.StatsCompilation> | null;

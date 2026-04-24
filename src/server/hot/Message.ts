@@ -17,8 +17,8 @@ export interface Progress {
   action: 'progress';
   payload: {
     stage: string;
+    progress: number;
     details: string[];
-    percentage: number;
   };
 }
 
