@@ -132,11 +132,11 @@ export class Socket {
 
     if (options.progress) {
       plugins.push(
-        new webpack.ProgressPlugin((percentage, status, ...messages) => {
+        new webpack.ProgressPlugin((percentage, message, ...details) => {
           if (percentage > context.percentage) {
             context.percentage = percentage;
 
-            this.#broadcast(context.clients, 'progress', { status, messages, percentage });
+            this.#broadcast(context.clients, 'progress', { message, details, percentage });
           }
         })
       );
